@@ -15,7 +15,7 @@ import {
   DrawerTrigger,
 } from "./ui/drawer";
 import { ModeToggle } from "./mode-toggle";
-import AuthService from "@/app/services/authService"; // AuthService'i içe aktar
+import AuthService from "@/app/services/auth.service"; // AuthService'i içe aktar
 import { useRouter } from "next/navigation"; // useRouter hook'unu içe aktar
 
 interface NavProps {

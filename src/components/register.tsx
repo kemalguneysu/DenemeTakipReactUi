@@ -21,7 +21,7 @@ import { z } from "zod";
 const formSchema = z.object({
     username: z.string()
       .min(5, { message: "Kullanıcı adı en az 5 karakter olmalıdır." })
-      .max(35, { message: "Kullanıcı adı en fazla 35 karakter olmalıdır." })
+      .max(25, { message: "Kullanıcı adı en fazla 25 karakter olmalıdır." })
       .nonempty({ message: "Kullanıcı adı alanı boş olmamalıdır." }),
   
     email: z.string()
@@ -38,7 +38,7 @@ const formSchema = z.object({
             if (data.password !== data.confirmPassword) {
             ctx.addIssue({
                 path: ["confirmPassword"],
-                message: "Şifreler eşleşmiyor.",
+                message: "Şifre ve Şifre Tekrar alanları uyuşmamaktadır.",
                 code: z.ZodIssueCode.custom,
             });
             }
@@ -96,7 +96,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="E-posta adresinizi girin" {...field} />
+                  <Input placeholder="E-posta adresinizi giriniz." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -111,7 +111,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Kullanıcı Adı</FormLabel>
                 <FormControl>
-                  <Input placeholder="Kullanıcı adınızı girin" {...field} />
+                  <Input placeholder="Kullanıcı adınızı giriniz." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,7 +128,7 @@ export function RegisterForm() {
                   <FormControl>
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Şifrenizi girin"
+                      placeholder="Şifrenizi giriniz."
                       {...field}
                     />
                   </FormControl>
@@ -159,7 +159,7 @@ export function RegisterForm() {
                   <FormControl>
                     <Input
                       type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Şifrenizi tekrar girin"
+                      placeholder="Şifrenizi tekrar giriniz."
                       {...field}
                     />
                   </FormControl>

@@ -77,7 +77,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email veya kullanıcı adı</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email veya kullanıcı adınızı giriniz" {...field} />
+                  <Input placeholder="Email veya kullanıcı adınızı giriniz." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,7 +95,7 @@ export function LoginForm() {
                   <FormControl>
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Şifrenizi giriniz"
+                      placeholder="Şifrenizi giriniz."
                       {...field}
                     />
                   </FormControl>
@@ -118,7 +118,7 @@ export function LoginForm() {
           {/* Şifremi unuttum? Linki */}
           <div className="mt-2 text-center">
             <Link href="/sifremi-unuttum" className="text-primary hover:underline">
-              Şifremi unuttum?
+              Şifremi unuttum
             </Link>
           </div>
 
