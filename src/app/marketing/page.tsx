@@ -1,8 +1,9 @@
 import FAQSection from "@/components/faq";
 import FeaturesSection from "@/components/features";
-import Image from "next/image";
+import React from "react";
+type Props = {};
 
-export default function Home() {
+export default function IndexPage({}: Props) {
   return (
     <div className="min-h-screen  max-w-7xl mx-auto ">
       <FeaturesSection />

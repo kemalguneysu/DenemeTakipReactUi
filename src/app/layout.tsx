@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "./styles/globals.css";
+import { Plus_Jakarta_Sans as FontJakarta, Plus_Jakarta_Sans } from "next/font/google";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { ThemeProvider } from "next-themes";
+import Navigation from "@/components/navigation";
+import { dashboardConfig } from "@/config/dashboard";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
+const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,11 +22,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
       >
-        {children}
-      </body>
+        <body
+          className={`${jakarta.className} ${fontJakartaSans.variable} antialiased min-h-screen mx-auto max-w-7xl`}
+        >
+          <div className="min-h-screen w-full">
+            <header className="sticky justify-center items-center flex flex-col w-full top-0 z-40 bg-background">
+              <div className="flex h-16 items-center w-full mx-auto justify-between py-4">
+                <Navigation items={dashboardConfig.mainNav} />
+              </div>
+              <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
+            </header>
+            <main>{children}</main>
+            <footer className="flex flex-col h-16 items-center w-full mx-auto justify-between py-4">
+              <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
+            </footer>
+          </div>
+          <TailwindIndicator />
+        </body>
+      </ThemeProvider>
     </html>
   );
 }
