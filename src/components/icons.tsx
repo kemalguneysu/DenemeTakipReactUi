@@ -26,6 +26,9 @@ import {
     Stamp,
     type Icon as LucideIcon,
     LogOutIcon,
+    Eye,
+    EyeClosed,
+    EyeOff,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -73,5 +76,7 @@ import {
     ),
     twitter: Twitter,
     check: Check,
-    logOut:LogOutIcon
+    logOut:LogOutIcon,
+    eye:Eye,
+    eyeOf:EyeOff
   };
