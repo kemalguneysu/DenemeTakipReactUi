@@ -6,6 +6,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "next-themes";
 import Navigation from "@/components/navigation";
 import { dashboardConfig } from "@/config/dashboard";
+import { Toaster } from "@/components/ui/toaster";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
 const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });
@@ -31,6 +32,7 @@ export default function RootLayout({
         <body
           className={`${jakarta.className} ${fontJakartaSans.variable} antialiased min-h-screen mx-auto max-w-7xl`}
         >
+          <Toaster />
           <div className="min-h-screen w-full">
             <header className="sticky justify-center items-center flex flex-col w-full top-0 z-40 bg-background">
               <div className="flex h-16 items-center w-full mx-auto justify-between py-4">

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from 'next-themes'; // Tema kullanımı için ekleniyor
+import { useTheme } from 'next-themes';
 import {
   Form,
   FormControl,
@@ -18,34 +18,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { z } from "zod";
+import { SocialUser, UserCreate } from "@/types";
+import { userService } from "@/app/services/user.service";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation'; // next/navigation'dan useRouter import et
+import authService from "@/app/services/auth.service";
+import { UserAuthService } from "@/app/services/user-auth.service";
+
+
+// Form validation schema using Zod
 const formSchema = z.object({
-    username: z.string()
-      .min(5, { message: "Kullanıcı adı en az 5 karakter olmalıdır." })
-      .max(25, { message: "Kullanıcı adı en fazla 25 karakter olmalıdır." })
-      .nonempty({ message: "Kullanıcı adı alanı boş olmamalıdır." }),
+  username: z.string()
+    .min(5, { message: "Kullanıcı adı en az 5 karakter olmalıdır." })
+    .max(25, { message: "Kullanıcı adı en fazla 25 karakter olmalıdır." })
+    .nonempty({ message: "Kullanıcı adı alanı boş olmamalıdır." }),
   
-    email: z.string()
-      .email({ message: "Geçerli bir e-posta adresi girin." })
-      .nonempty({ message: "E-posta alanı boş olmamalıdır." }),
-  
-    password: z.string()
-      .min(6, { message: "Şifre en az 6 karakter olmalıdır." })
-      .nonempty({ message: "Şifre alanı boş olmamalıdır." }),
-  
-      confirmPassword: z.string()
-      .nonempty({ message: "Şifre tekrarı alanı boş olmamalıdır." }),
-        }).superRefine((data, ctx) => {
-            if (data.password !== data.confirmPassword) {
-            ctx.addIssue({
-                path: ["confirmPassword"],
-                message: "Şifre ve Şifre Tekrar alanları uyuşmamaktadır.",
-                code: z.ZodIssueCode.custom,
-            });
-            }
-  });
+  email: z.string()
+    .email({ message: "Geçerli bir e-posta adresi girin." })
+    .nonempty({ message: "E-posta alanı boş olmamalıdır." }),
+
+  password: z.string()
+    .min(6, { message: "Şifre en az 6 karakter olmalıdır." })
+    .nonempty({ message: "Şifre alanı boş olmamalıdır." }),
+
+  confirmPassword: z.string()
+    .nonempty({ message: "Şifre tekrarı alanı boş olmamalıdır." }),
+}).superRefine((data, ctx) => {
+  if (data.password !== data.confirmPassword) {
+    ctx.addIssue({
+      path: ["confirmPassword"],
+      message: "Şifre ve Şifre Tekrar alanları uyuşmamaktadır.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+});
 
 export function RegisterForm() {
-  const { theme } = useTheme(); // Tema bilgisini almak için useTheme kancası ekleniyor
+  const { theme } = useTheme();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,31 +64,110 @@ export function RegisterForm() {
       confirmPassword: "",
     },
   });
-
-  // Şifre görünürlüğünü kontrol etmek için state tanımlayalım
+  const userAuthService = UserAuthService(); 
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Form değerlerini işleyen bir submit handler tanımlayalım.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Kayıt işlemi burada yapılacak
+  // Form submission handler
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { username, email, password, confirmPassword } = values;
+    try {
+      const userCreateResponse: UserCreate = await userService.create(
+        {
+          username,
+          email,
+          password,
+          passwordConfirm: confirmPassword,
+        },
+        undefined,
+        (errorMessage) => {
+          toast({
+            title: "Kayıt Başarısız",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+      );
+
+      // Kullanıcı oluşturulduysa kontrol et
+      if (userCreateResponse.succeeded) {
+        toast({
+          title: "Kullanıcı Başarıyla Oluşturuldu",
+          description: userCreateResponse.message || "Kullanıcı başarıyla oluşturuldu.",
+        });
+        router.push('/giris-yap'); // Yönlendirme
+      } else {
+        toast({
+          title: "Kayıt Başarısız",
+          description: userCreateResponse.message || "Kullanıcı oluşturulurken bir hata oluştu.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Kullanıcı oluşturma işlemi başarısız:", error);
+      let errorMessage = "Kayıt işlemi sırasında bir hata oluştu.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = (error as any).message;
+      }
+
+      toast({
+        title: "Kayıt Başarısız",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   }
 
-  // Google ile giriş başarılı olduğunda çağrılacak fonksiyon
-  const onSuccess = (credentialResponse: any) => {
-    console.log('Google ile giriş başarılı:', credentialResponse);
-    // Giriş başarılı olduğunda yapılacak işlemleri buraya ekleyin
+  // Google login success handler
+  const onSuccess = async (credentialResponse: any) => {
+    try {
+      const profile = credentialResponse.profileObj || {};
+
+      const user: SocialUser = {
+        provider: 'Google',
+        id: profile.googleId || '',
+        email: profile.email || '',
+        name: profile.name || '',
+        photoUrl: profile.picture || '',
+        firstName: profile.givenName || '',
+        lastName: profile.familyName || '',
+        authToken: credentialResponse.credential || '',
+        idToken: credentialResponse.credential || '',
+        authorizationCode: '',
+        response: credentialResponse,
+      };
+
+      await userAuthService.googleLogin(user, () => {
+        authService.identityCheck(); // Kullanıcı durumunu kontrol et
+        router.push('/'); // Ana sayfaya yönlendir
+      });
+    } catch (error) {
+      console.error('Google ile giriş hatası:', error);
+      toast({
+        title: 'Google ile giriş hatası',
+        description: 'Google ile girişte bir hata oluştu.',
+        variant: 'destructive',
+      });
+    }
   };
 
-  // Google ile giriş başarısız olduğunda çağrılacak fonksiyon
   const onError = () => {
-    console.log('Google ile giriş başarısız');
-    // Hata işlemlerini buraya ekleyin
+    console.log('Google ile giriş hatası');
+    toast({
+      title: 'Giriş Yapılamadı',
+      description: 'Google ile girişte bir hata oluştu.',
+      variant: 'destructive',
+    });
   };
+
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
 
-  // Eğer clientId tanımlı değilse hata ver
   if (!clientId) {
     throw new Error("Google Client ID is not defined. Please check your .env file.");
   }
@@ -88,7 +176,7 @@ export function RegisterForm() {
     <GoogleOAuthProvider clientId={clientId}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Email Alanı */}
+          {/* Email Field */}
           <FormField
             control={form.control}
             name="email"
@@ -103,7 +191,7 @@ export function RegisterForm() {
             )}
           />
 
-          {/* Username Alanı */}
+          {/* Username Field */}
           <FormField
             control={form.control}
             name="username"
@@ -118,6 +206,7 @@ export function RegisterForm() {
             )}
           />
 
+          {/* Password Field */}
           <FormField
             control={form.control}
             name="password"
@@ -140,15 +229,12 @@ export function RegisterForm() {
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
-                {/* Hata mesajı alanı */}
-                <div className="h-6"> {/* Sabit yükseklik ekleyerek kaymayı önlüyoruz */}
-                  <FormMessage />
-                </div>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Confirm Password Alanı */}
+          {/* Confirm Password Field */}
           <FormField
             control={form.control}
             name="confirmPassword"
@@ -171,20 +257,17 @@ export function RegisterForm() {
                     {showConfirmPassword ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
-                {/* Hata mesajı alanı */}
-                <div className="h-6"> {/* Sabit yükseklik ekleyerek kaymayı önlüyoruz */}
-                  <FormMessage />
-                </div>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Submit Butonu */}
+          {/* Submit Button */}
           <Button type="submit" className="w-full">
             Kayıt Ol
           </Button>
 
-          {/* Hesabınız var mı? Giriş Yap Linki */}
+          {/* Link to Login Page */}
           <div className="mt-4 text-center">
             <p className="text-gray-500">
               Hesabınız var mı?{' '}
@@ -194,8 +277,8 @@ export function RegisterForm() {
             </p>
           </div>
 
-          {/* Google ile giriş yap butonu */}
-          <div className="mt-4 flex justify-center"> {/* Flex ile ortalama */}
+          {/* Google Login Button */}
+          <div className="mt-4 flex justify-center">
             <GoogleLogin
               onSuccess={onSuccess}
               onError={onError}
@@ -203,7 +286,7 @@ export function RegisterForm() {
               shape="pill"
               text="signup_with"
               size="large"
-              theme={theme === 'dark' ? 'filled_black' : 'outline'} // Tema kontrolü
+              theme={theme === 'dark' ? 'filled_black' : 'outline'}
               width="100%"
               auto_select={false}
             />

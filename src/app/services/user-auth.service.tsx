@@ -1,108 +1,176 @@
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { useToast } from '@/hooks/use-toast'; // Shadcn toast için hook importu
+import { TokenResponse, SocialUser } from '@/types'; // types.tsx dosyasından import
 
-interface TokenResponse {
-  token: {
-    accessToken: string;
-    refreshToken: string;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL; // API base URL environment variable üzerinden alınıyor
+
+export const UserAuthService = () => {
+  const { toast } = useToast(); // useToast hook'u ile toast fonksiyonu alınır
+
+  const login = async (userNameOrEmail: string, password: string, callBackFunction?: () => void): Promise<void> => {
+      try {
+          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ userNameOrEmail, password }),
+          });
+
+          if (!response.ok) {
+              throw new Error('Giriş işlemi başarısız'); // HTTP hata kodlarına göre hata fırlat
+          }
+
+          const tokenResponse: TokenResponse = await response.json();
+
+          if (tokenResponse) {
+              localStorage.setItem('accessToken', tokenResponse.token.accessToken);
+              localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
+
+              toast({
+                  title: 'Giriş Başarılı',
+                  description: 'Kullanıcı girişi başarıyla sağlanmıştır.',
+              });
+
+              // Eğer callback fonksiyonu varsa çağır
+              if (callBackFunction) {
+                  callBackFunction();
+              }
+          }
+      } catch (error) {
+          console.error('Login error:', error);
+          toast({
+              title: 'Giriş Yapılamadı',
+              description: 'Kullanıcı adı veya şifre hatalı.',
+              variant: "destructive",
+          });
+          // Hata durumunda callback çağrılmayacak
+      }
   };
-}
 
-export default function AuthService() {
-  const router = useRouter();
-
-  const login = async (userNameOrEmail: string, password: string, callBackFunction?: () => void) => {
+  const refreshTokenLogin = async (refreshToken: string, callBackFunction?: (state: any) => void): Promise<any> => {
     try {
-      const response = await axios.post<TokenResponse>('/api/auth/login', { userNameOrEmail, password });
-      const tokenResponse = response.data;
-
-      if (tokenResponse) {
-        localStorage.setItem('accessToken', tokenResponse.token.accessToken);
-        localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
-
-        toast.success('Kullanıcı girişi başarıyla sağlanmıştır.', {
-          position: "top-right",
-        });
-        
-        router.push('/');
-      }
-
-      if (callBackFunction) {
-        callBackFunction();
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      toast.error('Giriş işlemi başarısız.', {
-        position: "top-right",
+      const response = await fetch(`${API_BASE_URL}/auth/refreshtokenlogin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
       });
-    }
-  };
 
-  const refreshTokenLogin = async (refreshToken: string, callBackFunction?: (state: any) => void) => {
-    try {
-      const response = await axios.post<TokenResponse>('/api/auth/refreshtokenlogin', { refreshToken });
-
-      if (response.data) {
-        const tokenResponse = response.data;
-        localStorage.setItem('accessToken', tokenResponse.token.accessToken);
-        localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
-      }
-
-      if (callBackFunction) {
-        callBackFunction(true);
-      }
-    } catch (error) {
-      console.error('Refresh token login failed:', error);
-      if (callBackFunction) {
-        callBackFunction(false);
-      }
-    }
-  };
-
-  const googleLogin = async (user: any, callBackFunction?: () => void) => {
-    try {
-      const response = await axios.post<TokenResponse>('/api/auth/google-login', user);
-      const tokenResponse = response.data;
+      const tokenResponse: TokenResponse = await response.json();
 
       if (tokenResponse) {
         localStorage.setItem('accessToken', tokenResponse.token.accessToken);
         localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
-        toast.success('Google üzerinden giriş başarıyla sağlanmıştır.', {
-          position: "top-right",
-        });
       }
 
       if (callBackFunction) {
-        callBackFunction();
+        callBackFunction(tokenResponse);
       }
     } catch (error) {
-      console.error('Google login failed:', error);
-      toast.error('Google ile giriş işlemi başarısız.', {
-        position: "top-right",
+      console.error('Refresh token error:', error);
+    }
+  };
+
+  const googleLogin = async (user: SocialUser, callBackFunction?: () => void): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+  
+      // Yanıtı metin olarak oku
+      const responseText = await response.text();
+  
+      // Eğer yanıt başarılıysa (örneğin, 2xx durum kodu) JSON’a dönüştür
+      if (response.ok) {
+        const tokenResponse: TokenResponse = JSON.parse(responseText);
+  
+        // Eğer tokenResponse var ise ve geçerliyse
+        if (tokenResponse && tokenResponse.token) {
+          localStorage.setItem('accessToken', tokenResponse.token.accessToken);
+          localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
+  
+          toast({
+            title: 'Giriş Başarılı',
+            description: 'Google üzerinden giriş başarıyla sağlanmıştır.',
+          });
+  
+          // Başarılı giriş durumunda callBackFunction varsa çağır
+          if (callBackFunction) {
+            callBackFunction();
+          }
+        } else {
+          throw new Error('Token alınamadı');
+        }
+      } else {
+        // Hata durumunda hata mesajını çıkart
+        throw new Error(responseText);
+      }
+    } catch (error: any) {
+      let errorMessage = 'Google ile giriş yapılırken bir hata ile karşılaşıldı.';
+      
+      // Hata mesajını kontrol et
+      if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = error.message || errorMessage;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+    
+      // Hata mesajından yalnızca "Bu email adresi halihazırda başka bir hesap tarafından kullanılmaktadır." kısmını al
+      if (typeof errorMessage === 'string') {
+        // Hata mesajında "System.Exception:" ifadesini bul ve kaldır
+        if (errorMessage.startsWith("System.Exception:")) {
+          errorMessage = errorMessage.split("System.Exception:")[1].trim();
+        }
+    
+        // Geri kalan metin içinde istenen mesajı kontrol et
+        if (errorMessage.includes("Bu email adresi halihazırda başka bir hesap tarafından kullanılmaktadır.")) {
+          errorMessage = "Bu email adresi halihazırda başka bir hesap tarafından kullanılmaktadır.";
+        }
+      }
+      toast({
+        title: 'Giriş Yapılamadı',
+        description: errorMessage,
+        variant: 'destructive',
       });
     }
   };
 
   const passwordReset = async (emailOrUserName: string, callBackFunction?: () => void) => {
     try {
-      await axios.post('/api/auth/PasswordReset', { emailOrUserName });
+      const response = await fetch(`${API_BASE_URL}/auth/PasswordReset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ emailOrUserName }),
+      });
+
+      await response.json();
+
       if (callBackFunction) {
         callBackFunction();
       }
     } catch (error) {
-      console.error('Password reset failed:', error);
-      if (callBackFunction) {
-        callBackFunction();
-      }
+      console.error('Password reset error:', error);
     }
   };
 
   const verifyResetToken = async (resetToken: string, userId: string, callBackFunction?: () => void): Promise<boolean> => {
     try {
-      const response = await axios.post<boolean>('/api/auth/VerifyResetToken', { resetToken, userId });
-      const state = response.data;
+      const response = await fetch(`${API_BASE_URL}/auth/VerifyResetToken`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ resetToken, userId }),
+      });
+
+      const state: boolean = await response.json();
 
       if (callBackFunction) {
         callBackFunction();
@@ -110,10 +178,7 @@ export default function AuthService() {
 
       return state;
     } catch (error) {
-      console.error('Verify reset token failed:', error);
-      if (callBackFunction) {
-        callBackFunction();
-      }
+      console.error('Verify reset token error:', error);
       return false;
     }
   };
@@ -125,4 +190,4 @@ export default function AuthService() {
     passwordReset,
     verifyResetToken,
   };
-}
+};

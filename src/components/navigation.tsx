@@ -30,22 +30,22 @@ export default function Footer({ items }: NavProps) {
   const router = useRouter(); // useRouter hook'unu kullanarak yönlendirme işlemi
 
   useEffect(() => {
-    // AuthService üzerinden isAuthenticated ve isAdmin değerlerini al ve durumu güncelle
-    const checkAuthStatus = () => {
-      const authStatus = AuthService.isAuthenticated;
-      const adminStatus = AuthService.isAdmin;
-      console.log("isAuthenticated:", authStatus, "isAdmin:", adminStatus); // Değerleri kontrol et
-      setIsAuthenticated(authStatus);
-      setIsAdmin(adminStatus);
-    };
+    const subscription = AuthService.authStatus$().subscribe(({ isAuthenticated, isAdmin }) => {
+      setIsAuthenticated(isAuthenticated);
+      setIsAdmin(isAdmin);
+    });
 
-    checkAuthStatus();
+    // İlk durumu kontrol et
+    AuthService.identityCheck();
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSignOut = () => {
     AuthService.signOut(); // Çıkış yap
-    setIsAuthenticated(false); // Durumu güncelle
-    setIsAdmin(false); // Admin durumunu güncelle
     router.push("/"); // Anasayfaya yönlendir
   };
 
@@ -60,28 +60,28 @@ export default function Footer({ items }: NavProps) {
 
           {/* Büyük ekranlar için menü öğelerini göster */}
           <nav className="hidden md:flex gap-6">
-              {items?.map((item, index) => {
-                // Eğer Admin öğesi ve isAdmin değeri false ise, bu öğeyi atla
-                if (item.title === "Admin" && !isAdmin) {
-                  return null; // isAdmin false ise hiçbir şey döndürme
-                }
+            {items?.map((item, index) => {
+              // Eğer Admin öğesi ve isAdmin değeri false ise, bu öğeyi atla
+              if (item.title === "Admin" && !isAdmin) {
+                return null; // isAdmin false ise hiçbir şey döndürme
+              }
 
-                return (
-                  <Link
-                    key={index}
-                    href={item.disabled ? "#" : item.href}
-                    className={cn(
-                      "flex items-center text-md font-medium transition-colors hover:text-foreground/80",
-                      item.href.startsWith(`/${segment}`)
-                        ? "text-foreground"
-                        : "text-foreground/60",
-                      item.disabled && "cursor-not-allowed opacity-80"
-                    )}
-                  >
-                    {item.title}
-                  </Link>
-                );
-              })}
+              return (
+                <Link
+                  key={index}
+                  href={item.disabled ? "#" : item.href}
+                  className={cn(
+                    "flex items-center text-md font-medium transition-colors hover:text-foreground/80",
+                    item.href.startsWith(`/${segment}`)
+                      ? "text-foreground"
+                      : "text-foreground/60",
+                    item.disabled && "cursor-not-allowed opacity-80"
+                  )}
+                >
+                  {item.title}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         <div className="flex items-center gap-4">
