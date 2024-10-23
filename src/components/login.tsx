@@ -1,36 +1,30 @@
-"use client";
+"use client"; // İstemci bileşeni olarak işaretle
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import Link from "next/link";
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTheme } from 'next-themes'; // Tema kullanımı için ekleniyor
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useTheme } from 'next-themes';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { UserAuthService } from '@/app/services/user-auth.service';
+import { z } from 'zod';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'; // UI bileşenleri
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react'; // Eye ikonları
+import { useRouter } from 'next/navigation'; // next/navigation'dan useRouter import et
+import authService from '@/app/services/auth.service'; // AuthService import et
+import { toast } from '@/hooks/use-toast';
+import { SocialUser } from '@/types';
 
-// Form şemasını güncelleyelim.
+// Form doğrulama şemasını tanımlayın
 const formSchema = z.object({
-  username: z.string().nonempty({
-    message: "Email veya kullanıcı adı kısmı boş olmamalıdır.",
-  }),
-  password: z.string().nonempty({
-    message: "Şifre alanı boş olmamalıdır.",
-  }),
+  username: z.string().nonempty('Email veya kullanıcı adı gereklidir'),
+  password: z.string().nonempty('Şifre gereklidir'),
 });
 
 export function LoginForm() {
-  const { theme } = useTheme(); // Tema bilgisini almak için useTheme kancası ekleniyor
+  const { theme } = useTheme(); // Tema bilgisini almak için useTheme kancası
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,31 +33,77 @@ export function LoginForm() {
     },
   });
 
-  // Şifre görünürlüğünü kontrol etmek için state tanımlayalım
   const [showPassword, setShowPassword] = useState(false);
-
-  // Form değerlerini işleyen bir submit handler tanımlayalım.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
-
-  // Google ile giriş başarılı olduğunda çağrılacak fonksiyon
-  const onSuccess = (credentialResponse: any) => {
-    console.log('Google ile giriş başarılı:', credentialResponse);
-    // Giriş başarılı olduğunda yapılacak işlemleri buraya ekleyin
-  };
-
-  // Google ile giriş başarısız olduğunda çağrılacak fonksiyon
-  const onError = () => {
-    console.log('Google ile giriş başarısız');
-    // Hata işlemlerini buraya ekleyin
-  };
+  const router = useRouter(); // useRouter burada kullanılır
+  const userAuthService = UserAuthService(); // UserAuthService örneği alınıyor
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
 
   // Eğer clientId tanımlı değilse hata ver
   if (!clientId) {
     throw new Error("Google Client ID is not defined. Please check your .env file.");
   }
+  // Form değerlerini işleyen bir submit handler tanımlayalım.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { username, password } = values;
+    try {
+        await userAuthService.login(username, password, () => {
+            authService.identityCheck(); // Kullanıcı durumunu kontrol et
+            router.push('/'); // Ana sayfaya yönlendir
+        });
+    } catch (error) {
+        // Hata durumunda herhangi bir işlem yapılmıyor, toast gösteriliyor
+        toast({
+            title: 'Giriş Yapılamadı',
+            description: 'Kullanıcı adı veya şifre hatalı.',
+            variant: "destructive",
+        });
+    }
+}
+
+
+  // Google ile giriş başarılı olduğunda çağrılacak fonksiyon
+  const onSuccess = async (credentialResponse: any) => {
+    try {
+      const profile = credentialResponse.profileObj || {};
+
+      const user: SocialUser = {
+        provider: 'Google',
+        id: profile.googleId || '',
+        email: profile.email || '',
+        name: profile.name || '',
+        photoUrl: profile.picture || '',
+        firstName: profile.givenName || '',
+        lastName: profile.familyName || '',
+        authToken: credentialResponse.credential || '',
+        idToken: credentialResponse.credential || '',
+        authorizationCode: '',
+        response: credentialResponse,
+      };
+
+      await userAuthService.googleLogin(user, () => {
+        authService.identityCheck(); // Kullanıcı durumunu kontrol et
+        router.push('/'); // Ana sayfaya yönlendir
+      });
+    } catch (error) {
+      console.error('Google ile giriş hatası:', error);
+      toast({
+        title: 'Google ile giriş hatası',
+        description: 'Google ile girişte bir hata oluştu.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const onError = () => {
+    console.log('Google ile giriş hatası');
+    toast({
+      title: 'Giriş Yapılamadı',
+      description: 'Google ile girişte bir hata oluştu.',
+      variant: 'destructive',
+    });
+  };
+
+  
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
@@ -77,7 +117,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email veya kullanıcı adı</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email veya kullanıcı adınızı giriniz" {...field} />
+                  <Input placeholder="Email veya kullanıcı adınızı giriniz." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,7 +135,7 @@ export function LoginForm() {
                   <FormControl>
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Şifrenizi giriniz"
+                      placeholder="Şifrenizi giriniz."
                       {...field}
                     />
                   </FormControl>
@@ -107,7 +147,6 @@ export function LoginForm() {
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
-                {/* Hata mesajı alanı */}
                 <div className="h-6"> {/* Sabit yükseklik ekleyerek kaymayı önlüyoruz */}
                   <FormMessage />
                 </div>
@@ -118,7 +157,7 @@ export function LoginForm() {
           {/* Şifremi unuttum? Linki */}
           <div className="mt-2 text-center">
             <Link href="/sifremi-unuttum" className="text-primary hover:underline">
-              Şifremi unuttum?
+              Şifremi unuttum
             </Link>
           </div>
 
@@ -149,7 +188,6 @@ export function LoginForm() {
               theme={theme === 'dark' ? 'filled_black' : 'outline'} // Tema kontrolü
               width="100%"
               auto_select={false}
-              
             />
           </div>
         </form>

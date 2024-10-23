@@ -63,3 +63,35 @@ export interface FaqItem {
   question: string;
   answer: string;
 }
+export interface SocialUser {
+  provider: string;
+  id: string;
+  email: string;
+  name: string;
+  photoUrl: string;
+  firstName: string;
+  lastName: string;
+  authToken: string;
+  idToken: string;
+  authorizationCode: string;
+  response: any;
+}
+export interface Token {
+  accessToken: string;
+  refreshToken: string;
+  expiration: Date;
+}
+
+export interface TokenResponse {
+  token: Token;
+}
+export class UserCreate {
+  succeeded!: boolean;  // Using '!' to assert that this will be initialized later
+  message!: string;   
+}
+export class User{
+  username!:string;
+  email!:string;
+  password!:string;
+  passwordConfirm!:string
+}
