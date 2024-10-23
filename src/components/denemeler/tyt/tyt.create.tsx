@@ -156,7 +156,6 @@ const TytCreate = () => {
   
     try {
       await denemeService.createTyt(tytDeneme);
-      // Başarı mesajını toast ile göster
       toast({
         title: 'Başarılı',
         description: 'Deneme başarıyla eklendi!',

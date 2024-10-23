@@ -103,6 +103,7 @@ export class tytGenelList{
   sosyalNet!:number;
   fenNet!:number;
   toplamNet!:number;
+  tarih!:Date
 }
 export class aytGenelList{
   id!:string;
@@ -110,6 +111,7 @@ export class aytGenelList{
   esitAgirlikNet!:number;
   sozelNet!:number;
   dilNet!:number;
+  tarih!:Date
 }
 export class CreateTyt{
   matematikDogru:number=0;
@@ -150,4 +152,8 @@ export class CreateAyt{
   dilYanlis:number=0;
   yanlisKonularId:Array<string>=[];
   bosKonularId:Array<string>=[];
+}
+export class CreateDers{
+  dersAdi!:string;
+  isTyt!:boolean;
 }
