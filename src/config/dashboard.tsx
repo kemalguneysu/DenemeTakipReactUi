@@ -17,6 +17,20 @@ export const dashboardConfig: DashboardConfig = {
     {
       title: "Admin",
       href: "/admin",
+      children: [ // Admin altında alt öğeler
+        {
+          title: "Dersler",
+          href: "/admin/dersler",
+        },
+        {
+          title: "Kullanıcılar",
+          href: "/admin/kullanicilar",
+        },
+        {
+          title: "Konular",
+          href: "/admin/konular",
+        },
+      ],
     },
   ],
   footerNav: [

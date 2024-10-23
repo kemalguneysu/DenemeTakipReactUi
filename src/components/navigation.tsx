@@ -17,6 +17,13 @@ import {
 import { ModeToggle } from "./mode-toggle";
 import AuthService from "@/app/services/auth.service"; // AuthService'i içe aktar
 import { useRouter } from "next/navigation"; // useRouter hook'unu içe aktar
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../components/ui/dropdown-menu";
+
 
 interface NavProps {
   items: NavItem[];
@@ -49,6 +56,50 @@ export default function Footer({ items }: NavProps) {
     router.push("/"); // Anasayfaya yönlendir
   };
 
+  const renderNavItems = (items: NavItem[]) => {
+    return items.map((item, index) => {
+      // Eğer Admin öğesi ve isAdmin değeri false ise, bu öğeyi atla
+      if (item.title === "Admin" && !isAdmin) {
+        return null; // isAdmin false ise hiçbir şey döndürme
+      }
+      
+
+      // Eğer çocuk öğeleri varsa, dropdown menü oluştur
+      if (item.children && item.children.length > 0) {
+        return (
+          <DropdownMenu key={index}>
+            <DropdownMenuTrigger>
+              <span className="flex items-center text-md font-medium transition-colors hover:text-foreground/80">{item.title}</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-50"> {/* Dropdown'un z-index'ini artır */}
+              {item.children.map((child, childIndex) => (
+                <DropdownMenuItem key={childIndex}>
+                  <Link href={child.disabled ? "#" : child.href}>
+                    {child.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      }
+
+      return (
+        <Link
+          key={index}
+          href={item.disabled ? "#" : item.href}
+          className={cn(
+            "flex items-center text-md font-medium transition-colors hover:text-foreground/80",
+            item.href.startsWith(`/${segment}`) ? "text-foreground" : "text-foreground/60",
+            item.disabled && "cursor-not-allowed opacity-80"
+          )}
+        >
+          {item.title}
+        </Link>
+      );
+    });
+  };
+
   return (
     <nav className="sticky max-w-7xl mx-auto top-0 z-40 w-full bg-background">
       <div className="flex py-3 px-4 gap-8 items-center">
@@ -57,31 +108,9 @@ export default function Footer({ items }: NavProps) {
             <Icons.logo />
             <h1 className="font-bold text-xl sm:inline-block">Deneme Takip</h1>
           </Link>
-
-          {/* Büyük ekranlar için menü öğelerini göster */}
+          
           <nav className="hidden md:flex gap-6">
-            {items?.map((item, index) => {
-              // Eğer Admin öğesi ve isAdmin değeri false ise, bu öğeyi atla
-              if (item.title === "Admin" && !isAdmin) {
-                return null; // isAdmin false ise hiçbir şey döndürme
-              }
-
-              return (
-                <Link
-                  key={index}
-                  href={item.disabled ? "#" : item.href}
-                  className={cn(
-                    "flex items-center text-md font-medium transition-colors hover:text-foreground/80",
-                    item.href.startsWith(`/${segment}`)
-                      ? "text-foreground"
-                      : "text-foreground/60",
-                    item.disabled && "cursor-not-allowed opacity-80"
-                  )}
-                >
-                  {item.title}
-                </Link>
-              );
-            })}
+            {renderNavItems(items)}
           </nav>
         </div>
         <div className="flex items-center gap-4">
@@ -103,25 +132,7 @@ export default function Footer({ items }: NavProps) {
                 </DrawerHeader>
                 {items?.length ? (
                   <div className="flex flex-col items-center gap-4 py-4">
-                    {items.map((item, index) => {
-                      // Eğer Admin öğesi ve isAdmin değeri false ise, bu öğeyi atla
-                      if (item.title === "Admin" && !isAdmin) {
-                        return null; // isAdmin false ise hiçbir şey döndürme
-                      }
-
-                      return (
-                        <Link
-                          key={index}
-                          href={item.disabled ? "#" : item.href}
-                          className={cn(
-                            "flex items-center w-fit text-lg font-medium transition-colors hover:text-foreground/80",
-                            item.disabled && "cursor-not-allowed opacity-80"
-                          )}
-                        >
-                          {item.title}
-                        </Link>
-                      );
-                    })}
+                    {renderNavItems(items)}
                     {/* Giriş Yap veya Çıkış Yap Linki */}
                     {!isAuthenticated ? (
                       <Link href="/giris-yap" className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80">

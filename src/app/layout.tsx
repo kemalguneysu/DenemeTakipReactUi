@@ -30,7 +30,7 @@ export default function RootLayout({
         disableTransitionOnChange
       >
         <body
-          className={`${jakarta.className} ${fontJakartaSans.variable} antialiased min-h-screen mx-auto max-w-7xl`}
+          className={`${jakarta.className} ${fontJakartaSans.variable} antialiased min-h-screen mx-auto`}
         >
           <Toaster />
           <div className="min-h-screen w-full">

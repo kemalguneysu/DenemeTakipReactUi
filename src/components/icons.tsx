@@ -29,6 +29,7 @@ import {
     Eye,
     EyeClosed,
     EyeOff,
+    Pencil,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -78,5 +79,6 @@ import {
     check: Check,
     logOut:LogOutIcon,
     eye:Eye,
-    eyeOf:EyeOff
+    eyeOf:EyeOff,
+    edit:Pencil
   };
