@@ -30,6 +30,9 @@ import {
     EyeClosed,
     EyeOff,
     Pencil,
+    ChevronsRight,
+    ChevronsLeft,
+    Ellipsis,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -80,5 +83,8 @@ import {
     logOut:LogOutIcon,
     eye:Eye,
     eyeOf:EyeOff,
-    edit:Pencil
+    edit:Pencil,
+    chevronsRight:ChevronsRight,
+    chevronsLeft:ChevronsLeft,
+    dots:Ellipsis
   };

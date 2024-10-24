@@ -157,3 +157,19 @@ export class CreateDers{
   dersAdi!:string;
   isTyt!:boolean;
 }
+export class Ders{
+  id!:string;
+  dersAdi!:string;
+  isTyt!:boolean;
+}
+export class Konu{
+  id!:string;
+  konuAdi!:string;
+  isTyt!:boolean;
+  dersAdi!:string
+}
+export class CreateKonu{
+  konuAdi!:string;
+  dersId!:string;
+  isTyt!:boolean;
+}

@@ -23,12 +23,12 @@ export const dashboardConfig: DashboardConfig = {
           href: "/admin/dersler",
         },
         {
-          title: "Kullanıcılar",
-          href: "/admin/kullanicilar",
-        },
-        {
           title: "Konular",
           href: "/admin/konular",
+        },
+        {
+          title: "Kullanıcılar",
+          href: "/admin/kullanicilar",
         },
       ],
     },
