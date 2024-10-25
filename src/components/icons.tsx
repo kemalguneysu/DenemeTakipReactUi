@@ -33,6 +33,9 @@ import {
     ChevronsRight,
     ChevronsLeft,
     Ellipsis,
+    ChevronDown,
+    Trash2Icon,
+    Trash2,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -86,5 +89,7 @@ import {
     edit:Pencil,
     chevronsRight:ChevronsRight,
     chevronsLeft:ChevronsLeft,
-    dots:Ellipsis
+    chevronDown:ChevronDown,
+    dots:Ellipsis,
+    trash2:Trash2
   };

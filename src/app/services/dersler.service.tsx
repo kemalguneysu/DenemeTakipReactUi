@@ -21,7 +21,7 @@ class DerslerService {
     }
 
     async getAllDers(
-        isTyt?: boolean,
+        isTyt?: boolean | null,
         dersAdi?: string,
         page?: number,
         size?: number,
@@ -31,7 +31,7 @@ class DerslerService {
         let queryString = '';
 
         // Query string oluşturma
-        if (isTyt !== undefined) {
+        if (isTyt !== undefined && isTyt!=null) {
             queryString += `isTyt=${isTyt}`;
         }
         if (dersAdi) {
@@ -62,6 +62,22 @@ class DerslerService {
             // Varsayılan boş veri döndür
             return { totalCount: 0, dersler: [] };
         }
+    }
+    async deleteDers(ids: string[]): Promise<any> {
+        if (ids.length === 0) {
+            throw new Error("Silinecek ders seçilmedi.");
+        }
+    
+        // Adjust this part if fetchWithAuth returns already parsed JSON
+        const response = await fetchWithAuth(`${this.baseUrl}/Ders/DeleteDers`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ids }),
+        });
+    
+        return response; 
     }
 }
 

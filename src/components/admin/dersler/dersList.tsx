@@ -1,66 +1,84 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DataTable } from "./dersList/derslist-dataTable"; // Adjust path as necessary
-import { columns } from "./dersList/derslist-columns"; // Adjust path as necessary
+import { DataTable } from "./dersList/derslist-dataTable";
+import { columns } from "./dersList/derslist-columns";
 import { Ders } from "@/types";
 import { derslerService } from "@/app/services/dersler.service";
-import CustomToggleDersler from "@/app/admin/dersler/custom.toggle.dersler";
-import React from "react";
+import { useSignalR } from "@/hooks/use-signalr";
+import { ReceiveFunctions } from "@/types/receiveFunctions";
+import { HubUrls } from "@/types/hubUrls";
 
 export default function DersList() {
   const [data, setData] = useState<Ders[]>([]);
-  const [page, setPage] = useState(0); // Set to 0 for zero-based index
-  const [pageSize, setPageSize] = useState(5); // Default page size
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [isTyt, setIsTyt] = useState<boolean>(true); // Default to TYT selected
+  const [isTyt, setIsTyt] = useState<boolean | null>(null); // Default to null
   const [input, setInput] = useState<string>("");
-  
+  const [totalCount, setTotalCount] = useState(0);
+  const signalRService = useSignalR();
+
+  // fetchData fonksiyonunu burada tanımlıyoruz
+  const fetchData = async () => {
+      try {
+          const result = await derslerService.getAllDers(
+              isTyt,
+              input,
+              page + 1,
+              pageSize,
+              () => {},
+          );
+
+          setData(result.dersler);
+          const totalCount = result.totalCount;
+          setTotalCount(totalCount); 
+          const newTotalPages = Math.ceil(totalCount / pageSize);
+          setTotalPages(newTotalPages);
+      } catch (error) {
+      }
+  };
+
+  useEffect(() => {
+      fetchData();
+  }, [page, pageSize, input, isTyt]);
+
+
+  useEffect(() => {
+    // Ders silindi ve eklendi mesajlarını dinle
+    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersDeletedMessage, async (message) => {
+        await fetchData(); // Verileri yeniden yükle
+    });
+
+    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage, async (message) => {
+        await fetchData(); // Yeni ders eklendiğinde de verileri yeniden yükle
+    });
+
+    return () => {
+        signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersDeletedMessage);
+        signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage);
+    };
+  }, [signalRService, fetchData]);
+
   useEffect(() => {
     setPage(0); 
   }, [isTyt]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await derslerService.getAllDers(
-          isTyt, // Filter by isTyt
-          input, // Filter by dersAdi
-          page + 1, // Send the current page (1-based for API)
-          pageSize, // Send the current page size
-          () => console.log("Data loaded successfully."),
-          (errorMessage) => console.error("An error occurred:", errorMessage)
-        );
 
-        setData(result.dersler);
-        const totalCount = result.totalCount;
-
-        // Calculate total pages correctly
-        const newTotalPages = Math.ceil(totalCount / pageSize);
-        setTotalPages(newTotalPages);
-      } catch (error) {
-        console.error("An error occurred while fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [page, pageSize, input, isTyt]); // Re-fetch data when these dependencies change
 
   return (
-    <div>
-      <CustomToggleDersler onChange={(value: boolean) => setIsTyt(value)} />
-      <div className="container space-y-8 max-w-7xl mx-auto">
-        <DataTable
-          columns={columns}
-          data={data}
-          page={page}
-          pageSize={pageSize}
-          setPage={setPage}
-          setPageSize={setPageSize}
-          totalPages={totalPages}
-          input={input} // New prop
-          setInput={setInput} // New prop
-        />
-      </div>
+    <div className="container space-y-8 max-w-7xl mx-auto">
+      <DataTable<Ders,any>
+        columns={columns({ isTyt, setIsTyt })} // Pass isTyt and setIsTyt
+        data={data}
+        page={page}
+        pageSize={pageSize}
+        setPage={setPage}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+        input={input}
+        setInput={setInput}
+        totalCount={totalCount} 
+      />
     </div>
   );
 }
