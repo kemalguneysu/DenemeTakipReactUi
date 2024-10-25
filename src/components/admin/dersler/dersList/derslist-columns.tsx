@@ -3,8 +3,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Ders } from "@/types";
 import { Icons } from "@/components/icons";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import Link from "next/link";
+import { derslerService } from "@/app/services/dersler.service";
+import { toast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface ColumnsProps {
   isTyt: boolean | null;
@@ -96,6 +99,17 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
     header: () => <div className="text-center">Aksiyonlar</div>,
     cell: ({ row }) => {
       const { id } = row.original;
+      const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+      const handleDeleteClick = () => {
+        setIsDialogOpen(true);
+      };
+
+      const confirmDelete = async () => {
+        setIsDialogOpen(false); // Close the dialog
+        await handleDelete(id); // Call the delete function
+      };
+
       return (
         <div className="justify-self-center">
           <DropdownMenu>
@@ -103,14 +117,37 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
               <Icons.dots className="w-5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleDelete(id)}>Sil</DropdownMenuItem>
+              {/* AlertDialog Trigger */}
+              <DropdownMenuItem onClick={handleDeleteClick} className="cursor-pointer">
+                <div style={{ textAlign: "center", width: "100%" }}>Sil</div>
+              </DropdownMenuItem>
+
               <DropdownMenuItem asChild>
-                <Link href={`/admin/dersler/${id}`}>
-                  <a>Detayları Gör</a>
+                <Link href={`/admin/dersler/${id}`} className="cursor-pointer">
+                  <div style={{ textAlign: "center", width: "100%" }}>Detayları Gör</div>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* AlertDialog for Delete Confirmation */}
+          <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <div style={{ display: "none" }} />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Seçilen dersi silmek istediğinize emin misiniz?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>İptal</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>Sil</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
@@ -118,6 +155,27 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
 ];
 
 // Silme işlemi için örnek işlev
-const handleDelete = (id: string) => {
-  console.log("Deleting item with id:", id);
+const handleDelete = async (id: string) => {
+  try {
+    const response = await derslerService.deleteDers([id]);
+    if (response.succeeded) {
+        toast({
+            title: 'Başarılı',
+            description: "Seçilen ders başarıyla silinmiştir.",
+        });
+    }
+    else
+    toast({
+      title: 'Başarısız',
+      description: response.message,
+      variant: 'destructive',
+    });
+
+} catch (error: any) {
+    toast({
+        title: 'Başarısız',
+        description: 'Seçilen ders silinirken bir hata oluştu.',
+        variant: 'destructive',
+    });
+}
 };
