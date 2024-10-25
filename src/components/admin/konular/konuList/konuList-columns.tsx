@@ -212,7 +212,7 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
               <Icons.trash2 className="h-4 w-4" />
             </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/admin/dersler/${id}`} className="cursor-pointer">
+                <Link href={`/admin/konular/${id}`} className="cursor-pointer">
                   <div style={{ textAlign: "center", width: "100%" }}>Detayları Gör</div>
                 </Link>
               </DropdownMenuItem>

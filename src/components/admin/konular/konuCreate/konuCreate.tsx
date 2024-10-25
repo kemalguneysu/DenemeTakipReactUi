@@ -40,7 +40,7 @@ const KonuCreate = () => {
         });
       }
     };
-
+    setSelectedDersId('');
     fetchDersler();
   }, [isTyt]); // Rerun when isTyt changes
 
@@ -120,12 +120,11 @@ const KonuCreate = () => {
         </div>
 
         <div className="mb-4">
-        <ComboboxDemo 
-            items={dersler} // Pass the fetched dersler to the Combobox
-            onSelect={(value: string) => setSelectedDersId(value)} // Update selected Ders ID
-            value={selectedDersId} // Pass the selectedDersId as value
-        />
-
+          <ComboboxDemo 
+              items={dersler} // Pass the fetched dersler to the Combobox
+              onSelect={(value: string) => setSelectedDersId(value)} // Update selected Ders ID
+              value={selectedDersId} // Pass the selectedDersId as value
+          />
         </div>
 
         {/* Submit button */}

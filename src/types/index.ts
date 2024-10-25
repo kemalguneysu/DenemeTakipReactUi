@@ -185,3 +185,8 @@ export class ListKonu{
   dersAdi!:string;
   dersId!:string;
 }
+export class UpdateKonu{
+  konuId!:string;
+  konuAdi!:string;
+  dersId!:string;
+}

@@ -38,7 +38,7 @@ const SingleDersContent = () => {
       setDers(fetchedDers);
       setIsTyt1(fetchedDers.isTyt);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Unknown error");
+      setError(error instanceof Error ? error.message : "Bilinmeyen bir hata oluştu.");
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,6 @@ const SingleDersContent = () => {
         }
       );
 
-      console.log("Submitted Ders:", ders);
     } catch (err) {
       if (err instanceof z.ZodError) {
         setInputError(err.errors[0].message); // İlk hatayı göster

@@ -1,15 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
 interface CustomToggleDerslerProps {
-  onChange: (isTyt: boolean) => void; // Prop type for the onChange callback
+  onChange: (isTyt: boolean) => void;
+  isTyt?: boolean; // Make this required to ensure proper functioning
 }
 
-const CustomToggleDersler: React.FC<CustomToggleDerslerProps> = ({ onChange }) => {
+const CustomToggleDersler: React.FC<CustomToggleDerslerProps> = ({ onChange, isTyt }) => {
   const { theme } = useTheme();
-  const [isTytSelected, setIsTytSelected] = useState(true);
+  const [isTytSelected, setIsTytSelected] = useState(isTyt); // Set initial state based on the isTyt prop
+
+  // Update internal state when isTyt prop changes
+  useEffect(() => {
+    if(isTyt)
+      setIsTytSelected(isTyt);
+  }, [isTyt]);
 
   const handleToggle = () => {
     const newSelection = !isTytSelected;

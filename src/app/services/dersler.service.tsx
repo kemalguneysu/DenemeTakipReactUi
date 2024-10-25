@@ -127,7 +127,7 @@ class DerslerService {
         } catch (error) {
             throw new Error("Ders bulunamadı.");            
         }
-      }
+    }
     
 
             

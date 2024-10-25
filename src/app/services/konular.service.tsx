@@ -1,4 +1,4 @@
-import { CreateKonu, ListKonu } from "@/types"; // Adjust the path as necessary
+import { CreateKonu, ListKonu, UpdateKonu } from "@/types"; // Adjust the path as necessary
 import { fetchWithAuth } from "./fetch.withAuth";
 
 class KonularService {
@@ -80,6 +80,50 @@ class KonularService {
     });
 
     return response; 
-}
+  }
+  async getKonuById(id: string): Promise<ListKonu> {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Konular/GetKonuById?KonuId=${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          let message = "";
+          errorData.forEach((error: { key: string; value: Array<string> }) => {
+              error.value.forEach((errorMessage: string) => {
+                  message += `${errorMessage} \n`;
+              });
+          });
+      }
+      const promiseData: ListKonu = await response.json();
+      return promiseData;
+    } catch (error) {
+        throw new Error("Ders bulunamadı.");            
+    }
+  }
+  async editKonu(updateKonu: UpdateKonu, successCallback?: () => void, errorCallback?: (errorMessage: string) => void){
+    try {
+        const response = await fetchWithAuth(`${this.baseUrl}/Konular/UpdateKonu`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateKonu), // Convert the UpdateDers object to JSON
+        });
+        if(successCallback)
+            successCallback();
+        return response;
+    } catch (error) {
+        // Handle generic error
+        const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+        if (errorCallback) {
+            errorCallback(errorMessage);
+        }
+    }
+  }
 }
 export const konularService = new KonularService();
