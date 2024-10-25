@@ -51,12 +51,16 @@ export default function DersList() {
     });
 
     signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage, async (message) => {
-        await fetchData(); // Yeni ders eklendiğinde de verileri yeniden yükle
+        await fetchData();
+    });
+    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage, async (message) => {
+      await fetchData();
     });
 
     return () => {
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersDeletedMessage);
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage);
+        signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage);
     };
   }, [signalRService, fetchData]);
 

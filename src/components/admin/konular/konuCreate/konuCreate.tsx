@@ -10,7 +10,7 @@ import CustomToggleDersler from '@/app/admin/dersler/custom.toggle.dersler';
 import { konularService } from '@/app/services/konular.service';
 import { Ders } from '@/types'; // Import Ders type
 import { derslerService } from '@/app/services/dersler.service';
-import { ComboboxDemo } from '../dersler/dersCreate/dersCreate.combobox';
+import { ComboboxDemo } from './konuCreate.combobox';
 
 // Zod validation schema for topics
 const konuSchema = z.object({

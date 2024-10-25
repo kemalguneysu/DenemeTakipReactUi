@@ -1,4 +1,4 @@
-import { CreateDers, Ders } from "@/types";
+import { CreateDers, Ders, UpdateDers } from "@/types";
 import { fetchWithAuth } from "./fetch.withAuth";
 
 class DerslerService {
@@ -79,6 +79,58 @@ class DerslerService {
     
         return response; 
     }
+    async editDers(updateDers: UpdateDers, successCallback?: () => void, errorCallback?: (errorMessage: string) => void){
+        try {
+            const response = await fetchWithAuth(`${this.baseUrl}/Ders/UpdateDers`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateDers), // Convert the UpdateDers object to JSON
+            });
+            if(successCallback)
+                successCallback();
+            return response;
+        } catch (error) {
+            // Handle generic error
+            const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            if (errorCallback) {
+                errorCallback(errorMessage);
+            }
+        }
+    }
+    async  getDersById(id: string): Promise<Ders> {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Ders/getDersById?DersId=${id}`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  // Gerekirse buraya kimlik doğrulama başlıkları ekleyin
+                },
+              });
+    
+            // Check if the response is OK
+            if (!response.ok) {
+                const errorData = await response.json();
+                let message = "";
+                // Assuming errorData is similar to the error response in Angular
+                errorData.forEach((error: { key: string; value: Array<string> }) => {
+                    error.value.forEach((errorMessage: string) => {
+                        message += `${errorMessage} \n`;
+                    });
+                });
+            }
+            const promiseData: Ders = await response.json();
+            return promiseData;
+       
+            
+        } catch (error) {
+            throw new Error("Ders bulunamadı.");            
+        }
+      }
+    
+
+            
 }
 
 export const derslerService = new DerslerService();

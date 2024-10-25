@@ -1,6 +1,6 @@
 "use client"; // Client Component olarak işaretleme
 
-import KonuCreate from '@/components/admin/konular/konuCreate';
+import KonuCreate from '@/components/admin/konular/konuCreate/konuCreate';
 import React, { useState } from 'react';
 
 const Konular = () => {

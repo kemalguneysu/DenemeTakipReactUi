@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 
 // Zod ile validation şeması
 const dersSchema = z.object({
-  dersAdi: z.string().min(1, "Ders adı boş olamaz"), // Ders adı boş olmamalı
+  dersAdi: z.string().min(1, "Ders adı boş olamaz."), // Ders adı boş olmamalı
   isTyt: z.boolean(),
 });
 
@@ -61,7 +61,7 @@ const DersCreate = () => {
       const response = await derslerService.createDers(ders);
       toast({
         title: 'Başarılı',
-        description: 'Ders başarıyla eklendi!',
+        description: 'Ders başarıyla eklendi.',
       });
 
       // Input alanını temizle

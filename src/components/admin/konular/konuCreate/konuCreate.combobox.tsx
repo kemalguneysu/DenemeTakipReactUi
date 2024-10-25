@@ -52,7 +52,7 @@ export function ComboboxDemo({ items, onSelect, value }: ComboboxDemoProps) {
                       className="w-full mb-2 border p-1 rounded"
                   />
                   {filteredItems.length === 0 && <div>Ders bulunamadı.</div>}
-                  <ScrollArea className="max-h-60 overflow-y-auto rounded-md">
+                  <ScrollArea className="h-48 w-48 rounded-md border">
                       <div>
                           {filteredItems.map((ders) => (
                               <div

@@ -1,12 +1,10 @@
-
-import DersCreate from '@/components/admin/dersler/dersCreate/dersCreate';
-import DersList from '@/components/admin/dersler/dersList';
+import SingleDersContent from '@/components/admin/dersler/singleDers/singleDersContent';
 import React from 'react';
 
 const SingleDers= () => {
   return (
     <div>
-      aaaa
+      <SingleDersContent/>
     </div>
   );
 };

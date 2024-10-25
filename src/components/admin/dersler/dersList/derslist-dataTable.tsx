@@ -164,19 +164,18 @@ export function DataTable<TData extends Ders, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Sonuç bulunamadı.
+                  Ders bulunamadı.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex-1 text-sm text-muted-foreground mt-1">
         {totalCount} adet veriden {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
-        
       </div>
 
-      <div className="flex items-center space-x-6 lg:space-x-8">
+      <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Sayfa başı ders</p>
           <Select

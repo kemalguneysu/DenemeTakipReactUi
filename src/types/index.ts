@@ -173,3 +173,8 @@ export class CreateKonu{
   dersId!:string;
   isTyt!:boolean;
 }
+export class UpdateDers{
+  dersId!:string;
+  dersAdi!:string;
+  isTyt!:boolean;
+}
