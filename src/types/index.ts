@@ -178,3 +178,10 @@ export class UpdateDers{
   dersAdi!:string;
   isTyt!:boolean;
 }
+export class ListKonu{
+  id!:string;
+  konuAdi!:string;
+  isTyt!:boolean;
+  dersAdi!:string;
+  dersId!:string;
+}

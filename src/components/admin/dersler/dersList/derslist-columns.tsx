@@ -118,10 +118,10 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {/* AlertDialog Trigger */}
-              <DropdownMenuItem onClick={handleDeleteClick} className="cursor-pointer">
-                <div style={{ textAlign: "center", width: "100%" }}>Sil</div>
+              <DropdownMenuItem onClick={handleDeleteClick} className="cursor-pointer flex items-center justify-center">
+                <span className="mr-2">Sil</span>
+                <Icons.trash2 className="h-4 w-4" />
               </DropdownMenuItem>
-
               <DropdownMenuItem asChild>
                 <Link href={`/admin/dersler/${id}`} className="cursor-pointer">
                   <div style={{ textAlign: "center", width: "100%" }}>Detayları Gör</div>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DataTable } from "./dersList/derslist-dataTable";
-import { columns } from "./dersList/derslist-columns";
+import { DataTable } from "./derslist-dataTable";
+import { columns } from "./derslist-columns";
 import { Ders } from "@/types";
 import { derslerService } from "@/app/services/dersler.service";
 import { useSignalR } from "@/hooks/use-signalr";
