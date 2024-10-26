@@ -18,15 +18,14 @@ export class SignalRService {
                 .build();
 
             hubConnection.start()
-                .then(() => console.log(`Connected to ${fullHubUrl}`))
+                .then(() =>{})
                 .catch(error => {
-                    console.error('Connection failed: ', error);
                     setTimeout(() => this.start(hubUrl), 2000);
                 });
 
-            hubConnection.onreconnected(() => console.log('Reconnected to hub'));
-            hubConnection.onreconnecting(() => console.log('Reconnecting to hub'));
-            hubConnection.onclose(() => console.log('Connection closed'));
+            hubConnection.onreconnected(() => {});
+            hubConnection.onreconnecting(() => {});
+            hubConnection.onclose(() =>{});
 
             this.hubConnections[hubUrl] = hubConnection;
         }

@@ -19,7 +19,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Icons } from "@/components/icons";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; // AlertDialog bileşenini ekliyoruz.
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; 
 import { derslerService } from "@/app/services/dersler.service";
 import { Ders } from "@/types";
 import { toast } from "@/hooks/use-toast";
@@ -32,8 +32,8 @@ interface DataTableProps<TData, TValue> {
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
   totalPages: number;
-  input: string; // Yeni prop
-  setInput: (value: string) => void; // Yeni prop
+  input: string; 
+  setInput: (value: string) => void; 
   totalCount: number;
 }
 
@@ -72,10 +72,7 @@ export function DataTable<TData extends Ders, TValue>({
             Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
         );
         if (response.succeeded) {
-            toast({
-                title: 'Başarılı',
-                description: response.message,
-            });
+            
             const selectedRows = table.getSelectedRowModel().rows;
             selectedRows.splice(0, selectedRows.length); 
             table.setRowSelection({});
@@ -97,15 +94,24 @@ export function DataTable<TData extends Ders, TValue>({
     setDialogOpen(false); 
   };
 
+  function getColumnWidth(totalColumns: number, index: number): string {
+    const totalRatio = totalColumns + 2; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
+    if (index === 0 || index === totalColumns - 1) {
+      return `${(1 / totalRatio) * 100}%`; // For the first and last column
+    } else {
+      return `${(2 / totalRatio) * 100}%`; // For the other columns
+    }
+  }
+
   return (
-    <div>
+    <div className="max-w-7xl">
       <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Ara"
           value={input}
           onChange={(event) => {
-            setInput(event.target.value); // Girdi değerini güncelle
-            setPage(0); // Girdi değiştiğinde sayfayı 0'a sıfırla
+            setInput(event.target.value);
+            setPage(0);
           }}
           className="max-w-sm"
         />
@@ -126,7 +132,7 @@ export function DataTable<TData extends Ders, TValue>({
               <AlertDialogCancel>İptal</AlertDialogCancel>
               <AlertDialogAction
                 onClick={(e) => {
-                  handleDeleteSelected(e); // Silme işlemi
+                  handleDeleteSelected(e);
                 }}
               >
                 Sil
@@ -140,8 +146,8 @@ export function DataTable<TData extends Ders, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -154,8 +160,8 @@ export function DataTable<TData extends Ders, TValue>({
             {data.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -181,8 +187,8 @@ export function DataTable<TData extends Ders, TValue>({
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => {
-              setPageSize(Number(value)); // Yeni sayfa boyutunu ayarla
-              setPage(0); // Sayfa boyutu değiştiğinde sayfayı 0'a sıfırla
+              setPageSize(Number(value));
+              setPage(0);
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -199,14 +205,14 @@ export function DataTable<TData extends Ders, TValue>({
         </div>
 
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Sayfa {page + 1} / {totalPages} {/* Sayfa gösterimi ayarla */}
+          Sayfa {page + 1} / {totalPages}
         </div>
 
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => setPage(0)} // İlk sayfaya git
+            onClick={() => setPage(0)}
             disabled={page === 0}
           >
             <Icons.chevronsLeft className="h-4 w-4" />
@@ -215,7 +221,7 @@ export function DataTable<TData extends Ders, TValue>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => setPage(page - 1)} // Önceki sayfaya git
+            onClick={() => setPage(page - 1)}
             disabled={page === 0}
           >
             <Icons.chevronLeft className="h-4 w-4" />
@@ -224,7 +230,7 @@ export function DataTable<TData extends Ders, TValue>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => setPage(page + 1)} // Sonraki sayfaya git
+            onClick={() => setPage(page + 1)}
             disabled={page >= totalPages - 1}
           >
             <Icons.chevronRight className="h-4 w-4" />
@@ -233,7 +239,7 @@ export function DataTable<TData extends Ders, TValue>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => setPage(totalPages - 1)} // Son sayfaya git
+            onClick={() => setPage(totalPages - 1)}
             disabled={page >= totalPages - 1}
           >
             <Icons.chevronsRight className="h-4 w-4" />

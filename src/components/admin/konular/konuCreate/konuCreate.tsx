@@ -82,15 +82,9 @@ const KonuCreate = () => {
     setErrors(null);
 
     try {
-      // Call the service to create a topic
-      await konularService.createKonu(konu);
-      toast({
-        title: 'Başarılı',
-        description: 'Konu başarıyla eklendi!',
-      });
-
-      setInputValue(''); // Clear input
-      setSelectedDersId(''); // Reset ders selection
+      await konularService.createKonu(konu)
+      setInputValue('');
+      setSelectedDersId('');
     } catch (error: any) {
       toast({
         title: 'Başarısız',

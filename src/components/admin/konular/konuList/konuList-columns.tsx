@@ -115,6 +115,7 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
                           <Checkbox
                             checked={selectedDersIds.includes(ders.id)}
                             onCheckedChange={() => handleSelect(ders.id)}
+                            onClick={() => handleSelect(ders.id)}
                           />
                         </div>
                       ))}
@@ -248,10 +249,7 @@ const handleDelete = async (id: string) => {
   try {
     const response = await konularService.deleteKonu([id]);
     if (response.succeeded) {
-      toast({
-        title: 'Başarılı',
-        description: "Seçilen ders başarıyla silinmiştir.",
-      });
+      
     } else {
       toast({
         title: 'Başarısız',

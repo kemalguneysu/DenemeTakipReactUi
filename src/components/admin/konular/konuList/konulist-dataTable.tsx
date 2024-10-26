@@ -37,7 +37,14 @@ import { konularService } from "@/app/services/konular.service";
     totalCount: number;
     setSelectedDersIds: Dispatch<SetStateAction<string[]>>;
   }
-  
+  function getColumnWidth(totalColumns: number, index: number): string {
+    const totalRatio = totalColumns + 2; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
+    if (index === 0 || index === totalColumns - 1) {
+      return `${(1 / totalRatio) * 100}%`; // For the first and last column
+    } else {
+      return `${(2 / totalRatio) * 100}%`; // For the other columns
+    }
+  }
   export function DataTable<TData extends ListKonu, TValue>({
     columns,
     data,
@@ -74,10 +81,6 @@ import { konularService } from "@/app/services/konular.service";
               Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
           );
           if (response.succeeded) {
-              toast({
-                  title: 'Başarılı',
-                  description: response.message,
-              });
               const selectedRows = table.getSelectedRowModel().rows;
               selectedRows.splice(0, selectedRows.length); 
               table.setRowSelection({});
@@ -100,7 +103,7 @@ import { konularService } from "@/app/services/konular.service";
     };
   
     return (
-      <div>
+      <div className="max-w-7xl">
         <div className="flex items-center py-4 justify-between">
           <Input
             placeholder="Ara"
@@ -139,38 +142,38 @@ import { konularService } from "@/app/services/konular.service";
         </div>
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => (
+                  <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {data.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {data.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Ders bulunamadı.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Ders bulunamadı.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
           </Table>
         </div>
         <div className="flex-1 text-sm text-muted-foreground mt-1">

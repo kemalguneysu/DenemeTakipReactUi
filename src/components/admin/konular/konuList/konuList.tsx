@@ -49,7 +49,6 @@ export default function KonuList() {
             setDersListesi(result.dersler);
         } catch (error) {
         }
-        console.log(dersListesi);
     };
 
   useEffect(() => {
@@ -61,7 +60,6 @@ export default function KonuList() {
   },[isTyt]);
 
   useEffect(() => {
-    // Ders silindi ve eklendi mesajlarını dinle
     signalRService.on(HubUrls.KonuHub, ReceiveFunctions.KonuDeletedMessage, async (message) => {
         setPage(0);
         await fetchData(); // Verileri yeniden yükle

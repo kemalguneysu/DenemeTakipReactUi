@@ -70,11 +70,9 @@ const SingleDersContent = () => {
 
   useEffect(() => {
     fetchKonu();
-
     signalRService.on(HubUrls.KonuHub, ReceiveFunctions.KonuUpdatedMessage, async (message) => {
         fetchKonu();
     });
-
     return () => {
       signalRService.off(HubUrls.KonuHub, ReceiveFunctions.KonuUpdatedMessage);
     };
@@ -100,10 +98,10 @@ const SingleDersContent = () => {
 
       await konularService.editKonu(updateKonu, 
           () => {
-            toast({
-                title: 'Başarılı',
-                description: 'Ders başarıyla güncellendi.',
-            });
+            // toast({
+            //     title: 'Başarılı',
+            //     description: 'Ders başarıyla güncellendi.',
+            // });
           },
           (errorMessage) => {
             toast({

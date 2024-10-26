@@ -5,23 +5,22 @@ import { useTheme } from 'next-themes';
 
 interface CustomToggleDerslerProps {
   onChange: (isTyt: boolean) => void;
-  isTyt?: boolean; // Make this required to ensure proper functioning
+  isTyt?: boolean | null; // isTyt nullable olarak işaretlendi
 }
 
 const CustomToggleDersler: React.FC<CustomToggleDerslerProps> = ({ onChange, isTyt }) => {
   const { theme } = useTheme();
-  const [isTytSelected, setIsTytSelected] = useState(isTyt); // Set initial state based on the isTyt prop
+  const [isTytSelected, setIsTytSelected] = useState(isTyt ?? true); // Başlangıçta isTyt null ise true (TYT) yap
 
-  // Update internal state when isTyt prop changes
+  // isTyt değiştiğinde state'i güncelle
   useEffect(() => {
-    if(isTyt)
-      setIsTytSelected(isTyt);
+    setIsTytSelected(isTyt ?? true); // Eğer isTyt null veya undefined ise TYT (true) yap
   }, [isTyt]);
 
   const handleToggle = () => {
     const newSelection = !isTytSelected;
     setIsTytSelected(newSelection);
-    onChange(newSelection); // Call the onChange prop to pass the new selection
+    onChange(newSelection); // Yeni seçimi üst bileşene ilet
   };
 
   // Temaya göre renkler

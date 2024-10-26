@@ -89,10 +89,6 @@ const SingleDersContent = () => {
 
       await derslerService.editDers(updateDers, 
         () => {
-          toast({
-            title: 'Başarılı',
-            description: 'Ders başarıyla güncellendi.',
-          });
         },
         (errorMessage) => {
           toast({

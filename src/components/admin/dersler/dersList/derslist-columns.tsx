@@ -159,10 +159,6 @@ const handleDelete = async (id: string) => {
   try {
     const response = await derslerService.deleteDers([id]);
     if (response.succeeded) {
-        toast({
-            title: 'Başarılı',
-            description: "Seçilen ders başarıyla silinmiştir.",
-        });
     }
     else
     toast({

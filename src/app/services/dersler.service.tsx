@@ -19,7 +19,6 @@ class DerslerService {
 
         return response; // Başarılıysa yanıtı JSON olarak döndür
     }
-
     async getAllDers(
         isTyt?: boolean | null,
         dersAdi?: string,

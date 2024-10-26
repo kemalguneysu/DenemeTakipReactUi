@@ -59,11 +59,6 @@ const DersCreate = () => {
     try {
       // Ders oluşturma işlemi
       const response = await derslerService.createDers(ders);
-      toast({
-        title: 'Başarılı',
-        description: 'Ders başarıyla eklendi.',
-      });
-
       // Input alanını temizle
       setInputValue(''); 
     } catch (error: any) {

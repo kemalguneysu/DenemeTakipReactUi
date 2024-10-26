@@ -1,12 +1,17 @@
 import Navigation from "@/components/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { dashboardConfig } from "../../config/dashboard"
+import { useSignalR } from "@/hooks/use-signalr";
+import { toast } from "@/hooks/use-toast";
+import { HubUrls } from "@/types/hubUrls";
+import { ReceiveFunctions } from "@/types/receiveFunctions";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function Layout({ children }: Props) {
+
   return (
     <div className="min-h-screen w-full ">
       <header className="sticky justify-center items-center flex flex-col w-full top-0 z-40 bg-background">
