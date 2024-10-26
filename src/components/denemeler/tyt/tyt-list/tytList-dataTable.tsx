@@ -15,14 +15,16 @@ import {
     TableRow,
   } from "@/components/ui/table";
   import { Button } from "@/components/ui/button";
-  import React, { Dispatch, SetStateAction } from "react";
+  import React from "react";
   import { Input } from "@/components/ui/input";
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
   import { Icons } from "@/components/icons";
-  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; // AlertDialog bileşenini ekliyoruz.
-  import { Ders, ListKonu } from "@/types";
+  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; 
+  import { derslerService } from "@/app/services/dersler.service";
+  import { Ders, tytGenelList } from "@/types";
   import { toast } from "@/hooks/use-toast";
-import { konularService } from "@/app/services/konular.service";
+import { cn } from "@/lib/utils";
+import { denemeService } from "@/app/services/denemeler.service";
   
   interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -32,21 +34,12 @@ import { konularService } from "@/app/services/konular.service";
     setPage: (page: number) => void;
     setPageSize: (size: number) => void;
     totalPages: number;
-    input: string; // Yeni prop
-    setInput: (value: string) => void; // Yeni prop
+    input: string; 
+    setInput: (value: string) => void; 
     totalCount: number;
-    setSelectedDersIds: Dispatch<SetStateAction<string[]>>;
   }
-  function getColumnWidth(totalColumns: number, index: number): string {
-    const totalRatio =  3 * (totalColumns - 2)+ 2; ; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
-    if (index === 0 || index === totalColumns - 1) {
-      return `${(1 / totalRatio) * 100}%`; // For the first and last column
-    } else {
-      return `${(3/ totalRatio) * 100}%`; // For the other columns
-    }
-    
-  }
-  export function DataTable<TData extends ListKonu, TValue>({
+  
+  export function DataTable<TData extends tytGenelList, TValue>({
     columns,
     data,
     page,
@@ -56,12 +49,12 @@ import { konularService } from "@/app/services/konular.service";
     totalPages,
     input,
     setInput,
-    setSelectedDersIds,
     totalCount,
   }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [dialogOpen, setDialogOpen] = React.useState(false);
+    
     const table = useReactTable({
       data,
       columns,
@@ -78,10 +71,11 @@ import { konularService } from "@/app/services/konular.service";
     const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
       e.preventDefault();
       try {
-          const response = await konularService.deleteKonu(
+          const response = await denemeService.deleteTytDenemes(
               Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
           );
           if (response.succeeded) {
+              
               const selectedRows = table.getSelectedRowModel().rows;
               selectedRows.splice(0, selectedRows.length); 
               table.setRowSelection({});
@@ -96,15 +90,24 @@ import { konularService } from "@/app/services/konular.service";
       } catch (error: any) {
           toast({
               title: 'Başarısız',
-              description: 'Seçilen dersler silinirken bir hata oluştu.',
+              description: 'Seçilen TYT denemesi silinirken bir hata oluştu.',
               variant: 'destructive',
           });
       }
       setDialogOpen(false); 
     };
   
+    function getColumnWidth(totalColumns: number, index: number): string {
+        const totalRatio = 2 + 3 * (totalColumns - 2); // 1 for first, 3 * (totalColumns - 2) for middle, 1 for last
+        if (index === 0 || index === totalColumns - 1) {
+          return `${(1 / totalRatio) * 100}%`;
+        } else {
+          return `${(3 / totalRatio) * 100}%`;
+        }
+    }
+  
     return (
-      <div className="max-w-7xl">
+      <div className="max-w-7xl ">
         <div className="flex items-center py-4 justify-between">
           <Input
             placeholder="Ara"
@@ -125,14 +128,14 @@ import { konularService } from "@/app/services/konular.service";
               <AlertDialogHeader>
                 <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Seçilen dersleri silmek istediğinize emin misiniz?
+                  Seçilen TYT denemelerini silmek istediğinize emin misiniz?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="flex justify-end">
                 <AlertDialogCancel>İptal</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={(e:any) => {
-                    handleDeleteSelected(e); // Silme işlemi
+                    handleDeleteSelected(e);
                   }}
                 >
                   Sil
@@ -141,40 +144,40 @@ import { konularService } from "@/app/services/konular.service";
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <div className="rounded-md border">
-          <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header, index) => (
-                  <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {data.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+        <div className="rounded-md border ">
+          <Table className="relative">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header, index) => (
+                    <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Ders bulunamadı.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {data.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    TYT denemesi bulunamadı.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
           </Table>
         </div>
         <div className="flex-1 text-sm text-muted-foreground mt-1">
@@ -183,11 +186,12 @@ import { konularService } from "@/app/services/konular.service";
   
         <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Sayfa başı konu</p>
+            <p className="text-sm font-medium">Sayfa başı TYT denemesi</p>
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => {
                 setPageSize(Number(value));
+                setPage(0);
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
@@ -204,14 +208,14 @@ import { konularService } from "@/app/services/konular.service";
           </div>
   
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Sayfa {page + 1} / {totalPages} {/* Sayfa gösterimi ayarla */}
+            Sayfa {page + 1} / {totalPages}
           </div>
   
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => setPage(0)} // İlk sayfaya git
+              onClick={() => setPage(0)}
               disabled={page === 0}
             >
               <Icons.chevronsLeft className="h-4 w-4" />
@@ -220,7 +224,7 @@ import { konularService } from "@/app/services/konular.service";
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => setPage(page - 1)} // Önceki sayfaya git
+              onClick={() => setPage(page - 1)}
               disabled={page === 0}
             >
               <Icons.chevronLeft className="h-4 w-4" />
@@ -229,7 +233,7 @@ import { konularService } from "@/app/services/konular.service";
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => setPage(page + 1)} // Sonraki sayfaya git
+              onClick={() => setPage(page + 1)}
               disabled={page >= totalPages - 1}
             >
               <Icons.chevronRight className="h-4 w-4" />
@@ -238,7 +242,7 @@ import { konularService } from "@/app/services/konular.service";
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => setPage(totalPages - 1)} // Son sayfaya git
+              onClick={() => setPage(totalPages - 1)}
               disabled={page >= totalPages - 1}
             >
               <Icons.chevronsRight className="h-4 w-4" />

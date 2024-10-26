@@ -5,9 +5,11 @@ import { toast } from '@/hooks/use-toast'; // Toast hook importu
 class AuthService {
     private _isAuthenticated: boolean = false;
     private _isAdmin: boolean = false;
-    private _authStatusSubject = new BehaviorSubject<{ isAuthenticated: boolean; isAdmin: boolean }>({
+    private _userId: string | null = null; // userId ekleniyor
+    private _authStatusSubject = new BehaviorSubject<{ isAuthenticated: boolean; isAdmin: boolean, userId: string | null }>({
         isAuthenticated: this._isAuthenticated,
         isAdmin: this._isAdmin,
+        userId: this._userId,
     });
 
     constructor() {
@@ -24,6 +26,7 @@ class AuthService {
             try {
                 const decoded: any = jwtDecode(token);
                 const roleClaimName = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+                const nameIdentifierClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"; // NameIdentifier claim
 
                 // Rol bilgisini alma
                 if (decoded[roleClaimName]) {
@@ -33,6 +36,9 @@ class AuthService {
                         roles = [decoded[roleClaimName]];
                     }
                 }
+
+                // userId'yi ayarla
+                this._userId = decoded[nameIdentifierClaim] || null; // Eğer yoksa null olarak ayarla
 
                 // Token süresi kontrolü
                 expired = this.isTokenExpired(decoded);
@@ -45,9 +51,14 @@ class AuthService {
         } else {
             this._isAuthenticated = false;
             this._isAdmin = false;
+            this._userId = null; // Token yoksa userId de null
         }
         // Durum güncellendiğinde bildir
-        this._authStatusSubject.next({ isAuthenticated: this._isAuthenticated, isAdmin: this._isAdmin });
+        this._authStatusSubject.next({ 
+            isAuthenticated: this._isAuthenticated, 
+            isAdmin: this._isAdmin,
+            userId: this._userId // userId durumu ekleniyor
+        });
     }
 
     public signOut() {
@@ -69,6 +80,10 @@ class AuthService {
 
     public get isAdmin(): boolean {
         return this._isAdmin;
+    }
+
+    public get userId(): string | null {
+        return this._userId; // userId getter ekleniyor
     }
 
     public authStatus$() {

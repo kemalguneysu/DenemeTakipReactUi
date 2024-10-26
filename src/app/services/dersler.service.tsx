@@ -100,29 +100,14 @@ class DerslerService {
     }
     async  getDersById(id: string): Promise<Ders> {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Ders/getDersById?DersId=${id}`, {
+            const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/Ders/getDersById?DersId=${id}`, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
                   // Gerekirse buraya kimlik doğrulama başlıkları ekleyin
                 },
               });
-    
-            // Check if the response is OK
-            if (!response.ok) {
-                const errorData = await response.json();
-                let message = "";
-                // Assuming errorData is similar to the error response in Angular
-                errorData.forEach((error: { key: string; value: Array<string> }) => {
-                    error.value.forEach((errorMessage: string) => {
-                        message += `${errorMessage} \n`;
-                    });
-                });
-            }
-            const promiseData: Ders = await response.json();
-            return promiseData;
-       
-            
+            return response;
         } catch (error) {
             throw new Error("Ders bulunamadı.");            
         }

@@ -1,4 +1,4 @@
-import { CreateAyt, CreateTyt } from "@/types";
+import { CreateAyt, CreateTyt, tytGenelList, TytSingleList, UpdateAyt, UpdateTyt } from "@/types";
 import { fetchWithAuth } from "./fetch.withAuth";
 
 class DenemeService {
@@ -23,14 +23,155 @@ class DenemeService {
     });
     return response; // Başarılı ise JSON olarak döndür
   }
-
-  async createDers(ders: { dersAdi: string; isTyt: boolean }): Promise<void> {
-    const response = await fetchWithAuth(`${this.baseUrl}/Ders/CreateDers`, {
-      method: 'POST',
-      body: JSON.stringify(ders),
-    });
-    return response; // Başarılı ise JSON olarak döndür
+  async getTytDenemes(
+    page: number = 0,
+    size: number = 5,
+    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' }>,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ): Promise<{ totalCount: number; tytDenemes: tytGenelList[] }> {
+    let queryString = `page=${page}&size=${size}`;
+    if (orderByAndDirections && orderByAndDirections.length > 0) {
+      const orderParams = orderByAndDirections
+          .map(({ orderBy, orderDirection }) => `orderByAndDirections=${orderBy},${orderDirection}`)
+          .join('&');
+      queryString += `&${orderParams}`;
   }
+    try {
+        const data = await fetchWithAuth(`${this.baseUrl}/Tyts/getAllTyt?${queryString}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (successCallBack) {
+          successCallBack();
+        }
+        return data; 
+    } catch (error: any) {
+        if (errorCallBack) {
+          console.log(error.message);
+            errorCallBack(error.message);
+        }
+        return { totalCount: 0, tytDenemes: [] };
+    }
+  }
+  async getAytDenemes(
+    page: number = 0,
+    size: number = 5,
+    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' }>,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ): Promise<{ totalCount: number; tytDenemes: tytGenelList[] }> {
+    let queryString = `page=${page}&size=${size}`;
+    if (orderByAndDirections && orderByAndDirections.length > 0) {
+      const orderParams = orderByAndDirections
+          .map(({ orderBy, orderDirection }) => `orderByAndDirections=${orderBy},${orderDirection}`)
+          .join('&');
+      queryString += `&${orderParams}`;
+  }
+    try {
+        const data = await fetchWithAuth(`${this.baseUrl}/ayts/getAllAyt?${queryString}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (successCallBack) {
+            successCallBack();
+        }
+
+        return data; // JSON olarak gelen veriyi döndür
+    } catch (error: any) {
+        // Hata durumunda geri çağırma fonksiyonunu çağır
+        if (errorCallBack) {
+            errorCallBack(error.message);
+        }
+        return { totalCount: 0, tytDenemes: [] };
+    }
+  }
+  async deleteTytDenemes(ids: string[]): Promise<any> {
+    if (ids.length === 0) {
+        throw new Error("Silinecek TYT denemesi seçilmedi.");
+    }
+    const response = await fetchWithAuth(`${this.baseUrl}/Tyts/DeleteTyt`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids }),
+    });
+    return response; 
+  }
+  async deleteAytDenemes(ids: string[]): Promise<any> {
+    if (ids.length === 0) {
+        throw new Error("Silinecek AYT denemesi seçilmedi.");
+    }
+    const response = await fetchWithAuth(`${this.baseUrl}/Ayts/DeleteAyt`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids }),
+    });
+    return response; 
+  }
+  async  getTytById(id: string): Promise<TytSingleList> {
+    try {
+        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/Tyts/GetTytById?TytId=${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        return response as TytSingleList;
+    } catch (error) {
+        throw new Error("TYT denemesi bulunamadı.");            
+    }
+  }
+  async editTyt(tytDeneme:UpdateTyt,successCallback?:any,errorCallBack?: (errorMessage: string) => void){
+    try {
+      const response = await fetchWithAuth(`${this.baseUrl}/Tyts/updateTyt`,{
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(tytDeneme), // Convert the UpdateDers object to JSON
+      });
+      if(successCallback)
+          successCallback();
+      return response;
+      } catch (error) {
+        // Handle generic error
+        const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+        if (errorCallBack) {
+            errorCallBack(errorMessage);
+        }
+      }
+  }
+  async editAyt(aytDeneme:UpdateAyt,successCallback?:any,errorCallBack?: (errorMessage: string) => void){
+    try {
+      const response = await fetchWithAuth(`${this.baseUrl}/Ayts/updateAyt`,{
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(aytDeneme), // Convert the UpdateDers object to JSON
+      });
+      if(successCallback)
+          successCallback();
+      return response;
+      } catch (error) {
+        // Handle generic error
+        const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+        if (errorCallBack) {
+            errorCallBack(errorMessage);
+        }
+      }
+  }
+
 }
 
 export const denemeService = new DenemeService();

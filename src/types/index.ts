@@ -190,3 +190,93 @@ export class UpdateKonu{
   konuAdi!:string;
   dersId!:string;
 }
+export class TytSingleList{
+  id!:string;
+  turkceDogru!:number;
+  turkceYanlis!:number;
+  matematikDogru!:number;
+  matematikYanlis!:number;
+  fenDogru!:number;
+  fenYanlis!:number;
+  sosyalDogru!:number;
+  sosyalYanlis!:number;
+  yanlisKonularAdDers!:Array<konularAdDers>;
+  bosKonularAdDers!:Array<konularAdDers>;
+}
+export class konularAdDers{
+  konuAdi!:string;
+  konuId!:string;
+  dersAdi!:string;
+  dersId!:string;
+}
+export class AytSingleList{
+  id!:string;
+  matematikDogru!:number;
+  matematikYanlis!:number;
+  fizikDogru!:number;
+  fizikYanlis!:number;
+  kimyaDogru!:number;
+  kimyaYanlis!:number;
+  biyolojiDogru!:number;
+  biyolojiYanlis!:number;
+  edebiyatDogru!:number;
+  edebiyatYanlis!:number;
+  tarih1Dogru!:number;
+  tarih1Yanlis!:number;
+  tarih2Dogru!:number;
+  tarih2Yanlis!:number;
+  cografya1Dogru!:number;
+  cografya1Yanlis!:number;
+  cografya2Dogru!:number;
+  cografya2Yanlis!:number;
+  felsefeDogru!:number;
+  felsefeYanlis!:number;
+  dinDogru!:number;
+  dinYanlis!:number;
+  dilDogru!:number;
+  dilYanlis!:number;
+  yanlisKonularAdDers!:Array<konularAdDers>;
+  bosKonularAdDers!:Array<konularAdDers>;
+}
+export class UpdateTyt{
+  tytId!:string;
+  matematikDogru:number=0;
+  matematikYanlis:number=0;
+  turkceDogru:number=0;
+  turkceYanlis:number=0;
+  fenDogru:number=0;
+  fenYanlis:number=0;
+  sosyalDogru:number=0;
+  sosyalYanlis:number=0;
+  yanlisKonular:Array<string>=[];
+  bosKonular:Array<string>=[];
+}
+export class UpdateAyt{
+  aytId!:string;
+  matematikDogru:number=0;
+  matematikYanlis:number=0;
+  fizikDogru:number=0;
+  fizikYanlis:number=0;
+  kimyaDogru:number=0;
+  kimyaYanlis:number=0;
+  biyolojiDogru:number=0;
+  biyolojiYanlis:number=0;
+  edebiyatDogru:number=0;
+  edebiyatYanlis:number=0;
+  tarih1Dogru:number=0;
+  tarih1Yanlis:number=0;
+  cografya1Dogru:number=0;
+  cografya1Yanlis:number=0;
+  tarih2Dogru:number=0;
+  tarih2Yanlis:number=0;
+  cografya2Dogru:number=0;
+  cografya2Yanlis:number=0;
+  felsefeDogru:number=0;
+  felsefeYanlis:number=0;
+  dinDogru:number=0;
+  dinYanlis:number=0;
+  dilDogru:number=0;
+  dilYanlis:number=0;
+  yanlisKonular:Array<string>=[];
+  bosKonular:Array<string>=[];
+}

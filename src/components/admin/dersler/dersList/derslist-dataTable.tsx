@@ -95,14 +95,14 @@ export function DataTable<TData extends Ders, TValue>({
   };
 
   function getColumnWidth(totalColumns: number, index: number): string {
-    const totalRatio = totalColumns + 2; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
+    const totalRatio =  3 * (totalColumns - 2)+ 2; ; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
     if (index === 0 || index === totalColumns - 1) {
       return `${(1 / totalRatio) * 100}%`; // For the first and last column
     } else {
-      return `${(2 / totalRatio) * 100}%`; // For the other columns
+      return `${(3/ totalRatio) * 100}%`; // For the other columns
     }
+    
   }
-
   return (
     <div className="max-w-7xl">
       <div className="flex items-center py-4 justify-between">
@@ -131,7 +131,7 @@ export function DataTable<TData extends Ders, TValue>({
             <div className="flex justify-end">
               <AlertDialogCancel>İptal</AlertDialogCancel>
               <AlertDialogAction
-                onClick={(e) => {
+                onClick={(e:any) => {
                   handleDeleteSelected(e);
                 }}
               >

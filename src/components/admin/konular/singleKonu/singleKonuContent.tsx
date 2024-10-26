@@ -24,8 +24,6 @@ const dersSchema = z.object({
 const SingleDersContent = () => {
   const { id } = useParams();
   const [konu, setKonu] = useState<ListKonu | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [inputError, setInputError] = useState<string | null>(null);
   const signalRService = useSignalR();
   const [isTyt, setIsTyt] = useState<boolean>(true);
@@ -42,9 +40,7 @@ const SingleDersContent = () => {
       setIsTyt(fetchedKonu.isTyt);
       setKonuAdi(fetchedKonu.konuAdi);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Bilinmeyen bir hata oluştu.");
     } finally {
-      setLoading(false);
     }
   };
 
@@ -118,7 +114,6 @@ const SingleDersContent = () => {
     }
   };
 
-  if (loading) return <div className="text-center mt-2">Yükleniyor...</div>;
   if (!konu) return <div className="text-center mt-2">Konu bulunamadı.</div>;
 
   return (
