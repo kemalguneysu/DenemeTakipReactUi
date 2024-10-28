@@ -280,3 +280,7 @@ export class UpdateAyt{
   yanlisKonular:Array<string>=[];
   bosKonular:Array<string>=[];
 }
+export type OrderByDirection = {
+  orderBy: string;
+  orderDirection: 'asc' | 'desc'| null;
+};

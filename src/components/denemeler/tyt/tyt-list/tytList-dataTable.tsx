@@ -5,6 +5,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     useReactTable,
+    VisibilityState,
   } from "@tanstack/react-table";
   import {
     Table,
@@ -21,10 +22,11 @@ import {
   import { Icons } from "@/components/icons";
   import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; 
   import { derslerService } from "@/app/services/dersler.service";
-  import { Ders, tytGenelList } from "@/types";
+  import { Ders, OrderByDirection, tytGenelList } from "@/types";
   import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { denemeService } from "@/app/services/denemeler.service";
+  import { cn } from "@/lib/utils";
+  import { denemeService } from "@/app/services/denemeler.service";
+  import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
   
   interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -34,9 +36,9 @@ import { denemeService } from "@/app/services/denemeler.service";
     setPage: (page: number) => void;
     setPageSize: (size: number) => void;
     totalPages: number;
-    input: string; 
-    setInput: (value: string) => void; 
     totalCount: number;
+    orderByAndDirections: OrderByDirection[];
+    setOrderByAndDirections: (order: OrderByDirection[]) => void;
   }
   
   export function DataTable<TData extends tytGenelList, TValue>({
@@ -47,13 +49,32 @@ import { denemeService } from "@/app/services/denemeler.service";
     setPage,
     setPageSize,
     totalPages,
-    input,
-    setInput,
     totalCount,
+    orderByAndDirections,
+    setOrderByAndDirections
   }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [selectedSort, setSelectedSort] = React.useState<string | null>("desc");
+    const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+    const handleSortChange = (sortOrder: 'asc' | 'desc' | null) => {
+      const columnKey = "tarih"; // Sıralamak istediğiniz sütun
+        // @ts-ignore
+        setOrderByAndDirections((prevOrderBy: OrderByDirection[]) => {
+          const updatedOrderBy: OrderByDirection[] = prevOrderBy.filter((item: OrderByDirection) => item.orderBy !== columnKey);
+          
+          if (sortOrder) {
+            updatedOrderBy.push({ orderBy: columnKey, orderDirection: sortOrder });
+          } else {
+            // Eğer sortOrder null ise, sadece 'tarih' sütununu çıkarıyoruz
+            updatedOrderBy.push({ orderBy: columnKey, orderDirection: null });
+          }
+      
+          return updatedOrderBy; // Güncellenmiş durumu döndür
+        });
+    };
     
     const table = useReactTable({
       data,
@@ -62,9 +83,11 @@ import { denemeService } from "@/app/services/denemeler.service";
       onColumnFiltersChange: setColumnFilters,
       getFilteredRowModel: getFilteredRowModel(),
       onRowSelectionChange: setRowSelection,
+      onColumnVisibilityChange: setColumnVisibility,
       state: {
         columnFilters,
         rowSelection,
+        columnVisibility,
       },
     });
   
@@ -108,41 +131,92 @@ import { denemeService } from "@/app/services/denemeler.service";
   
     return (
       <div className="max-w-7xl ">
-        <div className="flex items-center py-4 justify-between">
-          <Input
-            placeholder="Ara"
-            value={input}
-            onChange={(event) => {
-              setInput(event.target.value);
-              setPage(0);
-            }}
-            className="max-w-sm"
-          />
-          <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <AlertDialogTrigger asChild>
-                <Button variant="outline" className="ml-4">
-                  Seçilen dersleri sil <Icons.trash2 className="ml-2" />
+        <div className="flex flex-col gap-2 pb-4">
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  Sütun Filtrele
                 </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Seçilen TYT denemelerini silmek istediğinize emin misiniz?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="flex justify-end">
-                <AlertDialogCancel>İptal</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e:any) => {
-                    handleDeleteSelected(e);
-                  }}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" >
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize cursor-pointer"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* İkinci satır: Solda Tarih sıralama, sağda Silme butonu */}
+          <div className="flex items-center justify-between">
+            {/* Solda Tarihe Göre Sırala */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center justify-center">
+                  {selectedSort ? (
+                    <span className="cursor-pointer text-center">
+                      {selectedSort === "asc" ? "Eskiden-Yeniye" : "Yeniden-Eskiye"}
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      Tarihe göre sırala <Icons.arrowDownUp className="ml-2" />
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuCheckboxItem
+                  checked={selectedSort === "desc"}
+                  onCheckedChange={() => handleSortChange("desc")}
+                  onClick={() => setSelectedSort("desc")}
+                  className="cursor-pointer"
                 >
-                  Sil
-                </AlertDialogAction>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
+                  Yeniden-Eskiye
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={selectedSort === "asc"}
+                  onCheckedChange={() => handleSortChange("asc")}
+                  onClick={() => setSelectedSort("asc")}
+                  className="cursor-pointer"
+                >
+                  Eskiden-Yeniye
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Sağda Silme butonu */}
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">
+                  Seçilen TYT denemelerini sil <Icons.trash2 className="ml-2" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Seçilen TYT denemelerini silmek istediğinize emin misiniz?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="flex justify-end">
+                  <AlertDialogCancel>İptal</AlertDialogCancel>
+                  <AlertDialogAction onClick={(e) => handleDeleteSelected(e)}>
+                    Sil
+                  </AlertDialogAction>
+                </div>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
         <div className="rounded-md border ">
           <Table className="relative">

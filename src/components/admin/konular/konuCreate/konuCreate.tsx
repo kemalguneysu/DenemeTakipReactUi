@@ -83,8 +83,6 @@ const KonuCreate = () => {
 
     try {
       await konularService.createKonu(konu)
-      setInputValue('');
-      setSelectedDersId('');
     } catch (error: any) {
       toast({
         title: 'Başarısız',

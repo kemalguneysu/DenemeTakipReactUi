@@ -1,3 +1,4 @@
+import { Arrow } from "@radix-ui/react-select";
 import {
     AlertTriangle,
     ArrowRight,
@@ -36,6 +37,9 @@ import {
     ChevronDown,
     Trash2Icon,
     Trash2,
+    ArrowDownUp,
+    ArrowDown,
+    ArrowUp,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -91,5 +95,8 @@ import {
     chevronsLeft:ChevronsLeft,
     chevronDown:ChevronDown,
     dots:Ellipsis,
-    trash2:Trash2
+    trash2:Trash2,
+    arrowDownUp:ArrowDownUp,
+    arrowDown:ArrowDown,
+    arrowUp:ArrowUp
   };

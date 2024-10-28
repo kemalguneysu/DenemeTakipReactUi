@@ -125,7 +125,7 @@ export default function RootLayout({
     <html lang="en">
        <head>
           <title>{metadata.title}</title>
-          <meta name="description" content={metadata.description || "Default description"} />
+          <meta name="description" content={metadata.description || "Deneme takip"} />
         {/* You can add more meta tags here if needed */}
       </head>
       <ThemeProvider
@@ -150,7 +150,6 @@ export default function RootLayout({
               <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
             </footer>
           </div>
-          <TailwindIndicator />
         </body>
       </ThemeProvider>
     </html>

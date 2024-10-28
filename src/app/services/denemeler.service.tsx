@@ -1,4 +1,4 @@
-import { CreateAyt, CreateTyt, tytGenelList, TytSingleList, UpdateAyt, UpdateTyt } from "@/types";
+import { aytGenelList, CreateAyt, CreateTyt, tytGenelList, TytSingleList, UpdateAyt, UpdateTyt } from "@/types";
 import { fetchWithAuth } from "./fetch.withAuth";
 
 class DenemeService {
@@ -26,14 +26,14 @@ class DenemeService {
   async getTytDenemes(
     page: number = 0,
     size: number = 5,
-    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' }>,
+    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' | null;}>,
     successCallBack?: () => void,
     errorCallBack?: (errorMessage: string) => void
   ): Promise<{ totalCount: number; tytDenemes: tytGenelList[] }> {
     let queryString = `page=${page}&size=${size}`;
     if (orderByAndDirections && orderByAndDirections.length > 0) {
       const orderParams = orderByAndDirections
-          .map(({ orderBy, orderDirection }) => `orderByAndDirections=${orderBy},${orderDirection}`)
+          .map(({ orderBy, orderDirection }) => `orderByAndDirection=${orderBy},${orderDirection}`)
           .join('&');
       queryString += `&${orderParams}`;
   }
@@ -60,19 +60,19 @@ class DenemeService {
   async getAytDenemes(
     page: number = 0,
     size: number = 5,
-    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' }>,
+    orderByAndDirections?: Array<{ orderBy: string, orderDirection: 'asc' | 'desc' | null;}>,
     successCallBack?: () => void,
     errorCallBack?: (errorMessage: string) => void
-  ): Promise<{ totalCount: number; tytDenemes: tytGenelList[] }> {
+  ): Promise<{ totalCount: number; aytDenemes: aytGenelList[] }> {
     let queryString = `page=${page}&size=${size}`;
     if (orderByAndDirections && orderByAndDirections.length > 0) {
       const orderParams = orderByAndDirections
-          .map(({ orderBy, orderDirection }) => `orderByAndDirections=${orderBy},${orderDirection}`)
+          .map(({ orderBy, orderDirection }) => `orderByAndDirection=${orderBy},${orderDirection}`)
           .join('&');
       queryString += `&${orderParams}`;
   }
     try {
-        const data = await fetchWithAuth(`${this.baseUrl}/ayts/getAllAyt?${queryString}`, {
+        const data = await fetchWithAuth(`${this.baseUrl}/Ayts/getAllAyt?${queryString}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -80,16 +80,15 @@ class DenemeService {
         });
 
         if (successCallBack) {
-            successCallBack();
+          successCallBack();
         }
-
-        return data; // JSON olarak gelen veriyi döndür
+        return data; 
     } catch (error: any) {
-        // Hata durumunda geri çağırma fonksiyonunu çağır
         if (errorCallBack) {
+          console.log(error.message);
             errorCallBack(error.message);
         }
-        return { totalCount: 0, tytDenemes: [] };
+        return { totalCount: 0, aytDenemes: [] };
     }
   }
   async deleteTytDenemes(ids: string[]): Promise<any> {
@@ -143,11 +142,10 @@ class DenemeService {
       if(successCallback)
           successCallback();
       return response;
-      } catch (error) {
-        // Handle generic error
-        const errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+      } catch (error:any) {
         if (errorCallBack) {
-            errorCallBack(errorMessage);
+          console.log(error.message);
+            errorCallBack(error.message);
         }
       }
   }

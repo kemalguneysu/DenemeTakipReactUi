@@ -80,4 +80,16 @@ body {
 iframe{
   color-scheme: light;
 }
+@media (max-width: 640px) {
+  .sortable-header {
+    display: flex;
+    flex-direction: column; /* İkonları alt satıra yerleştirir */
+    align-items: center; /* Merkeze hizalar */
+  }
+
+  .sortable-header > div {
+    display: flex;
+    align-items: center; /* İkon ve metni yan yana hizalar */
+  }
+}
 

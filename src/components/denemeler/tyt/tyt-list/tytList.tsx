@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ders, tytGenelList, TytSingleList } from "@/types";
+import { Ders, OrderByDirection, tytGenelList, TytSingleList } from "@/types";
 import { derslerService } from "@/app/services/dersler.service";
 import { useSignalR } from "@/hooks/use-signalr";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
@@ -18,18 +18,17 @@ export default function DersList() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [isTyt, setIsTyt] = useState<boolean | null>(null); // Default to null
-  const [input, setInput] = useState<string>("");
   const [totalCount, setTotalCount] = useState(0);
   const signalRService = useSignalR();
-
+  const [orderByAndDirections, setOrderByAndDirections] = useState<OrderByDirection[]>([]);
+  
   // fetchData fonksiyonunu burada tanımlıyoruz
   const fetchData = async () => {
       try {
           const result = await denemeService.getTytDenemes(
             page + 1,
             pageSize,
-            [],
+            orderByAndDirections,
             () => {},
             () => {},
           );
@@ -44,7 +43,7 @@ export default function DersList() {
 
   useEffect(() => {
       fetchData();
-  }, [page, pageSize, input, isTyt]);
+  }, [page, pageSize,orderByAndDirections]);
 
 
   useEffect(() => {
@@ -81,24 +80,20 @@ export default function DersList() {
     };
 }, [signalRService, fetchData]);
 
-  useEffect(() => {
-    setPage(0); 
-  }, [isTyt]);
-
 
   return (
     <div className="container space-y-8 max-w-7xl mx-auto">
-      <DataTable<tytGenelList,any>
-        columns={columns({ isTyt, setIsTyt })} 
+      <DataTable<tytGenelList, any>
+        columns={columns({orderByAndDirections, setOrderByAndDirections })} 
         data={data}
         page={page}
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
         totalPages={totalPages}
-        input={input}
-        setInput={setInput}
         totalCount={totalCount} 
+        orderByAndDirections={orderByAndDirections}
+        setOrderByAndDirections={setOrderByAndDirections}
       />
     </div>
   );

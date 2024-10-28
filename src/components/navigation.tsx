@@ -105,7 +105,6 @@ export default function Footer({ items }: NavProps) {
       <div className="flex py-3 px-4 gap-8 items-center">
         <div className="flex w-full items-center justify-between gap-12">
           <Link href="/" className="flex items-center space-x-2">
-            <Icons.logo />
             <h1 className="font-bold text-xl sm:inline-block">Deneme Takip</h1>
           </Link>
           
