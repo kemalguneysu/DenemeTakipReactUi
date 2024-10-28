@@ -144,7 +144,6 @@ class DenemeService {
       return response;
       } catch (error:any) {
         if (errorCallBack) {
-          console.log(error.message);
             errorCallBack(error.message);
         }
       }

@@ -71,7 +71,7 @@ const DersCreate = () => {
   };
 
   return (
-    <div className="p-4 max-w-7xl mx-auto"> {/* Ortalanmış bir genişlik */} 
+    <div className="py-4 max-w-7xl mx-auto"> {/* Ortalanmış bir genişlik */} 
       <form onSubmit={handleSubmit}>
         {/* Input alanı */}
         <div className="mb-4">

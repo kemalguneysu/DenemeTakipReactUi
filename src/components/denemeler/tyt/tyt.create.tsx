@@ -38,7 +38,7 @@ const subjectSchema = z
     incorrect: z.number().min(0).max(40),
   })
   .refine((data) => data.correct + data.incorrect <= 40, {
-    message: "Toplam puan 40'ı geçemez",
+    message: "Toplam soru 40'ı geçemez",
   });
 
 // Skorların tipi
@@ -200,7 +200,7 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
 
       if (scores[subject].correct < 0 || scores[subject].incorrect < 0) {
         newErrors[subject].push(
-          `${subject} için doğru ve yanlış puanı negatif olamaz.`
+          `${subject} için doğru ve yanlış soru sayısı negatif olamaz.`
         );
       }
       if (scores[subject].correct > maxLimits[subject].correct) {
@@ -234,7 +234,6 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
       return; // Hatalar varsa formu gönderme
     }
 
-    // CreateTyt objesini oluştur
     const tytDeneme: CreateTyt = {
       matematikDogru: scores.Matematik.correct,
       matematikYanlis: scores.Matematik.incorrect,

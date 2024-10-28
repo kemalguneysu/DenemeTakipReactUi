@@ -93,7 +93,7 @@ const KonuCreate = () => {
   };
 
   return (
-    <div className="p-4 max-w-7xl mx-auto"> {/* Centered width */} 
+    <div className="py-4 max-w-7xl mx-auto"> {/* Centered width */} 
       <form onSubmit={handleSubmit}>
         {/* Input field */}
         <div className="mb-4">

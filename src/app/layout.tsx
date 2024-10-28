@@ -14,6 +14,7 @@ import { HubUrls } from "@/types/hubUrls";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
 import { useEffect } from "react";
 import { metadata } from "./metadata";
+import authService from "./services/auth.service";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
 const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });
@@ -24,103 +25,131 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const signalRService = useSignalR();
-  useEffect(() => {
-    signalRService.on(HubUrls.KonuHub, ReceiveFunctions.KonuDeletedMessage, async (message) => {      
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div>
-            ))}
-          </>
-        ),
-        variant:"destructive"
-      });
-    });
-    signalRService.on(HubUrls.KonuHub, ReceiveFunctions.KonuAddedMessage, async (message) => {
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div>
-            ))}
-          </>
-        ),
-      });
-    });
-    signalRService.on(HubUrls.KonuHub, ReceiveFunctions.KonuUpdatedMessage, async (message) => {
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div> // Her bir satırı ayrı bir div içinde render ediyoruz
-            ))}
-          </>
-        ),
-      });
-    });
-    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersDeletedMessage, async (message) => {
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div>
-            ))}
-          </>
-        ),
-        variant:"destructive"
-      });
-    });
-    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage, async (message) => {
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div>
-            ))}
-          </>
-        ),
-      });
-    });
-    signalRService.on(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage, async (message) => {
-      const newMessage = message;
-      const messageLines = newMessage.split('\n');
-      toast({
-        title: 'Admin Bilgilendirmesi',
-        description: (
-          <>
-            {messageLines.map((line:any, index:any) => (
-              <div key={index}>{line}</div> // Her bir satırı ayrı bir div içinde render ediyoruz
-            ))}
-          </>
-        ),
-      });
-    });
+  const isAdmin=authService.isAdmin;
+  if(isAdmin){
+    useEffect(() => {
+      signalRService.on(
+        HubUrls.KonuHub,
+        ReceiveFunctions.KonuDeletedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div>
+                ))}
+              </>
+            ),
+            variant: "destructive",
+          });
+        }
+      );
+      signalRService.on(
+        HubUrls.KonuHub,
+        ReceiveFunctions.KonuAddedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div>
+                ))}
+              </>
+            ),
+          });
+        }
+      );
+      signalRService.on(
+        HubUrls.KonuHub,
+        ReceiveFunctions.KonuUpdatedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div> // Her bir satırı ayrı bir div içinde render ediyoruz
+                ))}
+              </>
+            ),
+          });
+        }
+      );
+      signalRService.on(
+        HubUrls.DersHub,
+        ReceiveFunctions.DersDeletedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div>
+                ))}
+              </>
+            ),
+            variant: "destructive",
+          });
+        }
+      );
+      signalRService.on(
+        HubUrls.DersHub,
+        ReceiveFunctions.DersAddedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div>
+                ))}
+              </>
+            ),
+          });
+        }
+      );
+      signalRService.on(
+        HubUrls.DersHub,
+        ReceiveFunctions.DersUpdatedMessage,
+        async (message) => {
+          const newMessage = message;
+          const messageLines = newMessage.split("\n");
+          toast({
+            title: "Admin Bilgilendirmesi",
+            description: (
+              <>
+                {messageLines.map((line: any, index: any) => (
+                  <div key={index}>{line}</div> // Her bir satırı ayrı bir div içinde render ediyoruz
+                ))}
+              </>
+            ),
+          });
+        }
+      );
 
-    return () => {
+      return () => {
         signalRService.off(HubUrls.KonuHub, ReceiveFunctions.KonuDeletedMessage);
         signalRService.off(HubUrls.KonuHub, ReceiveFunctions.KonuAddedMessage);
         signalRService.off(HubUrls.KonuHub, ReceiveFunctions.KonuUpdatedMessage);
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersDeletedMessage);
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage);
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage);
-    };
-  }, [signalRService]);
+      };
+    }, [signalRService]);
+  }
+  
   return (
     <html lang="en">
        <head>
