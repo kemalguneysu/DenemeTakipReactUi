@@ -224,15 +224,23 @@ export const columns = ({
                 <Icons.dots className="w-5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleDeleteClick} className="cursor-pointer flex items-center justify-center">
+                <DropdownMenuItem
+                  onClick={handleDeleteClick}
+                  className="cursor-pointer flex items-center justify-center"
+                >
                   <span className="mr-2">Sil</span>
                   <Icons.trash2 className="h-4 w-4" />
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/denemelerim/tyt/${id}`} className="cursor-pointer">
-                  <div className="text-center w-full dark:text-white text-black"> {/* Karanlık ve aydınlık tema için renkler */}
-                    Detayları Gör
-                  </div>
+                  <Link
+                    href={`/denemelerim/tyt/${id}`}
+                    className="cursor-pointer"
+                  >
+                    <div className="text-center w-full dark:text-white text-black">
+                      {" "}
+                      {/* Karanlık ve aydınlık tema için renkler */}
+                      Detayları Gör
+                    </div>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -245,12 +253,16 @@ export const columns = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Seçilen dersi silmek istediğinize emin misiniz?
+                    Seçilen TYT denemesini silmek istediğinize emin misiniz?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>İptal</AlertDialogCancel>
-                  <AlertDialogAction onClick={confirmDelete}>Sil</AlertDialogAction>
+                  <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
+                    İptal
+                  </AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmDelete}>
+                    Sil
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

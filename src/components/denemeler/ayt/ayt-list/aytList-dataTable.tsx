@@ -133,7 +133,6 @@ import {
     return (
       <div className="max-w-7xl ">
         <div className="flex flex-col gap-2 pb-4">
-  {/* İlk satır: Sağda Columns butonu */}
           <div className="flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

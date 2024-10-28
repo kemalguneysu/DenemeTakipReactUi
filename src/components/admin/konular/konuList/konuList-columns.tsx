@@ -208,19 +208,23 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
               <Icons.dots className="w-5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-            <DropdownMenuItem onClick={handleDeleteClick} className="cursor-pointer flex items-center justify-center">
-              <span className="mr-2">Sil</span>
-              <Icons.trash2 className="h-4 w-4" />
-            </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleDeleteClick}
+                className="cursor-pointer flex items-center justify-center"
+              >
+                <span className="mr-2">Sil</span>
+                <Icons.trash2 className="h-4 w-4" />
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/admin/konular/${id}`} className="cursor-pointer">
-                  <div style={{ textAlign: "center", width: "100%" }}>Detayları Gör</div>
+                  <div style={{ textAlign: "center", width: "100%" }}>
+                    Detayları Gör
+                  </div>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* AlertDialog for Delete Confirmation */}
           <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <AlertDialogTrigger asChild>
               <div style={{ display: "none" }} />
@@ -229,12 +233,16 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
               <AlertDialogHeader>
                 <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Seçilen dersi silmek istediğinize emin misiniz?
+                  Seçilen konuyu silmek istediğinize emin misiniz?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>İptal</AlertDialogCancel>
-                <AlertDialogAction onClick={confirmDelete}>Sil</AlertDialogAction>
+                <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
+                  İptal
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>
+                  Sil
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

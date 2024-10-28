@@ -1,9 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { z } from "zod"; 
+import { z } from "zod";
 import { derslerService } from "@/app/services/dersler.service";
-import { Ders, Konu, ListKonu, TytSingleList, UpdateKonu, UpdateTyt } from "@/types";
+import {
+  AytSingleList,
+  Ders,
+  Konu,
+  ListKonu,
+  UpdateAyt,
+} from "@/types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,29 +21,56 @@ import { konularService } from "@/app/services/konular.service";
 import CustomToggleDersler from "@/app/admin/dersler/custom.toggle.dersler";
 import { denemeService } from "@/app/services/denemeler.service";
 import authService from "@/app/services/auth.service";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronsUpDown } from "lucide-react";
 
 // Zod schema
 
-
-const SingleTytContent = () => {
+const SingleAytContent = () => {
   const { id } = useParams();
-  const [tyt, setTyt] = useState<TytSingleList | null>(null);
+  const [ayt, setAyt] = useState<AytSingleList | null>(null);
   const signalRService = useSignalR();
   const [dersler, setDersler] = useState<Ders[]>([]);
-  const subjects = ['Türkçe', 'Matematik', 'Fen', 'Sosyal'] as const;
+  const [openDialog, setOpenDialog] = useState(false);
+  const subjects = [
+    "Matematik",
+    "Fizik",
+    "Kimya",
+    "Biyoloji",
+    "Edebiyat",
+    "Tarih1",
+    "Coğrafya1",
+    "Tarih2",
+    "Coğrafya2",
+    "Felsefe",
+    "Din",
+    "Dil",
+  ] as const;
   const [yanlisKonularId, setYanlisKonularId] = useState<string[]>([]);
   const [bosKonularId, setBosKonularId] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [selectedDersId, setSelectedDersId] = useState<string | null>(null);
   const [konular, setKonular] = useState<Konu[]>([]);
-  const [openDialog, setOpenDialog] = useState(false);
-  const isTytSelected=true;
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const isTytSelected = false;
   const subjectSchema = z
     .object({
       correct: z.number().min(0).max(40),
@@ -70,79 +103,143 @@ const SingleTytContent = () => {
     setDialogOpen(true); // Dialog'u aç
   };
   const [scores, setScores] = useState<ScoresType>({
-    Türkçe: {
-      correct: Number(tyt?.turkceDogru),
-      incorrect: Number(tyt?.turkceYanlis),
-    },
     Matematik: {
-      correct: Number(tyt?.matematikDogru),
-      incorrect: Number(tyt?.matematikYanlis),
+      correct: Number(ayt?.matematikDogru),
+      incorrect: Number(ayt?.matematikYanlis),
     },
-    Fen: {
-      correct: Number(tyt?.fenDogru),
-      incorrect: Number(tyt?.fenYanlis),
+    Fizik: {
+      correct: Number(ayt?.fizikDogru),
+      incorrect: Number(ayt?.fizikYanlis),
     },
-    Sosyal: {
-      correct: Number(tyt?.sosyalDogru),
-      incorrect: Number(tyt?.sosyalYanlis),
+    Kimya: {
+      correct: Number(ayt?.kimyaDogru),
+      incorrect: Number(ayt?.kimyaYanlis),
     },
-    
+    Biyoloji: {
+      correct: Number(ayt?.biyolojiDogru),
+      incorrect: Number(ayt?.biyolojiYanlis),
+    },
+    Edebiyat: {
+      correct: Number(ayt?.edebiyatDogru),
+      incorrect: Number(ayt?.edebiyatYanlis),
+    },
+    Tarih1: {
+      correct: Number(ayt?.tarih1Dogru),
+      incorrect: Number(ayt?.tarih1Yanlis),
+    },
+    Coğrafya1: {
+      correct: Number(ayt?.cografya1Dogru),
+      incorrect: Number(ayt?.cografya1Yanlis),
+    },
+    Tarih2: {
+      correct: Number(ayt?.tarih2Dogru),
+      incorrect: Number(ayt?.tarih2Yanlis),
+    },
+    Coğrafya2: {
+      correct: Number(ayt?.cografya2Dogru),
+      incorrect: Number(ayt?.cografya2Yanlis),
+    },
+    Felsefe: {
+      correct: Number(ayt?.felsefeDogru),
+      incorrect: Number(ayt?.felsefeYanlis),
+    },
+    Din: {
+      correct: Number(ayt?.dinDogru),
+      incorrect: Number(ayt?.dinYanlis),
+    },
+    Dil: {
+      correct: Number(ayt?.dilDogru),
+      incorrect: Number(ayt?.dilYanlis),
+    },
   });
   const maxLimits: MaxLimitsType = {
-    Türkçe: { correct: 40, incorrect: 40, total: 40 },
     Matematik: { correct: 40, incorrect: 40, total: 40 },
-    Fen: { correct: 20, incorrect: 20, total: 20 },
-    Sosyal: { correct: 20, incorrect: 20, total: 20 },
+    Fizik: { correct: 14, incorrect: 14, total: 14 },
+    Kimya: { correct: 13, incorrect: 13, total: 13 },
+    Biyoloji: { correct: 13, incorrect: 13, total: 13 },
+    Edebiyat: { correct: 24, incorrect: 24, total: 24 },
+    Tarih1: { correct: 10, incorrect: 10, total: 10 },
+    Coğrafya1: { correct: 6, incorrect: 6, total: 6 },
+    Tarih2: { correct: 11, incorrect: 11, total: 11 },
+    Coğrafya2: { correct: 11, incorrect: 11, total: 11 },
+    Felsefe: { correct: 12, incorrect: 12, total: 12 },
+    Din: { correct: 6, incorrect: 6, total: 6 },
+    Dil: { correct: 80, incorrect: 80, total: 80 },
   };
-    const handleScoreChange = (
-      subject: string,
-      type: "correct" | "incorrect",
-      value: string
-    ) => {
-      const numberValue = Number(value);
-      const newScores = {
-        ...scores,
-        [subject]: {
-          ...scores[subject],
-          [type]: isNaN(numberValue) ? 0 : numberValue,
-        },
-      };
-      setScores(newScores); // Güncellenmiş değerleri ayarla
-      validateScores(newScores);
+  const handleScoreChange = (
+    subject: string,
+    type: "correct" | "incorrect",
+    value: string
+  ) => {
+    const numberValue = Number(value);
+    const newScores = {
+      ...scores,
+      [subject]: {
+        ...scores[subject],
+        [type]: isNaN(numberValue) ? 0 : numberValue,
+      },
     };
+    setScores(newScores); // Güncellenmiş değerleri ayarla
+    validateScores(newScores);
+  };
 
   const validateScores = (newScores: ScoresType) => {
-    const newErrors: { [key in typeof subjects[number]]: string[] } = {
-      Türkçe: [],
+    const newErrors: { [key in (typeof subjects)[number]]: string[] } = {
       Matematik: [],
-      Fen: [],
-      Sosyal: [],
+      Fizik: [],
+      Kimya: [],
+      Biyoloji: [],
+      Edebiyat: [],
+      Tarih1: [],
+      Coğrafya1: [],
+      Tarih2: [],
+      Coğrafya2: [],
+      Felsefe: [],
+      Din: [],
+      Dil: [],
     };
     subjects.forEach((subject) => {
-      const totalScore = newScores[subject].correct + newScores[subject].incorrect;
+      const totalScore =
+        newScores[subject].correct + newScores[subject].incorrect;
 
       if (newScores[subject].correct < 0 || newScores[subject].incorrect < 0) {
-        newErrors[subject].push(`${subject} için doğru ve yanlış puanı negatif olamaz.`);
+        newErrors[subject].push(
+          `${subject} için doğru ve yanlış puanı negatif olamaz.`
+        );
       }
       if (newScores[subject].correct > maxLimits[subject].correct) {
-        newErrors[subject].push(`${subject} doğru 0 ile ${maxLimits[subject].correct} arasında olmalıdır.`);
+        newErrors[subject].push(
+          `${subject} doğru 0 ile ${maxLimits[subject].correct} arasında olmalıdır.`
+        );
       }
       if (newScores[subject].incorrect > maxLimits[subject].incorrect) {
-        newErrors[subject].push(`${subject} yanlış 0 ile ${maxLimits[subject].incorrect} arasında olmalıdır.`);
+        newErrors[subject].push(
+          `${subject} yanlış 0 ile ${maxLimits[subject].incorrect} arasında olmalıdır.`
+        );
       }
       if (totalScore > maxLimits[subject].total) {
-        newErrors[subject].push(`${subject} alanı için toplam ${maxLimits[subject].total} soru girilmelidir.`);
+        newErrors[subject].push(
+          `${subject} alanı için toplam ${maxLimits[subject].total} soru girilmelidir.`
+        );
       }
     });
 
-    setErrors(newErrors); 
-  }
+    setErrors(newErrors);
+  };
    const handleSubmit = async () => {
      const newErrors: { [key in (typeof subjects)[number]]: string[] } = {
-       Türkçe: [],
        Matematik: [],
-       Fen: [],
-       Sosyal: [],
+       Fizik: [],
+       Kimya: [],
+       Biyoloji: [],
+       Edebiyat: [],
+       Tarih1: [],
+       Coğrafya1: [],
+       Tarih2: [],
+       Coğrafya2: [],
+       Felsefe: [],
+       Din: [],
+       Dil: [],
      };
      subjects.forEach((subject) => {
        const totalScore = scores[subject].correct + scores[subject].incorrect;
@@ -183,29 +280,45 @@ const SingleTytContent = () => {
          });
        return; // Hatalar varsa formu gönderme
      }
-     const tytUpdate: UpdateTyt = {
-       tytId: id as string,
+     const aytUpdate: UpdateAyt = {
+       aytId: id as string,
        matematikDogru: scores.Matematik.correct,
        matematikYanlis: scores.Matematik.incorrect,
-       turkceDogru: scores.Türkçe.correct,
-       turkceYanlis: scores.Türkçe.incorrect,
-       fenDogru: scores.Fen.correct,
-       fenYanlis: scores.Fen.incorrect,
-       sosyalDogru: scores.Sosyal.correct,
-       sosyalYanlis: scores.Sosyal.incorrect,
+       fizikDogru: scores.Fizik.correct,
+       fizikYanlis: scores.Fizik.incorrect,
+       kimyaDogru: scores.Kimya.correct,
+       kimyaYanlis: scores.Kimya.incorrect,
+       biyolojiDogru: scores.Biyoloji.correct,
+       biyolojiYanlis: scores.Biyoloji.incorrect,
+       edebiyatDogru: scores.Edebiyat.correct,
+       edebiyatYanlis: scores.Edebiyat.incorrect,
+       tarih1Dogru: scores.Tarih1.correct,
+       tarih1Yanlis: scores.Tarih1.incorrect,
+       cografya1Dogru: scores.Coğrafya1.correct,
+       cografya1Yanlis: scores.Coğrafya1.incorrect,
+       tarih2Dogru: scores.Tarih2.correct,
+       tarih2Yanlis: scores.Tarih2.incorrect,
+       cografya2Dogru: scores.Coğrafya2.correct,
+       cografya2Yanlis: scores.Coğrafya2.incorrect,
+       felsefeDogru: scores.Felsefe.correct,
+       felsefeYanlis: scores.Felsefe.incorrect,
+       dinDogru: scores.Din.correct,
+       dinYanlis: scores.Din.incorrect,
+       dilDogru: scores.Dil.correct,
+       dilYanlis: scores.Dil.incorrect,
        yanlisKonular: yanlisKonularId,
        bosKonular: bosKonularId,
      };
      try {
-       await denemeService.editTyt(tytUpdate, undefined, () => {
+       await denemeService.editAyt(aytUpdate, undefined, () => {
          toast({
            title: "Başarısız",
-           description: `TYT denemesi güncellenirken bir hata oluştu.`,
+           description: `AYT denemesi güncellenirken bir hata oluştu.`,
            variant: "destructive",
          });
        });
      } catch (error: any) {}
-   }; 
+   };
   const handleDersClick = async (dersId: string) => {
     if (selectedDersId === dersId) {
       setSelectedDersId(null); // Aynı derse tekrar tıklanırsa kapat
@@ -229,41 +342,88 @@ const SingleTytContent = () => {
       }
     }
   };
-  const fetchTyt = async () => {
+  
+  const fetchAyt = async () => {
     if (!id) return;
-    const fetchedTyt = await denemeService.getTytById(id as string);
-    setTyt(fetchedTyt);
-    if (fetchedTyt) {
+    const fetchedAyt = await denemeService.getAytById(id as string);
+    setAyt(fetchedAyt);
+    if (fetchedAyt) {
       setScores({
-        Türkçe: {
-          correct: fetchedTyt.turkceDogru,
-          incorrect: fetchedTyt.turkceYanlis,
-        },
         Matematik: {
-          correct: fetchedTyt.matematikDogru,
-          incorrect: fetchedTyt.matematikYanlis,
+          correct: fetchedAyt.matematikDogru,
+          incorrect: fetchedAyt.matematikYanlis,
         },
-        Fen: { correct: fetchedTyt.fenDogru, incorrect: fetchedTyt.fenYanlis },
-        Sosyal: {
-          correct: fetchedTyt.sosyalDogru,
-          incorrect: fetchedTyt.sosyalYanlis,
+        Fizik: {
+          correct: fetchedAyt.fizikDogru,
+          incorrect: fetchedAyt.fizikYanlis,
+        },
+        Kimya: {
+          correct: fetchedAyt.kimyaDogru,
+          incorrect: fetchedAyt.kimyaYanlis,
+        },
+        Biyoloji: {
+          correct: fetchedAyt.biyolojiDogru,
+          incorrect: fetchedAyt.biyolojiYanlis,
+        },
+        Edebiyat: {
+          correct: fetchedAyt.edebiyatDogru,
+          incorrect: fetchedAyt.edebiyatYanlis,
+        },
+        Tarih1: {
+          correct: fetchedAyt.tarih1Dogru,
+          incorrect: fetchedAyt.tarih1Yanlis,
+        },
+        Coğrafya1: {
+          correct: fetchedAyt.cografya1Dogru,
+          incorrect: fetchedAyt.cografya1Yanlis,
+        },
+        Tarih2: {
+          correct: fetchedAyt.tarih2Dogru,
+          incorrect: fetchedAyt.tarih2Yanlis,
+        },
+        Coğrafya2: {
+          correct: fetchedAyt.cografya2Dogru,
+          incorrect: fetchedAyt.cografya2Yanlis,
+        },
+        Felsefe: {
+          correct: fetchedAyt.felsefeDogru,
+          incorrect: fetchedAyt.felsefeYanlis,
+        },
+        Din: {
+          correct: fetchedAyt.dinDogru,
+          incorrect: fetchedAyt.dinYanlis,
+        },
+        Dil: {
+          correct: fetchedAyt.dilDogru,
+          incorrect: fetchedAyt.dilYanlis,
         },
       });
-      setYanlisKonularId(
-        fetchedTyt.yanlisKonularAdDers.map((konu) => konu.konuId)
-      );
-      setBosKonularId(fetchedTyt.bosKonularAdDers.map((konu) => konu.konuId));
+      setYanlisKonularId(fetchedAyt.yanlisKonularAdDers.map((konu) => konu.konuId));
+      setBosKonularId(fetchedAyt.bosKonularAdDers.map((konu) => konu.konuId));
     }
   };
   useEffect(() => {
-    fetchTyt();
+    fetchAyt();
   }, []);
   useEffect(() => {
     const fetchDersler = async () => {
       try {
         const response = await derslerService.getAllDers(isTytSelected);
         const sortedDersler = response.dersler.sort((a, b) => {
-          const order = ["Türkçe", "Matematik", "Fen", "Sosyal"];
+          const order = [
+            "Matematik",
+            "Fizik",
+            "Kimya",
+            "Biyoloji",
+            "Edebiyat",
+            "Tarih1",
+            "Coğrafya1",
+            "Tarih2",
+            "Coğrafya2",
+            "Felsefe",
+            "Din",
+            "Dil",
+          ];
           return order.indexOf(a.dersAdi) - order.indexOf(b.dersAdi);
         });
         setDersler(sortedDersler); // Sıralanmış dersleri ayarla
@@ -281,26 +441,33 @@ const SingleTytContent = () => {
       }
     };
     fetchDersler();
-  },[]);
-  
-  
-  
-  useEffect(() => {
-    const userId = authService.userId as string; 
-    signalRService.start(HubUrls.TytHub,userId);
-    signalRService.on(HubUrls.TytHub, ReceiveFunctions.TytUpdatedMessage, async (message) => {
-      fetchTyt();
-        toast({
-          title: 'Başarılı',
-          description: message,
-        });
-    }, userId);
-    return () => {
-        signalRService.off(HubUrls.TytHub, ReceiveFunctions.TytUpdatedMessage, userId);
-    };
-  }, [signalRService]);
-  
-  if (!tyt) return <div className="text-center mt-2">TYT denemesi bulunamaadı.</div>;
+  }, []);
+
+ useEffect(() => {
+   const userId = authService.userId as string;
+   signalRService.start(HubUrls.AytHub, userId);
+   signalRService.on(
+     HubUrls.AytHub,
+     ReceiveFunctions.AytUpdatedMessage,
+     async (message) => {
+       fetchAyt();
+       toast({
+         title: "Başarılı",
+         description: message,
+       });
+     },
+     userId
+   );
+   return () => {
+     signalRService.off(
+       HubUrls.AytHub,
+       ReceiveFunctions.AytUpdatedMessage,
+       userId
+     );
+   };
+ }, [signalRService]);
+  if (!ayt)
+    return <div className="text-center mt-2">AYT denemesi bulunamaadı.</div>;
   return (
     <div className="mx-auto mt-4 max-w-7xl">
       <form
@@ -308,13 +475,13 @@ const SingleTytContent = () => {
           e.preventDefault();
           setOpenDialog(true); // Open dialog on form submit
         }}
-        className="grid grid-cols-1 gap-12"
+        className="grid grid-cols-1 gap-8"
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {dersler.map((ders) => (
             <div key={ders.id} className="flex flex-col gap-2">
-              <Label className="text-lg">{ders.dersAdi}</Label>
-              <div className="flex gap-4 w-full">
+              <Label className="text-lg font-semibold">{ders.dersAdi}</Label>
+              <div className="flex gap-4">
                 <div className="flex items-center w-full">
                   <label className="text-sm mr-2">Doğru</label>
                   <Input
@@ -352,7 +519,6 @@ const SingleTytContent = () => {
                   />
                 </div>
               </div>
-
               {errors[ders.dersAdi].map((error, index) => (
                 <span key={index} className="text-red-500 text-sm">
                   {error}
@@ -397,12 +563,14 @@ const SingleTytContent = () => {
                           .map((konu) => (
                             <div
                               key={konu.id}
-                              className="flex justify-between items-center px-2 py-1"
+                              className="flex items-center justify-between px-2 py-1"
                             >
-                              <span className="flex-1 break-all">
-                                {konu.konuAdi}
-                              </span>
-                              <div className="flex items-center gap-2 mr-2">
+                              <div className="flex-1 flex flex-col">
+                                <span className="break-all">
+                                  {konu.konuAdi}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 ml-4">
                                 <div className="flex items-center">
                                   <Checkbox
                                     id={`yanlis-${konu.id}`}
@@ -410,15 +578,13 @@ const SingleTytContent = () => {
                                     onCheckedChange={(e) => {
                                       const isChecked = e.valueOf();
                                       setYanlisKonularId((prev) => {
-                                        if (isChecked) {
-                                          if (!prev.includes(konu.id))
-                                            return [...prev, konu.id];
-                                          return prev;
-                                        } else {
-                                          return prev.filter(
-                                            (id) => id !== konu.id
-                                          );
-                                        }
+                                        if (isChecked)
+                                          return !prev.includes(konu.id)
+                                            ? [...prev, konu.id]
+                                            : prev;
+                                        return prev.filter(
+                                          (id) => id !== konu.id
+                                        );
                                       });
                                     }}
                                   />
@@ -436,15 +602,13 @@ const SingleTytContent = () => {
                                     onCheckedChange={(e) => {
                                       const isChecked = e.valueOf();
                                       setBosKonularId((prev) => {
-                                        if (isChecked) {
-                                          if (!prev.includes(konu.id))
-                                            return [...prev, konu.id];
-                                          return prev;
-                                        } else {
-                                          return prev.filter(
-                                            (id) => id !== konu.id
-                                          );
-                                        }
+                                        if (isChecked)
+                                          return !prev.includes(konu.id)
+                                            ? [...prev, konu.id]
+                                            : prev;
+                                        return prev.filter(
+                                          (id) => id !== konu.id
+                                        );
                                       });
                                     }}
                                   />
@@ -468,6 +632,7 @@ const SingleTytContent = () => {
             </div>
           ))}
         </div>
+
         <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
           <AlertDialogTrigger asChild>
             <Button className="w-full mt-4" type="button">
@@ -478,7 +643,7 @@ const SingleTytContent = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Güncelleme Onayı</AlertDialogTitle>
               <AlertDialogDescription>
-                TYT denemesini güncellemek istediğinize emin misiniz?
+                AYT denemesini güncellemek istediğinize emin misiniz?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -490,7 +655,7 @@ const SingleTytContent = () => {
                   handleSubmit(); // Call submit function on confirmation
                   setOpenDialog(false); // Close the dialog
                 }}
-               
+                
               >
                 Güncelle
               </AlertDialogAction>
@@ -502,4 +667,4 @@ const SingleTytContent = () => {
   );
 };
 
-export default SingleTytContent;
+export default SingleAytContent;

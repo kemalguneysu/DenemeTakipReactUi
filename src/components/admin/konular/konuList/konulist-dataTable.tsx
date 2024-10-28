@@ -19,7 +19,7 @@ import {
   import { Input } from "@/components/ui/input";
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
   import { Icons } from "@/components/icons";
-  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; // AlertDialog bileşenini ekliyoruz.
+  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@/components/ui/alert-dialog"; // AlertDialog bileşenini ekliyoruz.
   import { Ders, ListKonu } from "@/types";
   import { toast } from "@/hooks/use-toast";
 import { konularService } from "@/app/services/konular.service";
@@ -117,70 +117,97 @@ import { konularService } from "@/app/services/konular.service";
           />
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="outline" className="ml-4">
-                  Seçilen dersleri sil <Icons.trash2 className="ml-2" />
-                </Button>
+              <Button variant="outline" className="ml-4">
+                Seçilen dersleri sil <Icons.trash2 className="ml-2" />
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Silme Onayı</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Seçilen dersleri silmek istediğinize emin misiniz?
+                  Seçilen konuyu silmek istediğinize emin misiniz?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <div className="flex justify-end">
+              <AlertDialogFooter>
                 <AlertDialogCancel>İptal</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={(e:any) => {
+                  onClick={(e: any) => {
                     handleDeleteSelected(e); // Silme işlemi
                   }}
                 >
                   Sil
                 </AlertDialogAction>
-              </div>
+              </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          
         </div>
         <div className="rounded-md border">
           <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header, index) => (
-                  <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {data.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header, index) => (
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        width: getColumnWidth(
+                          headerGroup.headers.length,
+                          index
+                        ),
+                      }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Ders bulunamadı.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {data.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          width: getColumnWidth(
+                            row.getVisibleCells().length,
+                            index
+                          ),
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Ders bulunamadı.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
           </Table>
         </div>
         <div className="flex-1 text-sm text-muted-foreground mt-1">
-          {totalCount} adet veriden {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
+          {totalCount} adet veriden{" "}
+          {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
         </div>
-  
+
         <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Sayfa başı konu</p>
@@ -202,11 +229,11 @@ import { konularService } from "@/app/services/konular.service";
               </SelectContent>
             </Select>
           </div>
-  
+
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Sayfa {page + 1} / {totalPages} {/* Sayfa gösterimi ayarla */}
           </div>
-  
+
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -216,7 +243,7 @@ import { konularService } from "@/app/services/konular.service";
             >
               <Icons.chevronsLeft className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -225,7 +252,7 @@ import { konularService } from "@/app/services/konular.service";
             >
               <Icons.chevronLeft className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -234,7 +261,7 @@ import { konularService } from "@/app/services/konular.service";
             >
               <Icons.chevronRight className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"

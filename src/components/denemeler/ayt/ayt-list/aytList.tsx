@@ -43,7 +43,6 @@ export default function DersList() {
 
   useEffect(() => {
       fetchData();
-      console.log(orderByAndDirections);
   }, [page, pageSize,orderByAndDirections]);
 
 
@@ -51,7 +50,6 @@ export default function DersList() {
     const userId = authService.userId as string; 
     signalRService.start(HubUrls.AytHub,userId);
     signalRService.on(HubUrls.AytHub, ReceiveFunctions.AytAddedMessage, async (message) => {
-        console.log("a");
         await fetchData(); 
         toast({
             title: 'Başarılı',

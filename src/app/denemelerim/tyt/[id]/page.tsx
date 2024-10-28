@@ -2,7 +2,7 @@ import SingleKonuContent from '@/components/admin/konular/singleKonu/singleKonuC
 import SingleTytContent from '@/components/denemeler/tyt/singleTytList/singleTytList';
 import React from 'react';
 
-const SingleDers= () => {
+const SingleTYT= () => {
   return (
     <div>
       <SingleTytContent/>
@@ -10,4 +10,4 @@ const SingleDers= () => {
   );
 };
 
-export default SingleDers;
+export default SingleTYT;

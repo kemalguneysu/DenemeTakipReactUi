@@ -19,7 +19,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Icons } from "@/components/icons";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; 
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@/components/ui/alert-dialog"; 
 import { derslerService } from "@/app/services/dersler.service";
 import { Ders } from "@/types";
 import { toast } from "@/hooks/use-toast";
@@ -117,9 +117,9 @@ export function DataTable<TData extends Ders, TValue>({
         />
         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <AlertDialogTrigger asChild>
-              <Button variant="outline" className="ml-4">
-                Seçilen dersleri sil <Icons.trash2 className="ml-2" />
-              </Button>
+            <Button variant="outline" className="ml-4">
+              Seçilen dersleri sil <Icons.trash2 className="ml-2" />
+            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -128,16 +128,16 @@ export function DataTable<TData extends Ders, TValue>({
                 Seçilen dersleri silmek istediğinize emin misiniz?
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="flex justify-end">
+            <AlertDialogFooter>
               <AlertDialogCancel>İptal</AlertDialogCancel>
               <AlertDialogAction
-                onClick={(e:any) => {
+                onClick={(e: any) => {
                   handleDeleteSelected(e);
                 }}
               >
                 Sil
               </AlertDialogAction>
-            </div>
+            </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       </div>
@@ -147,10 +147,18 @@ export function DataTable<TData extends Ders, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
-                  <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
+                  <TableHead
+                    key={header.id}
+                    style={{
+                      width: getColumnWidth(headerGroup.headers.length, index),
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -161,15 +169,29 @@ export function DataTable<TData extends Ders, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        width: getColumnWidth(
+                          row.getVisibleCells().length,
+                          index
+                        ),
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   Ders bulunamadı.
                 </TableCell>
               </TableRow>
@@ -178,7 +200,8 @@ export function DataTable<TData extends Ders, TValue>({
         </Table>
       </div>
       <div className="flex-1 text-sm text-muted-foreground mt-1">
-        {totalCount} adet veriden {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
+        {totalCount} adet veriden{" "}
+        {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
       </div>
 
       <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
