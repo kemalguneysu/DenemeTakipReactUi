@@ -136,11 +136,9 @@ import {
           <div className="flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  Sütun Filtrele
-                </Button>
+                <Button variant="outline">Sütun Filtrele</Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" >
+              <DropdownMenuContent align="end">
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
@@ -149,7 +147,9 @@ import {
                       key={column.id}
                       className="capitalize cursor-pointer"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
@@ -159,14 +159,19 @@ import {
           </div>
 
           {/* İkinci satır: Solda Tarih sıralama, sağda Silme butonu */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-nowrap space-x-2 w-full overflow-hidden">
             {/* Solda Tarihe Göre Sırala */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center justify-center">
+                <Button
+                  variant="outline"
+                  className="flex items-center justify-center"
+                >
                   {selectedSort ? (
                     <span className="cursor-pointer text-center">
-                      {selectedSort === "asc" ? "Eskiden-Yeniye" : "Yeniden-Eskiye"}
+                      {selectedSort === "asc"
+                        ? "Eskiden-Yeniye"
+                        : "Yeniden-Eskiye"}
                     </span>
                   ) : (
                     <span className="flex items-center">
@@ -195,11 +200,10 @@ import {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Sağda Silme butonu */}
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <AlertDialogTrigger asChild>
-                <Button variant="outline">
-                  Seçilen AYT denemelerini sil <Icons.trash2 className="ml-2" />
+                <Button variant="outline" className="">
+                  Seçilen denemelerini sil <Icons.trash2 className="ml-2" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -219,16 +223,27 @@ import {
             </AlertDialog>
           </div>
         </div>
-        <div className="rounded-md border ">
+        <div className="rounded-md border">
           <Table className="relative">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => (
-                    <TableHead key={header.id} style={{ width: getColumnWidth(headerGroup.headers.length, index) }}>
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        width: getColumnWidth(
+                          headerGroup.headers.length,
+                          index
+                        ),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -239,15 +254,29 @@ import {
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell key={cell.id} style={{ width: getColumnWidth(row.getVisibleCells().length, index) }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          width: getColumnWidth(
+                            row.getVisibleCells().length,
+                            index
+                          ),
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     AYT denemesi bulunamadı.
                   </TableCell>
                 </TableRow>
@@ -256,10 +285,11 @@ import {
           </Table>
         </div>
         <div className="flex-1 text-sm text-muted-foreground mt-1">
-          {totalCount} adet veriden {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
+          {totalCount} adet veriden{" "}
+          {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
         </div>
-  
-        <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
+
+        <div className="flex items-center  lg:space-x-8 mt-1">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Sayfa başı AYT denemesi</p>
             <Select
@@ -281,11 +311,14 @@ import {
               </SelectContent>
             </Select>
           </div>
-  
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Sayfa {page + 1} / {totalPages}
+
+          <div className="flex flex-col sm:flex-row w-[100px] items-center justify-center text-sm font-medium">
+            <span>Sayfa</span>
+            <span className="sm:ml-1">
+              {page + 1} / {totalPages}
+            </span>
           </div>
-  
+
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -295,7 +328,7 @@ import {
             >
               <Icons.chevronsLeft className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -304,7 +337,7 @@ import {
             >
               <Icons.chevronLeft className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
@@ -313,7 +346,7 @@ import {
             >
               <Icons.chevronRight className="h-4 w-4" />
             </Button>
-  
+
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
