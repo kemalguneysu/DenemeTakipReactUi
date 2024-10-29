@@ -140,7 +140,6 @@ import { konularService } from "@/app/services/konular.service";
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          
         </div>
         <div className="rounded-md border">
           <Table>
@@ -208,7 +207,7 @@ import { konularService } from "@/app/services/konular.service";
           {table.getFilteredSelectedRowModel().rows.length} tanesi seçildi.
         </div>
 
-        <div className="flex items-center space-x-6 lg:space-x-8 mt-1">
+        <div className="flex items-center lg:space-x-8 mt-1">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Sayfa başı konu</p>
             <Select
@@ -230,8 +229,11 @@ import { konularService } from "@/app/services/konular.service";
             </Select>
           </div>
 
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Sayfa {page + 1} / {totalPages} {/* Sayfa gösterimi ayarla */}
+          <div className="flex flex-col sm:flex-row w-[100px] items-center justify-center text-sm font-medium">
+            <span>Sayfa</span>
+            <span className="sm:ml-1">
+              {page + 1} / {totalPages}
+            </span>
           </div>
 
           <div className="flex items-center space-x-2">

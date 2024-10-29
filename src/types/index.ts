@@ -284,3 +284,20 @@ export type OrderByDirection = {
   orderBy: string;
   orderDirection: 'asc' | 'desc'| null;
 };
+export class UserList {
+  id!: string;
+  email!: string;
+  userName!: string;
+  isAdmin!: boolean;
+}
+export class Role{
+  id!:string;
+  name!:string;
+}
+export class UserById
+{
+  userId!:string;
+  userName!:string;
+  email!:string;
+  emailConfirmed!:boolean;
+}

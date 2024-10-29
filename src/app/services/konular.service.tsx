@@ -83,24 +83,17 @@ class KonularService {
   }
   async getKonuById(id: string): Promise<ListKonu> {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Konular/GetKonuById?KonuId=${id}`, {
-          method: 'GET',
+      const response = await fetchWithAuth(
+        `${process.env.NEXT_PUBLIC_API_URL}/Konular/GetKonuById?KonuId=${id}`,
+        {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        });
-
-      if (!response.ok) {
-          const errorData = await response.json();
-          let message = "";
-          errorData.forEach((error: { key: string; value: Array<string> }) => {
-              error.value.forEach((errorMessage: string) => {
-                  message += `${errorMessage} \n`;
-              });
-          });
-      }
-      const promiseData: ListKonu = await response.json();
-      return promiseData;
+        }
+      );
+      
+      return response;
     } catch (error) {
         throw new Error("Ders bulunamadı.");            
     }

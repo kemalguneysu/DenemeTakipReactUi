@@ -1,10 +1,11 @@
-import { User, UserCreate } from "@/types"; // Adjust the import path according to your project structure
+import { User, UserById, UserCreate, UserList } from "@/types"; // Adjust the import path according to your project structure
+import { fetchWithAuth } from "./fetch.withAuth";
 
 export class UserService {
-  private apiUrl: string;
+  private baseUrl: string;
 
   constructor() {
-    this.apiUrl = process.env.NEXT_PUBLIC_API_URL || ""; // Ensure you have the API URL from environment variables
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
   }
 
   async create(
@@ -13,18 +14,18 @@ export class UserService {
     errorCallback?: (errorMessage: string) => void
   ): Promise<UserCreate> {
     try {
-      const response = await fetch(`${this.apiUrl}/users/createUser`, {
+      const response = await fetch(`${this.baseUrl}/users/createUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(user),
       });
-  
+
       if (!response.ok) {
         const errorResponse = await response.json();
         let message = "";
-  
+
         if (Array.isArray(errorResponse)) {
           errorResponse.forEach((v) => {
             if (Array.isArray(v.value)) {
@@ -36,26 +37,123 @@ export class UserService {
         } else {
           message = errorResponse.message || "An unknown error occurred.";
         }
-  
+
         if (errorCallback) {
           errorCallback(message.trim());
         }
-  
+
         throw new Error(message.trim());
       }
-  
+
       const data: UserCreate = await response.json();
       if (successCallback) {
         successCallback(data); // Yanıtı successCallback'e geçiriyoruz
       }
-  
+
       return data;
     } catch (error) {
       console.error("Error creating user:", error);
       throw error; // Hata sonrası fırlat
     }
   }
-  
+  async getAllUsers(
+    page: number = 1,
+    size: number = 5,
+    nameOrEmail?: string,
+    isAdmin?: boolean | null,
+    successCallBack?: any,
+    errorCallBack?: (errorMessage: string) => void
+  ): Promise<{ totalCount: number; users: UserList[] }> {
+    let queryString = "";
+    if (nameOrEmail) {
+      queryString += `&NameOrEmail=${nameOrEmail}`;
+    }
+    if (isAdmin != null) queryString += `&IsAdmin=${isAdmin}`;
+    if (page && size) {
+      queryString += `&page=${page}&size=${size}`;
+    }
+
+    try {
+      // API'den veri çekme
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/Users/GetAllUsers?${queryString}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+      return { totalCount: 0, users: [] };
+    }
+  }
+  async getUserById(
+    userId: string,
+    successCallBack?: any,
+    errorCallBack?: (errorMessage: string) => void
+  ): Promise<UserById> {
+    try {
+      const response = await fetchWithAuth(
+        `${this.baseUrl}/Users/GetUserById?UserId=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      throw new Error("Kullanıcı bulunamadı.");
+    }
+  }
+  async getUserRoles(userName: string): Promise<string[]> {
+    try {
+      const response = await fetchWithAuth(
+        `${this.baseUrl}/Users/GetUserRoles?UserName=${userName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.userRoles;
+    } catch (error) {
+      throw new Error("Kullanıcı bulunamadı.");
+    }
+  }
+  async assignToRoles(
+    model: any,
+    successCallback?: () => void,
+    errorCallback?: (errorMessage: string) => void
+  ) {
+    try {
+      const response = await fetchWithAuth(
+        `${this.baseUrl}/Users/AssignRolesToUser`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(model),
+        }
+      );
+      if (successCallback) {
+        successCallback();
+      }
+    } catch (error) {
+      if(errorCallback)
+        errorCallback(error as string);
+    }
+  }
 }
 
 export const userService = new UserService();

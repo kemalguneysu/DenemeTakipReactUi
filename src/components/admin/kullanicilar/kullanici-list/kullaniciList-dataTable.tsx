@@ -17,11 +17,26 @@ import {
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Icons } from "@/components/icons";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@/components/ui/alert-dialog"; 
-import { derslerService } from "@/app/services/dersler.service";
-import { Ders } from "@/types";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import { UserList } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
 interface DataTableProps<TData, TValue> {
@@ -32,12 +47,12 @@ interface DataTableProps<TData, TValue> {
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
   totalPages: number;
-  input: string; 
-  setInput: (value: string) => void; 
+  input: string;
+  setInput: (value: string) => void;
   totalCount: number;
 }
 
-export function DataTable<TData extends Ders, TValue>({
+export function DataTable<TData extends UserList, TValue>({
   columns,
   data,
   page,
@@ -49,7 +64,9 @@ export function DataTable<TData extends Ders, TValue>({
   setInput,
   totalCount,
 }: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [rowSelection, setRowSelection] = React.useState({});
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const table = useReactTable({
@@ -65,43 +82,41 @@ export function DataTable<TData extends Ders, TValue>({
     },
   });
 
-  const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
-    e.preventDefault();
-    try {
-        const response = await derslerService.deleteDers(
-            Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
-        );
-        if (response.succeeded) {
-            
-            const selectedRows = table.getSelectedRowModel().rows;
-            selectedRows.splice(0, selectedRows.length); 
-            table.setRowSelection({});
-        }
-        else
-        toast({
-          title: 'Başarısız',
-          description: response.message,
-          variant: 'destructive',
-        });
-
-    } catch (error: any) {
-        toast({
-            title: 'Başarısız',
-            description: 'Seçilen dersler silinirken bir hata oluştu.',
-            variant: 'destructive',
-        });
-    }
-    setDialogOpen(false); 
-  };
+//   const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const response = await derslerService.deleteDers(
+//         Object.values(table.getSelectedRowModel().rowsById).map(
+//           (item) => item.original.id
+//         )
+//       );
+//       if (response.succeeded) {
+//         const selectedRows = table.getSelectedRowModel().rows;
+//         selectedRows.splice(0, selectedRows.length);
+//         table.setRowSelection({});
+//       } else
+//         toast({
+//           title: "Başarısız",
+//           description: response.message,
+//           variant: "destructive",
+//         });
+//     } catch (error: any) {
+//       toast({
+//         title: "Başarısız",
+//         description: "Seçilen kullanıcılar silinirken bir hata oluştu.",
+//         variant: "destructive",
+//       });
+//     }
+//     setDialogOpen(false);
+//   };
 
   function getColumnWidth(totalColumns: number, index: number): string {
-    const totalRatio =  3 * (totalColumns - 2)+ 2; ; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
+    const totalRatio = 3 * (totalColumns - 2) + 2; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
     if (index === 0 || index === totalColumns - 1) {
       return `${(1 / totalRatio) * 100}%`; // For the first and last column
     } else {
-      return `${(3/ totalRatio) * 100}%`; // For the other columns
+      return `${(3 / totalRatio) * 100}%`; // For the other columns
     }
-    
   }
   return (
     <div className="max-w-7xl">
@@ -115,7 +130,7 @@ export function DataTable<TData extends Ders, TValue>({
           }}
           className="max-w-sm"
         />
-        <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        {/* <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <AlertDialogTrigger asChild>
             <Button variant="outline" className="ml-4">
               Seçilen dersleri sil <Icons.trash2 className="ml-2" />
@@ -132,14 +147,14 @@ export function DataTable<TData extends Ders, TValue>({
               <AlertDialogCancel>İptal</AlertDialogCancel>
               <AlertDialogAction
                 onClick={(e: any) => {
-                  handleDeleteSelected(e);
+                //   handleDeleteSelected(e);
                 }}
               >
                 Sil
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
-        </AlertDialog>
+        </AlertDialog> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -192,7 +207,7 @@ export function DataTable<TData extends Ders, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Ders bulunamadı.
+                  Kullanıcı bulunamadı.
                 </TableCell>
               </TableRow>
             )}
@@ -206,7 +221,7 @@ export function DataTable<TData extends Ders, TValue>({
 
       <div className="flex items-center lg:space-x-8 mt-1">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Sayfa başı ders</p>
+          <p className="text-sm font-medium">Sayfa başı kullanıcı</p>
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => {
