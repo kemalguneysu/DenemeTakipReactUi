@@ -176,7 +176,6 @@ export default function RootLayout({
             </header>
             <main>{children}</main>
             <footer className="flex flex-col h-16 items-center w-full mx-auto justify-between py-4">
-              <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
             </footer>
           </div>
         </body>

@@ -40,6 +40,7 @@ import {
     ArrowDownUp,
     ArrowDown,
     ArrowUp,
+    ChevronsUpDown,
   } from "lucide-react";
   
   export type Icon = typeof LucideIcon;
@@ -98,5 +99,6 @@ import {
     trash2:Trash2,
     arrowDownUp:ArrowDownUp,
     arrowDown:ArrowDown,
-    arrowUp:ArrowUp
+    arrowUp:ArrowUp,
+    chevronsUpDown:ChevronsUpDown
   };

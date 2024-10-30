@@ -211,6 +211,58 @@ class DenemeService {
       }
     }
   }
+  async getLastTyt(
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/HomePage/GetLastTytDeneme`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        console.log(error.message);
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getLastAyt(
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/HomePage/GetLastAytDeneme`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        console.log(error.message);
+        errorCallBack(error.message);
+      }
+    }
+  }
 }
 
 export const denemeService = new DenemeService();

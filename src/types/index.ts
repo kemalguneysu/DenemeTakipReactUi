@@ -301,3 +301,48 @@ export class UserById
   email!:string;
   emailConfirmed!:boolean;
 }
+export class HomePageTyt {
+  id!: string;
+  CreatedDate!: Date;
+  turkceDogru!: number;
+  turkceYanlis!: number;
+  matematikDogru!: number;
+  matematikYanlis!: number;
+  fenDogru!: number;
+  fenYanlis!: number;
+  sosyalDogru!: number;
+  sosyalYanlis!: number;
+  toplamNet!: number;
+}
+export class HomePageAyt {
+  id!: string;
+  CreatedDate!: Date;
+  matematikDogru!: number;
+  matematikYanlis!: number;
+  fizikDogru!: number;
+  fizikYanlis!: number;
+  kimyaDogru!: number;
+  kimyaYanlis!: number;
+  biyolojiDogru!: number;
+  biyolojiYanlis!: number;
+  edebiyatDogru!: number;
+  edebiyatYanlis!: number;
+  tarih1Dogru!: number;
+  tarih1Yanlis!: number;
+  cografya1Dogru!: number;
+  cografya1Yanlis!: number;
+  tarih2Dogru!: number;
+  tarih2Yanlis!: number;
+  cografya2Dogru!: number;
+  cografya2Yanlis!: number;
+  felsefeDogru!: number;
+  felsefeYanlis!: number;
+  dinDogru!: number;
+  dinYanlis!: number;
+  dilDogru!: number;
+  dilYanlis!: number;
+  sayisalNet!: number;
+  esitAgirlikNet!: number;
+  sozelNet!: number;
+  dilNet!: number;
+}
