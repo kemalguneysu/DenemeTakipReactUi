@@ -232,7 +232,6 @@ class DenemeService {
       return data;
     } catch (error: any) {
       if (errorCallBack) {
-        console.log(error.message);
         errorCallBack(error.message);
       }
     }
@@ -258,11 +257,195 @@ class DenemeService {
       return data;
     } catch (error: any) {
       if (errorCallBack) {
-        console.log(error.message);
         errorCallBack(error.message);
       }
     }
   }
+  async getTytYanlisAnaliz(
+    denemeSayisi: number = 5,
+    konuSayisi: number = 5,
+    dersId?: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const url =
+        `${this.baseUrl}/Tyts/DenemeAnalizTytYanlis?DenemeSayisi=${denemeSayisi}&KonuSayisi=${konuSayisi}` +
+        (dersId ? `&DersId=${dersId}` : "");
+
+      const data = await fetchWithAuth(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getTytBosAnaliz(
+    denemeSayisi: number = 5,
+    konuSayısı: number = 5,
+    dersId: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/Tyts/DenemeAnalizTytBos?DenemeSayısı=${denemeSayisi}&KonuSayısı=${konuSayısı}&DersId=${dersId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getAytBosAnaliz(
+    denemeSayisi: number = 5,
+    konuSayısı: number = 5,
+    dersId: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/Ayts/DenemeAnalizAytBos?DenemeSayısı=${denemeSayisi}&KonuSayısı=${konuSayısı}&DersId=${dersId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getAytYanlisAnaliz(
+    denemeSayisi: number = 5,
+    konuSayısı: number = 5,
+    dersId: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const data = await fetchWithAuth(
+        `${this.baseUrl}/Ayts/DenemeAnalizAytYanlis?DenemeSayısı=${denemeSayisi}&KonuSayısı=${konuSayısı}&DersId=${dersId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getTytAnaliz(
+    denemeSayisi: number = 5,
+    konuSayisi: number = 5,
+    dersId: string,
+    type: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const baseUrl = `${this.baseUrl}/Tyts/TytAnaliz`; // Temel URL
+      const queryParams = new URLSearchParams({
+        DenemeSayisi: denemeSayisi.toString(),
+        KonuSayisi: konuSayisi.toString(),
+        DersId: dersId,
+        Type: type,
+      }).toString();
+
+      const fullUrl = `${baseUrl}?${queryParams}`;
+      const data = await fetchWithAuth(fullUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data.tytAnaliz;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getAytAnaliz(
+    denemeSayisi: number = 5,
+    konuSayisi: number = 5,
+    dersId: string,
+    type: string,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const baseUrl = `${this.baseUrl}/Ayts/AytAnaliz`; // Temel URL
+      const queryParams = new URLSearchParams({
+        DenemeSayisi: denemeSayisi.toString(),
+        KonuSayisi: konuSayisi.toString(),
+        DersId: dersId,
+        Type: type,
+      }).toString();
+
+      const fullUrl = `${baseUrl}?${queryParams}`;
+      const data = await fetchWithAuth(fullUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data.aytAnaliz;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  
 }
+
 
 export const denemeService = new DenemeService();

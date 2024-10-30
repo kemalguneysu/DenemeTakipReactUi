@@ -27,7 +27,7 @@ const CountdownTimer: React.FC = () => {
 
         setTimeLeft({ days, hours, minutes });
       }
-    }, 1000); // Her saniyede bir güncelle
+    }, 1000);
 
     return () => clearInterval(interval); // Temizleme işlemi
   }, [targetDate]);

@@ -115,7 +115,7 @@ export class aytGenelList{
 }
 export class CreateTyt{
   matematikDogru:number=0;
-  matematikYanlis:number=0;
+  bosYanlis:number=0;
   turkceDogru:number=0;
   turkceYanlis:number=0;
   fenDogru:number=0;
@@ -345,4 +345,11 @@ export class HomePageAyt {
   esitAgirlikNet!: number;
   sozelNet!: number;
   dilNet!: number;
+}
+export class DenemeAnaliz
+{
+  konuId!:string;
+  dersId!:string;
+  konuAdi!:string;
+  sayi!:number;
 }

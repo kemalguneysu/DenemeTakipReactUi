@@ -406,8 +406,8 @@ const AYTCard = () => {
                     </p>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="tarih1-net">
-                  <AccordionTrigger id="tarih1">
+                <AccordionItem value="tarih1-net-sozel">
+                  <AccordionTrigger id="tarih1-sozel">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold cursor-pointer">
                         Tarih1 Net:{" "}
@@ -427,8 +427,8 @@ const AYTCard = () => {
                     </p>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="cografya1-net">
-                  <AccordionTrigger id="cografya1">
+                <AccordionItem value="cografya1-net-sozel">
+                  <AccordionTrigger id="cografya1-sozel">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold cursor-pointer">
                         Coğrafya1 Net:{" "}

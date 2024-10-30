@@ -12,7 +12,7 @@ export const dashboardConfig: DashboardConfig = {
     },
     {
       title: "Analizler",
-      href: "/analizler",
+      href: "/analizlerim",
     },
     {
       title: "Admin",
