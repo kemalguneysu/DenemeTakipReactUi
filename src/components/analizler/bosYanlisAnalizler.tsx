@@ -147,7 +147,7 @@ const BosYanlisAnalizler = () => {
             Son {denemeSayisi} denemede{" "}
             {dersId ? `${dersler.find((d) => d.id === dersId)?.dersAdi}` : ""}{" "}
             dersi için en fazla {type === "yanlis" ? "yanlış" : "boş"} yapılan{" "}
-            {konuSayisi} konu{" "}
+            {analiz.length < konuSayisi ? analiz.length : konuSayisi} konu{" "}
           </CardDescription>
         </CardHeader>
       </CardHeader>
@@ -157,7 +157,8 @@ const BosYanlisAnalizler = () => {
         ) : analiz.length === 0 ? (
           <div className="text-center py-10">
             {dersId ? `${dersler.find((d) => d.id === dersId)?.dersAdi}` : ""}{" "}
-            dersi için {type === "yanlis" ? "yanlış" : "boş"} konu bulunmamaktadır.
+            dersi için {type === "yanlis" ? "yanlış" : "boş"} konu
+            bulunmamaktadır.
           </div>
         ) : (
           <ChartContainer config={chartConfig}>
