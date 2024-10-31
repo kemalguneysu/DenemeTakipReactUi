@@ -141,7 +141,7 @@ const BosYanlisAnalizler = () => {
   return (
     <Card className="max-w-md mt-4 mx-auto">
       <CardHeader>
-        <CardTitle>{isTyt ? "TYT Analiz" : "AYT Analiz"}</CardTitle>
+        <CardTitle>{isTyt ? "TYT Konu Analizi" : "AYT Konu Analizi"}</CardTitle>
         <CardHeader>
           <CardDescription>
             Son {denemeSayisi} denemede{" "}
