@@ -94,9 +94,6 @@ const NetAnalizler = () => {
     fetchDersler();
   }, [isTyt, alanTur]);
 
-  
-
-  
   const handleIsTyt = async () => {
     setIsTyt(!isTyt);
     setDersAdi(null);
@@ -481,11 +478,31 @@ const NetAnalizler = () => {
   return (
     <Card className="w-full max-w-md mt-4 mx-auto">
       <CardHeader>
-        <CardTitle>{isTyt ? "TYT Analiz" : "AYT Analiz"}</CardTitle>
+        <CardTitle>{isTyt ? "TYT Net Analizi" : "AYT Net Analizi"}</CardTitle>
         <CardDescription>
-          {dersAdi
-            ? `${dersler.find((d) => d.dersAdi === dersAdi)?.dersAdi}`
-            : "Ders Seçin"}
+          Son {analiz.length < denemeSayisi ? analiz.length : denemeSayisi}{" "}
+          {isTyt ? "TYT denemesi için" : "AYT denemesi için"}{" "}
+          {dersAdi === null &&
+            !isTyt &&
+            (alanTur === "sayisal"
+              ? "Sayısal"
+              : alanTur === "esitagirlik"
+              ? "Eşit Ağırlık"
+              : alanTur === "sozel"
+              ? "Sözel"
+              : alanTur === "dil"
+              ? "Dil"
+              : "")}{" "}
+          {dersAdi !== null
+            ? dersAdi === "turkce"
+              ? "Türkçe"
+              : dersAdi === "cografya1"
+              ? "Coğrafya1"
+              : dersAdi === "cografya2"
+              ? "Coğrafya2"
+              : dersAdi.charAt(0).toUpperCase() + dersAdi.slice(1)
+            : "Genel"}{" "}
+          net analizi
         </CardDescription>
       </CardHeader>
       <CardContent>
