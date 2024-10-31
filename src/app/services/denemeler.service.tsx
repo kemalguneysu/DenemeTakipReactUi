@@ -444,7 +444,73 @@ class DenemeService {
       }
     }
   }
-  
+  async getTytNetAnaliz(
+    denemeSayisi: number,
+    dersAdi?: string | null,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const url = new URL(`${this.baseUrl}/Tyts/TytNetAnaliz`);
+      url.searchParams.append("DenemeSayisi", denemeSayisi.toString());
+
+      // Eğer dersAdi varsa, onu da URL'ye ekliyoruz.
+      if (dersAdi) {
+        url.searchParams.append("DersAdi", dersAdi);
+      }
+
+      const data = await fetchWithAuth(url.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data.tyts;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
+  async getAytNetAnaliz(
+    denemeSayisi: number,
+    alanTur: string,
+    dersAdi?: string | null,
+    successCallBack?: () => void,
+    errorCallBack?: (errorMessage: string) => void
+  ) {
+    try {
+      const url = new URL(`${this.baseUrl}/Ayts/AytNetAnaliz`);
+      url.searchParams.append("DenemeSayisi", denemeSayisi.toString());
+      url.searchParams.append("AlanTuru", alanTur);
+
+      // Eğer dersAdi varsa, onu da ekliyoruz
+      if (dersAdi) {
+        url.searchParams.append("DersAdi", dersAdi);
+      }
+
+      // Fetch isteğini yapıyoruz
+      const data = await fetchWithAuth(url.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (successCallBack) {
+        successCallBack();
+      }
+      return data.ayts;
+    } catch (error: any) {
+      if (errorCallBack) {
+        errorCallBack(error.message);
+      }
+    }
+  }
 }
 
 

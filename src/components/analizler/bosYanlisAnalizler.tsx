@@ -139,7 +139,7 @@ const BosYanlisAnalizler = () => {
       return null;
     };
   return (
-    <Card className="max-w-lg">
+    <Card className="max-w-md mt-4 mx-auto">
       <CardHeader>
         <CardTitle>{isTyt ? "TYT Analiz" : "AYT Analiz"}</CardTitle>
         <CardHeader>

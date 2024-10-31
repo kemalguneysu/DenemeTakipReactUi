@@ -115,7 +115,7 @@ export class aytGenelList{
 }
 export class CreateTyt{
   matematikDogru:number=0;
-  bosYanlis:number=0;
+  matematikYanlis:number=0;
   turkceDogru:number=0;
   turkceYanlis:number=0;
   fenDogru:number=0;
@@ -352,4 +352,50 @@ export class DenemeAnaliz
   dersId!:string;
   konuAdi!:string;
   sayi!:number;
+}
+export class AnalizList {
+  id!: string;
+  tarih!: Date;
+  net!:number;
+  dogru!:number;
+  yanlis!:number;
+}
+export class SayisalAnalizList {
+  id!: string;
+  tarih!: Date;
+  net!: number;
+  matematikNet!: number;
+  fizikNet!: number;
+  kimyaNet!: number;
+  biyolojiNet!: number;
+}
+export class EsitAgirlikAnalizList {
+  id!: string;
+  tarih!: Date;
+  net!: number;
+  matematikNet!: number;
+  edebiyatNet!: number;
+  tarih1Net!: number;
+  cografya1Net!: number;
+}
+export class SozelAnalizList {
+  id!: string;
+  tarih!: Date;
+  net!: number;
+  edebiyatNet!: number;
+  tarih1Net!: number;
+  cografya1Net!: number;
+  tarih2Net!: number;
+  cografya2Net!: number;
+  felsefeNet!: number;
+  dinNet!: number;
+}
+export class TytAnalizList {
+  id!: string;
+  tarih!: Date;
+  net!: number;
+  matematikNet!: number;
+  turkceNet!: number;
+  fenNet!: number;
+  sosyalNet!: number;
 }

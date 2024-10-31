@@ -31,7 +31,6 @@ const TYTCard = () => {
 
       setHomePageTyt(formattedResult);
     } catch (error) {
-      console.error("TYT denemesi alınamadı.", error);
     }
   };
 
