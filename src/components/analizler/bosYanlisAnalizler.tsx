@@ -47,6 +47,7 @@ const BosYanlisAnalizler = () => {
   const [dersId, setDersId] = useState<string | null>(null);
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [isTyt, setIsTyt] = useState<boolean>(true);
+  const [alanTur, setAlanTur] = useState<string>("Sayısal"); // New state for subject type
   const [type, setType] = useState<string>("yanlis");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -55,8 +56,18 @@ const BosYanlisAnalizler = () => {
     setLoading(true);
     try {
       const result = isTyt
-        ? await denemeService.getTytAnaliz(denemeSayisi, konuSayisi, dersId, type)
-        : await denemeService.getAytAnaliz(denemeSayisi, konuSayisi, dersId, type);
+        ? await denemeService.getTytAnaliz(
+            denemeSayisi,
+            konuSayisi,
+            dersId,
+            type
+          )
+        : await denemeService.getAytAnaliz(
+            denemeSayisi,
+            konuSayisi,
+            dersId,
+            type
+          );
 
       if (Array.isArray(result)) {
         setAnaliz(result);
@@ -79,15 +90,56 @@ const BosYanlisAnalizler = () => {
 
   useEffect(() => {
     fetchAnaliz();
-  }, [dersId, denemeSayisi, konuSayisi, type,isTyt]);
+  }, [dersId, denemeSayisi, konuSayisi, type, isTyt]);
 
   const fetchDersler = async () => {
     try {
       const response = await derslerService.getAllDers(isTyt);
-      const sortedDersler = response.dersler.sort((a, b) => {
+      const filteredDersler = response.dersler.filter((ders) => {
+        if (isTyt) return true; // For TYT, return all dersler
+        switch (alanTur) {
+          case "Sayısal":
+            return ["Matematik", "Fizik", "Kimya", "Biyoloji"].includes(
+              ders.dersAdi
+            );
+          case "Eşit Ağırlık":
+            return ["Edebiyat", "Matematik", "Tarih1", "Coğrafya1"].includes(
+              ders.dersAdi
+            );
+          case "Sözel":
+            return [
+              "Edebiyat",
+              "Tarih1",
+              "Coğrafya1",
+              "Tarih2",
+              "Coğrafya2",
+              "Felsefe",
+              "Din",
+            ].includes(ders.dersAdi);
+          case "Dil":
+            return ders.dersAdi === "Dil";
+          default:
+            return false;
+        }
+      });
+
+      const sortedDersler = filteredDersler.sort((a, b) => {
         const order = isTyt
           ? ["Türkçe", "Matematik", "Fen", "Sosyal"]
-          : ["Matematik", "Fizik", "Kimya", "Biyoloji", "Edebiyat", "Tarih1", "Coğrafya1", "Tarih2", "Coğrafya2", "Felsefe", "Din", "Dil"];
+          : [
+              "Matematik",
+              "Fizik",
+              "Kimya",
+              "Biyoloji",
+              "Edebiyat",
+              "Tarih1",
+              "Coğrafya1",
+              "Tarih2",
+              "Coğrafya2",
+              "Felsefe",
+              "Din",
+              "Dil",
+            ];
         return order.indexOf(a.dersAdi) - order.indexOf(b.dersAdi);
       });
       setDersler(sortedDersler);
@@ -105,7 +157,7 @@ const BosYanlisAnalizler = () => {
 
   useEffect(() => {
     fetchDersler();
-  }, [isTyt]);
+  }, [isTyt, alanTur]); // Fetch dersler whenever isTyt or alanTur changes
 
   // Grafik verilerini hazırlama
   const chartData = analiz.map((item) => ({
@@ -123,21 +175,23 @@ const BosYanlisAnalizler = () => {
       color: "hsl(var(--chart-2))", // Renk ayarını buradan al
     },
   } satisfies ChartConfig;
-    const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
-      active,
-      payload,
-    }) => {
-      if (active && payload && payload.length) {
-        const { name, value } = payload[0].payload; // payload'dan konu adı ve sayı alın
-        return (
-          <div className="custom-tooltip bg-gray-800 text-white p-2 rounded-md shadow-md w-48">
-            <p className="label text-center text-base font-normal">{`${name}`}</p>
-            <p className="desc text-center text-base">{`${value}`}</p>
-          </div>
-        );
-      }
-      return null;
-    };
+
+  const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+    active,
+    payload,
+  }) => {
+    if (active && payload && payload.length) {
+      const { name, value } = payload[0].payload; // payload'dan konu adı ve sayı alın
+      return (
+        <div className="custom-tooltip bg-gray-800 text-white p-2 rounded-md shadow-md w-48">
+          <p className="label text-center text-base font-normal">{`${name}`}</p>
+          <p className="desc text-center text-base">{`${value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className="max-w-md mt-4 mx-auto">
       <CardHeader>
@@ -188,15 +242,14 @@ const BosYanlisAnalizler = () => {
           value={isTyt ? "TYT" : "AYT"}
           onValueChange={(value) => setIsTyt(value === "TYT")}
         >
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue placeholder={isTyt ? "TYT" : "AYT"} />
+          <SelectTrigger>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="TYT">TYT</SelectItem>
             <SelectItem value="AYT">AYT</SelectItem>
           </SelectContent>
         </Select>
-
         <h2 className="text-lg font-semibold">Konu Türü</h2>
         <Select value={type} onValueChange={(value) => setType(value)}>
           <SelectTrigger className="h-8 w-full">
@@ -207,51 +260,58 @@ const BosYanlisAnalizler = () => {
             <SelectItem value="bos">Boş</SelectItem>
           </SelectContent>
         </Select>
-
         <h2 className="text-lg font-semibold">Deneme Sayısı</h2>
         <Select
-          value={`${denemeSayisi}`}
-          onValueChange={(value) => setDenemeSayisi(Number(value))}
+          value={denemeSayisi.toString()}
+          onValueChange={(value) => setDenemeSayisi(parseInt(value))}
         >
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue placeholder={`${denemeSayisi}`} />
+          <SelectTrigger>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 20, 30, 50].map((size) => (
-              <SelectItem key={size} value={`${size}`}>
-                {size}
+            {[5, 10, 15, 20].map((value) => (
+              <SelectItem key={value} value={value.toString()}>
+                {value}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-
         <h2 className="text-lg font-semibold">Konu Sayısı</h2>
         <Select
-          value={`${konuSayisi}`}
-          onValueChange={(value) => setKonuSayisi(Number(value))}
+          value={konuSayisi.toString()}
+          onValueChange={(value) => setKonuSayisi(parseInt(value))}
         >
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue placeholder={`${konuSayisi}`} />
+          <SelectTrigger>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 15, 20].map((size) => (
-              <SelectItem key={size} value={`${size}`}>
-                {size}
+            {[5, 10, 15, 20].map((value) => (
+              <SelectItem key={value} value={value.toString()}>
+                {value}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-
+        {!isTyt && ( // Show only when isTyt is false
+          <>
+            <h2 className="text-lg font-semibold">Alan Türü</h2>
+            <Select value={alanTur} onValueChange={setAlanTur}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Sayısal">Sayısal</SelectItem>
+                <SelectItem value="Eşit Ağırlık">Eşit Ağırlık</SelectItem>
+                <SelectItem value="Sözel">Sözel</SelectItem>
+                <SelectItem value="Dil">Dil</SelectItem>
+              </SelectContent>
+            </Select>
+          </>
+        )}
         <h2 className="text-lg font-semibold">Dersler</h2>
-        <Select value={dersId ?? ""} onValueChange={setDersId}>
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue
-              placeholder={
-                dersId
-                  ? dersler.find((d) => d.id === dersId)?.dersAdi
-                  : "Ders Seçin"
-              }
-            />
+        <Select value={dersId || ""} onValueChange={setDersId}>
+          <SelectTrigger>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {dersler.map((ders) => (
