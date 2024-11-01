@@ -101,8 +101,15 @@ const TYTCarousel = () => {
         </button>
       </div>
 
-      {/* Use the orientation in the Carousel component */}
-      <Carousel orientation={orientation} className="w-full">
+      <Carousel
+        orientation={orientation}
+        className="w-full"
+        opts={{
+          dragFree: true,
+          dragThreshold: 10,
+          watchDrag: true,
+        }}
+      >
         <CarouselContent>
           {dersler.length > 0 && (
             <CarouselItem>

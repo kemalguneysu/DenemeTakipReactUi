@@ -13,7 +13,7 @@ const HomePage = () => {
   return (
     <div className="w-full grid grid-cols-1">
       {/* Countdown Timer */}
-      <div className="m-4">
+      <div className="m-4 md:w-3/5 md:mx-auto">
         <CountdownTimer />
       </div>
 

@@ -15,6 +15,7 @@ import { ReceiveFunctions } from "@/types/receiveFunctions";
 import { useEffect } from "react";
 import { metadata } from "./metadata";
 import authService from "./services/auth.service";
+import { Footer } from "@/components/footer";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
 const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });
@@ -175,7 +176,8 @@ export default function RootLayout({
               <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
             </header>
             <main>{children}</main>
-            <footer className="flex flex-col h-16 items-center w-full mx-auto justify-between py-4">
+            <footer className="">
+              <Footer/>
             </footer>
           </div>
         </body>

@@ -92,4 +92,7 @@ iframe{
     align-items: center; /* İkon ve metni yan yana hizalar */
   }
 }
-
+.carousel-item {
+  pointer-events: auto; 
+  /* Diğer stiller */
+}
