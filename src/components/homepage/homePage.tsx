@@ -7,23 +7,46 @@ import TYTCard from "./tytCard";
 import AYTCard from "./aytCard";
 import CountdownTimer from "./countdown";
 import TYTCarousel from "./tytCarousel";
+import AYTCarousel from "./aytCarousel";
 
 const HomePage = () => {
   return (
-    <div className="w-full grid grid-cols-5">
-      <div className="grid col-start-2 col-span-3">
+    <div className="w-full grid grid-cols-1">
+      {/* Countdown Timer */}
+      <div className="m-4">
         <CountdownTimer />
       </div>
-      <div className="row-start-2 col-start-1 col-span-5 m-4 flex ">
-        <div className="w-3/5">
+
+      {/* TYT Section */}
+      <div className="m-4 flex flex-col md:flex-row">
+        {" "}
+        {/* Mobilde dikey, büyük ekranda yatay */}
+        <div className="w-full md:w-3/5">
+          {" "}
+          {/* Mobilde tam genişlik, büyük ekranda 3/5 */}
           <TYTCard />
         </div>
-        <div className="h-full flex items-center justify-center w-2/5">
+        <div className="h-full flex items-center justify-center w-full md:w-2/5">
+          {" "}
+          {/* Mobilde tam genişlik, büyük ekranda 2/5 */}
           <TYTCarousel />
         </div>
       </div>
-      <div className="row-start-3 col-start-3 col-span-3 m-4">
-        <AYTCard />
+
+      {/* AYT Section */}
+      <div className="m-4 flex flex-col md:flex-row">
+        {" "}
+        {/* Mobilde dikey, büyük ekranda yatay */}
+        <div className="h-full flex items-center justify-center w-full md:w-2/5">
+          {" "}
+          {/* Mobilde tam genişlik, büyük ekranda 2/5 */}
+          <AYTCarousel />
+        </div>
+        <div className="w-full md:w-3/5">
+          {" "}
+          {/* Mobilde tam genişlik, büyük ekranda 3/5 */}
+          <AYTCard />
+        </div>
       </div>
     </div>
   );

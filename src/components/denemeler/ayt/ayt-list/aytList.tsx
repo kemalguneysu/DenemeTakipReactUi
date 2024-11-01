@@ -24,6 +24,7 @@ export default function DersList() {
   
   // fetchData fonksiyonunu burada tanımlıyoruz
   const fetchData = async () => {
+
       try {
           const result = await denemeService.getAytDenemes(
             page + 1,

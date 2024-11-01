@@ -310,8 +310,8 @@ const AYTCard = () => {
                     </p>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="matematik-net">
-                  <AccordionTrigger id="matematik">
+                <AccordionItem value="matematik-net-esit">
+                  <AccordionTrigger id="matematik-esit">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold cursor-pointer">
                         Matematik Net:{" "}
@@ -385,7 +385,7 @@ const AYTCard = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <AccordionItem value="edebiyat-net">
+                <AccordionItem value="edebiyat-net-sozel">
                   <AccordionTrigger id="edebiyat">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold cursor-pointer">

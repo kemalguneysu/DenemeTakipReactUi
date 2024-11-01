@@ -7,7 +7,7 @@ import { derslerService } from "@/app/services/dersler.service";
 import { useTheme } from "next-themes"; // Assuming you're using next-themes for theme management
 import { Icons } from "../icons";
 
-const TYTCarousel = () => {
+const AYTCarousel = () => {
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [konular, setKonular] = useState<DenemeAnaliz[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -19,16 +19,29 @@ const TYTCarousel = () => {
   // Dersleri çekme
   const fetchDersler = async () => {
     try {
-      const result = await derslerService.getAllDers(true);
+      const result = await derslerService.getAllDers(false);
       const sortedDersler = result.dersler.sort((a, b) => {
-        const order = ["Türkçe", "Matematik", "Fen", "Sosyal"];
+        const order = [
+          "Matematik",
+          "Fizik",
+          "Kimya",
+          "Biyoloji",
+          "Edebiyat",
+          "Tarih1",
+          "Coğrafya1",
+          "Tarih2",
+          "Coğrafya2",
+          "Felsefe",
+          "Din",
+          "Dil",
+        ]; // Sıralama önceliği
         return order.indexOf(a.dersAdi) - order.indexOf(b.dersAdi);
       });
 
       setDersler(sortedDersler);
 
       if (sortedDersler.length > 0) {
-        fetchKonular(sortedDersler[0].id);
+        fetchKonular(sortedDersler[0].id); // İlk dersin konularını çek
       }
     } catch (error) {
       console.error("Dersleri çekerken hata oluştu:", error);
@@ -37,22 +50,12 @@ const TYTCarousel = () => {
 
   const fetchKonular = async (dersId: string) => {
     try {
-      const result = await denemeService.getTytAnaliz(5, 3, dersId, "yanlis");
+      const result = await denemeService.getAytAnaliz(5, 3, dersId, "yanlis");
       setKonular(result);
     } catch (error) {
       console.error("Konuları çekerken hata oluştu:", error);
     }
   };
-
-  useEffect(() => {
-    fetchDersler();
-  }, []);
-
-  useEffect(() => {
-    if (dersler.length > 0) {
-      fetchKonular(dersler[selectedIndex].id);
-    }
-  }, [selectedIndex, dersler]);
 
   // Ekran boyutuna göre orientation'ı ayarla
   useEffect(() => {
@@ -64,6 +67,16 @@ const TYTCarousel = () => {
     window.addEventListener("resize", updateOrientation);
     return () => window.removeEventListener("resize", updateOrientation);
   }, []);
+
+  useEffect(() => {
+    fetchDersler();
+  }, []);
+
+  useEffect(() => {
+    if (dersler.length > 0) {
+      fetchKonular(dersler[selectedIndex].id); // Seçilen dersin ID'sini kullan
+    }
+  }, [selectedIndex, dersler]);
 
   const handlePrevious = () => {
     setSelectedIndex((prev) => Math.max(prev - 1, 0));
@@ -101,7 +114,7 @@ const TYTCarousel = () => {
         </button>
       </div>
 
-      {/* Use the orientation in the Carousel component */}
+      {/* Carousel component */}
       <Carousel orientation={orientation} className="w-full">
         <CarouselContent>
           {dersler.length > 0 && (
@@ -110,7 +123,7 @@ const TYTCarousel = () => {
                 <Card>
                   <CardContent className="flex flex-col p-6">
                     <h4 className="text-sm font-light mb-1 text-left">
-                      Son 5 TYT denemesi {dersler[selectedIndex].dersAdi} dersi
+                      Son 5 AYT denemesi {dersler[selectedIndex].dersAdi} dersi
                       için
                     </h4>
                     <h3 className="text-md font-semibold mb-2 text-center break-words">
@@ -208,4 +221,4 @@ const TYTCarousel = () => {
   );
 };
 
-export default TYTCarousel;
+export default AYTCarousel;

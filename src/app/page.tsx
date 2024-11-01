@@ -12,7 +12,7 @@ import HomePage from "@/components/homepage/homePage";
 
 export default function Home() { 
   var isAuthenticated = authService.isAuthenticated;
-
+  
   return (
     <div className="max-w-7xl mx-auto">
       {!isAuthenticated ? ( // Kullanıcı oturum açmamışsa gösterilecek içerik
