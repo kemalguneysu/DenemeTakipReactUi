@@ -124,7 +124,7 @@ const TYTCarousel = () => {
                       En Fazla Yanlış Yapılan Konular
                     </h3>
                     <ul className="w-full list-disc list-inside">
-                      {konular.length > 0 &&
+                      {Array.isArray(konular) && konular.length > 0 &&
                       konular.some(
                         (konu) => konu.dersId === dersler[selectedIndex].id
                       ) ? (

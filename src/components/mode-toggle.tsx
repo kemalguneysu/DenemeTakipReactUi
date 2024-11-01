@@ -2,28 +2,36 @@
 
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
+import Cookies from "js-cookie"; // js-cookie kütüphanesini import ediyoruz
 import { Sun, Moon } from "lucide-react";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    // localStorage'dan tema ayarını alıyoruz
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      // Eğer tema yoksa varsayılan olarak light ayarlanır
-      const defaultTheme = "light";
-      setTheme(defaultTheme);
-      localStorage.setItem("theme", defaultTheme);
+    // Çerez onay durumunu kontrol et
+    const cookieConsent = localStorage.getItem("cookieConsent");
+    const consent = cookieConsent ? JSON.parse(cookieConsent) : null;
+
+    // Eğer fonksiyonel çerezler kabul edilmediyse tema ayarı yapılmaz
+    if (consent && consent.functionalCookies) {
+      // Çerezden tema ayarını alıyoruz
+      const storedTheme = Cookies.get("theme");
+      if (storedTheme) {
+        setTheme(storedTheme);
+      } else {
+        // Eğer tema yoksa varsayılan olarak light ayarlanır
+        const defaultTheme = "light";
+        setTheme(defaultTheme);
+        Cookies.set("theme", defaultTheme); // Çereze varsayılan temayı kaydediyoruz
+      }
     }
   }, [setTheme]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    Cookies.set("theme", newTheme); // Yeni temayı çereze kaydediyoruz
   };
 
   return (

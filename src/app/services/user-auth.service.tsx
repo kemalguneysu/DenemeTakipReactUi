@@ -22,22 +22,21 @@ export const UserAuthService = () => {
 
           const tokenResponse: TokenResponse = await response.json();
 
-          if (tokenResponse) {
-              localStorage.setItem('accessToken', tokenResponse.token.accessToken);
-              localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
+           if (tokenResponse) {
+             document.cookie = `accessToken=${tokenResponse.token.accessToken}; path=/; max-age=3600; Secure; SameSite=Lax;`;
+             document.cookie = `refreshToken=${tokenResponse.token.refreshToken}; path=/; max-age=604800; Secure; SameSite=Lax;`;
 
-              toast({
-                  title: 'Giriş Başarılı',
-                  description: 'Kullanıcı girişi başarıyla sağlanmıştır.',
-              });
+             toast({
+               title: "Giriş Başarılı",
+               description: "Kullanıcı girişi başarıyla sağlanmıştır.",
+             });
 
-              // Eğer callback fonksiyonu varsa çağır
-              if (callBackFunction) {
-                  callBackFunction();
-              }
-          }
+             // Eğer callback fonksiyonu varsa çağır
+             if (callBackFunction) {
+               callBackFunction();
+             }
+           }
       } catch (error) {
-          console.error('Login error:', error);
           toast({
               title: 'Giriş Yapılamadı',
               description: 'Kullanıcı adı veya şifre hatalı.',
@@ -60,15 +59,15 @@ export const UserAuthService = () => {
       const tokenResponse: TokenResponse = await response.json();
 
       if (tokenResponse) {
-        localStorage.setItem('accessToken', tokenResponse.token.accessToken);
-        localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
+        document.cookie = `accessToken=${tokenResponse.token.accessToken}; path=/; max-age=3600; Secure; SameSite=Lax;`;
+        document.cookie = `refreshToken=${tokenResponse.token.refreshToken}; path=/; max-age=604800; Secure; SameSite=Lax;`;
       }
 
       if (callBackFunction) {
         callBackFunction(tokenResponse);
       }
     } catch (error) {
-      console.error('Refresh token error:', error);
+      
     }
   };
 
@@ -91,9 +90,8 @@ export const UserAuthService = () => {
   
         // Eğer tokenResponse var ise ve geçerliyse
         if (tokenResponse && tokenResponse.token) {
-          localStorage.setItem('accessToken', tokenResponse.token.accessToken);
-          localStorage.setItem('refreshToken', tokenResponse.token.refreshToken);
-  
+          document.cookie = `accessToken=${tokenResponse.token.accessToken}; path=/; max-age=3600; Secure; SameSite=Lax;`;
+          document.cookie = `refreshToken=${tokenResponse.token.refreshToken}; path=/; max-age=604800; Secure; SameSite=Lax;`;
           toast({
             title: 'Giriş Başarılı',
             description: 'Google üzerinden giriş başarıyla sağlanmıştır.',

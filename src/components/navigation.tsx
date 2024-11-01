@@ -42,18 +42,19 @@ export default function Footer({ items }: NavProps) {
       setIsAdmin(isAdmin);
     });
 
-    // İlk durumu kontrol et
     AuthService.identityCheck();
 
-    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
   const handleSignOut = () => {
-    AuthService.signOut(); // Çıkış yap
-    router.push("/"); // Anasayfaya yönlendir
+    AuthService.signOut();
+    router.push("/"); 
+    if (window.location.pathname === "/") {
+      window.location.reload(); // Force page refresh if already on the root path
+    }
   };
 
   const renderNavItems = (items: NavItem[]) => {

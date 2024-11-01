@@ -1,94 +1,112 @@
-import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject } from 'rxjs'; // Reaktif güncellemeler için RxJS kullanabilirsiniz.
-import { toast } from '@/hooks/use-toast'; // Toast hook importu
+import { BehaviorSubject } from "rxjs";
+import { toast } from "@/hooks/use-toast";
+import { jwtDecode } from "jwt-decode";
 
 class AuthService {
-    private _isAuthenticated: boolean = false;
-    private _isAdmin: boolean = false;
-    private _userId: string | null = null; // userId ekleniyor
-    private _authStatusSubject = new BehaviorSubject<{ isAuthenticated: boolean; isAdmin: boolean, userId: string | null }>({
-        isAuthenticated: this._isAuthenticated,
-        isAdmin: this._isAdmin,
-        userId: this._userId,
+  private _isAuthenticated = false;
+  private _isAdmin = false;
+  private _userId: string | null = null;
+  private _authStatusSubject = new BehaviorSubject<{
+    isAuthenticated: boolean;
+    isAdmin: boolean;
+    userId: string | null;
+  }>({
+    isAuthenticated: this._isAuthenticated,
+    isAdmin: this._isAdmin,
+    userId: this._userId,
+  });
+
+  constructor() {
+    this.identityCheck();
+  }
+
+  // Cookie'den tokeni alır
+  private getCookie(name: string): string | null {
+    const matches = document.cookie.match(
+      new RegExp(
+        "(?:^|; )" +
+          name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, "\\$1") +
+          "=([^;]*)"
+      )
+    );
+    return matches ? decodeURIComponent(matches[1]) : null;
+  }
+
+  // Kullanıcı oturumunu kapatır ve çerezleri temizler
+  public signOut(): void {
+    // Çerezleri temizle
+    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"; // Çerezi sil
+    this._isAuthenticated = false;
+    this._isAdmin = false;
+    this._userId = null;
+
+    // Güncellenen durumu yayınla
+    this._authStatusSubject.next({
+      isAuthenticated: this._isAuthenticated,
+      isAdmin: this._isAdmin,
+      userId: this._userId,
     });
 
-    constructor() {
-        this.identityCheck();
+    // Kullanıcıya bilgi ver
+    toast({ title: "Oturum kapatıldı", description: "Başarıyla çıkış yapıldı." });
+  }
+
+  public async identityCheck(): Promise<void> {
+    const token =
+      typeof document !== "undefined" ? this.getCookie("accessToken") : null;
+
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+
+        this._isAuthenticated = !this.isTokenExpired(decoded);
+        this._userId =
+          decoded[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+          ] || null;
+        this._isAdmin =
+          decoded[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ]?.includes("admin") || false;
+      } catch (error) {
+        console.error("Token çözümleme hatası:", error);
+        this._isAuthenticated = false;
+        this._isAdmin = false;
+        this._userId = null;
+      }
+    } else {
+      this._isAuthenticated = false;
+      this._isAdmin = false;
+      this._userId = null;
     }
 
-    public identityCheck() {
-        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    // Güncellenen durumu yayınla
+    this._authStatusSubject.next({
+      isAuthenticated: this._isAuthenticated,
+      isAdmin: this._isAdmin,
+      userId: this._userId,
+    });
+  }
 
-        if (token) {
-            let expired: boolean;
-            let roles: string[] = [];
+  private isTokenExpired(decodedToken: any): boolean {
+    return decodedToken.exp * 1000 < Date.now();
+  }
 
-            try {
-                const decoded: any = jwtDecode(token);
-                const roleClaimName = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
-                const nameIdentifierClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"; // NameIdentifier claim
+  public get isAuthenticated(): boolean {
+    return this._isAuthenticated;
+  }
 
-                // Rol bilgisini alma
-                if (decoded[roleClaimName]) {
-                    if (Array.isArray(decoded[roleClaimName])) {
-                        roles = decoded[roleClaimName];
-                    } else {
-                        roles = [decoded[roleClaimName]];
-                    }
-                }
+  public get isAdmin(): boolean {
+    return this._isAdmin;
+  }
 
-                // userId'yi ayarla
-                this._userId = decoded[nameIdentifierClaim] || null; // Eğer yoksa null olarak ayarla
+  public get userId(): string | null {
+    return this._userId;
+  }
 
-                // Token süresi kontrolü
-                expired = this.isTokenExpired(decoded);
-            } catch (error) {
-                console.error('Token çözümleme hatası:', error);
-                expired = true;
-            }
-            this._isAdmin = roles.includes('admin');
-            this._isAuthenticated = !expired;
-        } else {
-            this._isAuthenticated = false;
-            this._isAdmin = false;
-            this._userId = null; // Token yoksa userId de null
-        }
-        // Durum güncellendiğinde bildir
-        this._authStatusSubject.next({ 
-            isAuthenticated: this._isAuthenticated, 
-            isAdmin: this._isAdmin,
-            userId: this._userId // userId durumu ekleniyor
-        });
-    }
-
-    public signOut() {
-        localStorage.removeItem("accessToken");
-        this.identityCheck(); // Durumu güncelle
-        toast({
-            title: 'Çıkış Yapıldı',
-            description: 'Başarıyla çıkış yaptınız.',
-        });
-    }
-
-    private isTokenExpired(decodedToken: any): boolean {
-        return decodedToken.exp * 1000 < Date.now(); // Expiry time in milliseconds
-    }
-
-    public get isAuthenticated(): boolean {
-        return this._isAuthenticated;
-    }
-
-    public get isAdmin(): boolean {
-        return this._isAdmin;
-    }
-
-    public get userId(): string | null {
-        return this._userId; // userId getter ekleniyor
-    }
-
-    public authStatus$() {
-        return this._authStatusSubject.asObservable(); // Durum güncellemelerini yayınlar
-    }
+  public authStatus$() {
+    return this._authStatusSubject.asObservable();
+  }
 }
 
 const authService = new AuthService();

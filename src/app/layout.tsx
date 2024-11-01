@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { metadata } from "./metadata";
 import authService from "./services/auth.service";
 import { Footer } from "@/components/footer";
+import CookieConsentBanner from "@/components/cookieContent";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
 const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });
@@ -153,9 +154,12 @@ export default function RootLayout({
   
   return (
     <html lang="en">
-       <head>
-          <title>{metadata.title}</title>
-          <meta name="description" content={metadata.description || "Deneme takip"} />
+      <head>
+        <title>{metadata.title}</title>
+        <meta
+          name="description"
+          content={metadata.description || "Deneme takip"}
+        />
         {/* You can add more meta tags here if needed */}
       </head>
       <ThemeProvider
@@ -176,8 +180,9 @@ export default function RootLayout({
               <div className="border-b h-2 w-screen mx-0 flex justify-center items-center"></div>
             </header>
             <main>{children}</main>
+            <CookieConsentBanner/>
             <footer className="">
-              <Footer/>
+              <Footer />
             </footer>
           </div>
         </body>
