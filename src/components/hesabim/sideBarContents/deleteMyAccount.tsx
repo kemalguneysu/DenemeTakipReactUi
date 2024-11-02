@@ -52,7 +52,7 @@ export default function DeleteMyAccount() {
         </h2>
         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <AlertDialogTrigger asChild>
-            <Button variant="outline" className="flex justify-self-center mt-2">
+            <Button  className="flex justify-self-center mt-2">
               Hesabımı Sil <Icons.trash2 className="ml-2" />
             </Button>
           </AlertDialogTrigger>

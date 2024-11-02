@@ -36,11 +36,12 @@ export default function Footer({ items }: NavProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false); // Admin durumu için state
   const router = useRouter(); // useRouter hook'unu kullanarak yönlendirme işlemi
-
+  const [username,setUserName]=useState<string|null>("");
   useEffect(() => {
-    const subscription = AuthService.authStatus$().subscribe(({ isAuthenticated, isAdmin }) => {
+    const subscription = AuthService.authStatus$().subscribe(({ isAuthenticated, isAdmin,username }) => {
       setIsAuthenticated(isAuthenticated);
       setIsAdmin(isAdmin);
+      setUserName(username);
     });
 
     AuthService.identityCheck();
@@ -159,7 +160,7 @@ export default function Footer({ items }: NavProps) {
               <DropdownMenuTrigger>
                 <Avatar>
                   <AvatarImage/>
-                  <AvatarFallback>DT</AvatarFallback>
+                  <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

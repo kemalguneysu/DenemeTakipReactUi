@@ -6,14 +6,17 @@ class AuthService {
   private _isAuthenticated = false;
   private _isAdmin = false;
   private _userId: string | null = null;
+  private _username:string|null=null;
   private _authStatusSubject = new BehaviorSubject<{
     isAuthenticated: boolean;
     isAdmin: boolean;
     userId: string | null;
+    username:string|null;
   }>({
     isAuthenticated: this._isAuthenticated,
     isAdmin: this._isAdmin,
     userId: this._userId,
+    username:this._username
   });
   constructor() {
     this.identityCheck();
@@ -31,7 +34,6 @@ class AuthService {
     return matches ? decodeURIComponent(matches[1]) : null;
   }
 
-  // Kullanıcı oturumunu kapatır ve çerezleri temizler
   public async signOut(): Promise<void> {
     // Çerezleri temizle
     document.cookie =
@@ -45,6 +47,7 @@ class AuthService {
       isAuthenticated: this._isAuthenticated,
       isAdmin: this._isAdmin,
       userId: this._userId,
+      username:this._username,
     });
 
     // Kullanıcıya bilgi ver
@@ -71,11 +74,15 @@ class AuthService {
           decoded[
             "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
           ]?.includes("admin") || false;
+        this._username =
+          decoded[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+          ] || null; 
       } catch (error) {
-        console.error("Token çözümleme hatası:", error);
         this._isAuthenticated = false;
         this._isAdmin = false;
         this._userId = null;
+        this._username=null;
       }
     } else {
       this._isAuthenticated = false;
@@ -88,9 +95,9 @@ class AuthService {
       isAuthenticated: this._isAuthenticated,
       isAdmin: this._isAdmin,
       userId: this._userId,
+      username:this._username,
     });
   }
-
   private isTokenExpired(decodedToken: any): boolean {
     return decodedToken.exp * 1000 < Date.now();
   }
@@ -109,6 +116,9 @@ class AuthService {
 
   public authStatus$() {
     return this._authStatusSubject.asObservable();
+  }
+  public get username():string | null{
+    return this._username;
   }
 }
 

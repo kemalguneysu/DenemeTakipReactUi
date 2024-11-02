@@ -9,25 +9,21 @@ export default function GetMyDatas() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto p-4">
-      {" "}
-      {/* Kart bileşeni */}
-      <CardHeader className="flex flex-col">
-        <h1 className="text-2xl font-bold">Deneme Takip</h1> {/* Ana başlık */}
-        <p className="text-md opacity-70">
-          Aşağıdaki butondan verilerinizi indirebilirsiniz.
-        </p>{" "}
-        {/* Alt başlık */}
-      </CardHeader>
-      <CardContent className="flex items-center justify-center mt-4">
-        <Button
-          onClick={handleDownload}
-          className="flex items-center space-x-2"
-        >
-          <Download className="w-4 h-4" /> {/* İndirme simgesi */}
-          <span>Verilerimi İndir</span>
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="flex items-center justify-center">
+      <Card className="p-6 shadow-md">
+        <h1 className="text-2xl font-bold">Deneme Takip</h1>
+        <h2 className="text-md mt-2 opacity-70">
+          Verilerinizi indirmek için aşağıdaki butona basabilirsiniz.
+        </h2>
+          <Button
+            onClick={handleDownload}
+            className="flex justify-self-center mt-2"
+          >
+            {/* İndirme simgesi */}
+            <span>Verilerimi İndir</span>
+            <Download className="ml-2" />
+          </Button>
+      </Card>
+    </div>
   );
 }
