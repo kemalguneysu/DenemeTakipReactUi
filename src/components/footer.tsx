@@ -6,7 +6,7 @@ export function Footer() {
   const { theme } = useTheme(); // Tema bilgisini almak için useTheme kancası
 
   return (
-    <footer className="flex flex-col items-center w-full mx-auto py-4 bg-backgroundColor border-t border-textColor mt-4">
+    <footer className="flex flex-col items-center w-full mx-auto py-4 bg-backgroundColor border-t border-textColor mt-4 ">
       <div className="footerContainer grid grid-cols-1 sm:grid-cols-6 gap-4 p-8 max-w-7xl w-full">
         <div className="brandContainer col-span-1 sm:col-span-2 flex justify-center items-center mb-4 sm:mb-0">
           <Link href="" className="brandImageContainer h-40">

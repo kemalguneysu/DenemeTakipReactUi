@@ -2,8 +2,7 @@ import React from "react";
 
 import { FaqItem } from "@/types";
 import { faqQuestions } from "@/config/faq-questions";
-import { Accordion, AccordionContent, AccordionItem } from "@radix-ui/react-accordion";
-import { AccordionTrigger } from "./ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 type Props = {};
 
 export default function FAQSection({}: Props) {

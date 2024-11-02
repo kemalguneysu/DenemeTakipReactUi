@@ -317,9 +317,33 @@ export function RegisterForm() {
               </span>
             </label>
           </div>
-
+          <div className="mt-4 text-center">
+            <p className="text-gray-500">
+              Hesabınız var mı?{" "}
+              <Link href="/giris-yap" className="text-primary hover:underline">
+                Giriş Yap
+              </Link>
+            </p>
+          </div>
+          <div className="mt-4 flex justify-center">
+            {" "}
+            {/* Flex ile ortalama */}
+            <GoogleLogin
+              onSuccess={onSuccess}
+              onError={onError}
+              type="standard"
+              shape="pill"
+              text="signup_with"
+              size="large"
+              theme={theme === "dark" ? "filled_black" : "outline"}
+              width="100%"
+              auto_select={false}
+            />
+          </div>
           {/* Submit Button */}
-          <Button type="submit" className="w-full">Kayıt Ol</Button>
+          <Button type="submit" className="w-full">
+            Kayıt Ol
+          </Button>
         </form>
       </Form>
     </GoogleOAuthProvider>

@@ -149,7 +149,7 @@ export default function RootLayout({
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersAddedMessage);
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage);
       };
-    }, [signalRService]);
+    }, [signalRService,isAdmin]);
   }
   
   return (

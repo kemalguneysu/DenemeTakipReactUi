@@ -9,9 +9,13 @@ const CookieConsentBanner = () => {
   const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const [isPersonalizeOpen, setIsPersonalizeOpen] = useState(false);
-  const [functionalCookiesEnabled, setFunctionalCookiesEnabled] =
-    useState(false);
-
+  const [functionalCookiesEnabled, setFunctionalCookiesEnabled] =useState(false);
+  const [commercialCookiesEnabled, setCommercialCookiesEnabled] = useState(false);
+  const [cookiePreferences, setCookiePreferences] = useState({
+    essentialCookies: true, // Assuming essential cookies are always enabled
+    functionalCookies: false,
+    commercialCookies: false,
+  });
   useEffect(() => {
     const consent = localStorage.getItem("cookieConsent");
     if (!consent) {
@@ -20,8 +24,15 @@ const CookieConsentBanner = () => {
   }, []);
 
   const handleAcceptAll = () => {
-    localStorage.setItem("cookieConsent", "false");
+    const preferences = {
+      essentialCookies: true,
+      functionalCookies: true,
+      commercialCookies: true,
+    };
+    localStorage.setItem("cookieConsent", JSON.stringify(preferences));
+    setCookiePreferences(preferences);
     setIsVisible(false);
+    setIsPersonalizeOpen(false);
   };
 
   const handlePersonalize = () => {
@@ -29,13 +40,14 @@ const CookieConsentBanner = () => {
   };
 
   const handleDeclineOptional = () => {
-    console.log("Zorunlu olmayan çerezler reddedildi");
     setIsVisible(false);
   };
 
   const handleSavePreferences = () => {
     const preferences = {
+      essentialCookies: true,
       functionalCookies: functionalCookiesEnabled,
+      commercialCookies: commercialCookiesEnabled,
     };
     localStorage.setItem("cookieConsent", JSON.stringify(preferences));
     setIsVisible(false);
@@ -48,7 +60,7 @@ const CookieConsentBanner = () => {
         <div
           className={`fixed bottom-0 left-0 right-0 p-4 mx-auto border-t-2 ${
             theme === "dark" ? "border-gray-600" : "border-gray-300"
-          } bg-background`}
+          } bg-background`} // Ensure the background is fully opaque
         >
           <span>
             Bu web sitesi bazı çerezleri kullanmaktadır. Bu çerezlerden bazıları
@@ -95,18 +107,26 @@ const CookieConsentBanner = () => {
               <Switch checked disabled />
             </div>
             <div className="flex items-center justify-between mt-2">
-              <span>Fonksiyonel Çerezler</span>
+              <span className="mr-2">Fonksiyonel Çerezler</span>
               <Switch
                 checked={functionalCookiesEnabled}
                 onCheckedChange={setFunctionalCookiesEnabled}
               />
             </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="mr-2">Pazarlama Çerezler</span>
+              <Switch
+                checked={commercialCookiesEnabled}
+                onCheckedChange={setCommercialCookiesEnabled}
+              />
+            </div>
           </div>
-          <div className="mt-4 flex justify-between w-full">
-            <Button onClick={handleAcceptAll} className="ml-4">
+          <div className="mt-4 space-y-2">
+            {/* Buttons stacked vertically */}
+            <Button onClick={handleAcceptAll} className="w-full">
               Tüm Çerezleri Kabul Et
             </Button>
-            <Button onClick={handleSavePreferences} className="ml-4">
+            <Button onClick={handleSavePreferences} className="w-full">
               Ayarları Kaydet
             </Button>
           </div>
@@ -117,6 +137,7 @@ const CookieConsentBanner = () => {
             >
               Çerez Politikası
             </Link>
+            'mızı buradan inceleyebilirsiniz.
           </div>
         </DialogContent>
       </Dialog>

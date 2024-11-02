@@ -23,6 +23,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 interface NavProps {
@@ -108,10 +109,8 @@ export default function Footer({ items }: NavProps) {
           <Link href="/" className="flex items-center space-x-2">
             <h1 className="font-bold text-xl sm:inline-block">Deneme Takip</h1>
           </Link>
-          
-          <nav className="hidden md:flex gap-6">
-            {renderNavItems(items)}
-          </nav>
+
+          <nav className="hidden md:flex gap-6">{renderNavItems(items)}</nav>
         </div>
         <div className="flex items-center gap-4">
           <ModeToggle />
@@ -135,16 +134,14 @@ export default function Footer({ items }: NavProps) {
                     {renderNavItems(items)}
                     {/* Giriş Yap veya Çıkış Yap Linki */}
                     {!isAuthenticated ? (
-                      <Link href="/giris-yap" className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80">
+                      <Link
+                        href="/giris-yap"
+                        className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80"
+                      >
                         Giriş Yap
                       </Link>
                     ) : (
-                      <button
-                        onClick={handleSignOut}
-                        className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80"
-                      >
-                        Çıkış Yap
-                      </button>
+                      <></>
                     )}
                   </div>
                 ) : null}
@@ -152,19 +149,37 @@ export default function Footer({ items }: NavProps) {
             </Drawer>
           </div>
 
-          {/* Masaüstü için kullanıcı simgesi */}
-          {!isAuthenticated ? ( // Kullanıcı oturumu açmamışsa giriş simgesini göster
+          {/* Masaüstü için kullanıcı simgesi veya avatar dropdown */}
+          {!isAuthenticated ? (
             <Link href="/giris-yap" className="hidden md:flex items-center">
               <Icons.user className="w-5 h-5" />
             </Link>
           ) : (
-            // Kullanıcı oturumu açmışsa çıkış simgesini göster
-            <button
-              onClick={handleSignOut}
-              className="hidden md:flex items-center"
-            >
-              <Icons.logOut className="w-5 h-5" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarImage/>
+                  <AvatarFallback>DT</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/hesabim"
+                    className="flex items-center cursor-pointer justify-self-center"
+                  >
+                    Hesabım
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="flex items-center cursor-pointer justify-self-center "
+                >
+                  Çıkış Yap
+                  <Icons.logOut className="w-5 h-5 mr-2" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
