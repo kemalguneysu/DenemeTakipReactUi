@@ -166,6 +166,28 @@ export class UserService {
     );
     return response;
   }
+  async updateUserPassword(currentPassword:string,newPassword:string,passwordConfirm:string){
+    try {
+      const response = await fetchWithAuth(
+        `${this.baseUrl}/Users/UpdateUserPassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            passwordConfirm,
+          }),
+        }
+      );
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const userService = new UserService();

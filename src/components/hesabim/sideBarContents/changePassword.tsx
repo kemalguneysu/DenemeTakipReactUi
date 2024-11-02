@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
+import { userService } from "@/app/services/user.service";
+import { toast } from "@/hooks/use-toast";
 
 // Define the Zod schema for validation
 const passwordUpdateSchema = z
@@ -114,7 +116,7 @@ export default function ChangePassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
-
+    
     const result = passwordUpdateSchema.safeParse({
       currentPassword,
       newPassword,
@@ -125,13 +127,39 @@ export default function ChangePassword() {
       const formattedErrors = result.error.flatten();
       setErrors(formattedErrors.fieldErrors);
     } else {
-      console.log("Form data is valid:", result.data);
-      // Clear the fields and errors if needed
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setErrors({});
-      setIsSubmitted(false);
+      try {
+        var response=await userService.updateUserPassword(
+          currentPassword,
+          newPassword,
+          confirmPassword
+        );
+        if(response.succeeded){
+          toast({
+            title: "Başarılı",
+            description: response.message,
+          });
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        }
+        else{
+          toast({
+            title: "Başarısız",
+            description: response.message,
+            variant: "destructive",
+          });
+        }
+        
+        setErrors({});
+        setIsSubmitted(false);
+      } catch (error) {
+        
+        toast({
+          title: "Başarısız",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 

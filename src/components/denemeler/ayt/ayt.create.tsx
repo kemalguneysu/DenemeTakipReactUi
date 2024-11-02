@@ -154,6 +154,7 @@ const AytCreate : React.FC<AytCreateProps> = ({ isTytSelected }) => {
 
     setErrors(newErrors); // Hata mesajlarını ayarla
   };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { [key: string]: string[] } = {};
@@ -199,32 +200,32 @@ const AytCreate : React.FC<AytCreateProps> = ({ isTytSelected }) => {
     }
 
     const aytDeneme: CreateAyt = {
-      matematikDogru: scores.Matematik?.correct || 0,
-      matematikYanlis: scores.Matematik?.incorrect || 0,
-      fizikDogru: scores.Fizik?.correct || 0,
-      fizikYanlis: scores.Fizik?.incorrect || 0,
-      kimyaDogru: scores.Kimya?.correct || 0,
-      kimyaYanlis: scores.Kimya?.incorrect || 0,
-      biyolojiDogru: scores.Biyoloji?.correct || 0,
-      biyolojiYanlis: scores.Biyoloji?.incorrect || 0,
-      edebiyatDogru: scores.Edebiyat?.correct || 0,
-      edebiyatYanlis: scores.Edebiyat?.incorrect || 0,
-      tarih1Dogru: scores.Tarih1?.correct || 0,
-      tarih1Yanlis: scores.Tarih1?.incorrect || 0,
-      cografya1Dogru: scores.Coğrafya1?.correct || 0,
-      cografya1Yanlis: scores.Coğrafya1?.incorrect || 0,
-      tarih2Dogru: scores.Tarih2?.correct || 0,
-      tarih2Yanlis: scores.Tarih2?.incorrect || 0,
-      cografya2Dogru: scores.Coğrafya2?.correct || 0,
-      cografya2Yanlis: scores.Coğrafya2?.incorrect || 0,
-      felsefeDogru: scores.Felsefe?.correct || 0,
-      felsefeYanlis: scores.Felsefe?.incorrect || 0,
-      dinDogru: scores.Din?.correct || 0,
-      dinYanlis: scores.Din?.incorrect || 0,
-      dilDogru: scores.Dil?.correct || 0,
-      dilYanlis: scores.Dil?.incorrect || 0,
-      yanlisKonularId: yanlisKonularId.length > 0 ? yanlisKonularId : [],
-      bosKonularId: bosKonularId.length > 0 ? bosKonularId : [],
+      matematikDogru: scores.Matematik.correct,
+      matematikYanlis: scores.Matematik.incorrect,
+      fizikDogru: scores.Fizik.correct,
+      fizikYanlis: scores.Fizik.incorrect,
+      kimyaDogru: scores.Kimya.correct,
+      kimyaYanlis: scores.Kimya.incorrect,
+      biyolojiDogru: scores.Biyoloji.correct,
+      biyolojiYanlis: scores.Biyoloji.incorrect,
+      edebiyatDogru: scores.Edebiyat.correct,
+      edebiyatYanlis: scores.Edebiyat.incorrect,
+      tarih1Dogru: scores.Tarih1.correct,
+      tarih1Yanlis: scores.Tarih1.incorrect,
+      cografya1Dogru: scores.Coğrafya1.correct,
+      cografya1Yanlis: scores.Coğrafya1.incorrect,
+      tarih2Dogru: scores.Tarih2.correct,
+      tarih2Yanlis: scores.Tarih2.incorrect,
+      cografya2Dogru: scores.Coğrafya2.correct,
+      cografya2Yanlis: scores.Coğrafya2.incorrect,
+      felsefeDogru: scores.Felsefe.correct,
+      felsefeYanlis: scores.Felsefe.incorrect,
+      dinDogru: scores.Din.correct,
+      dinYanlis: scores.Din.incorrect,
+      dilDogru: scores.Dil.correct,
+      dilYanlis: scores.Dil.incorrect,
+      yanlisKonularId: yanlisKonularId,
+      bosKonularId: bosKonularId,
     };
 
     try {
@@ -263,11 +264,11 @@ const AytCreate : React.FC<AytCreateProps> = ({ isTytSelected }) => {
         setDersler(sortedDersler); // Sıralanmış dersleri ayarla
 
         // Skorları başlangıçta sıfır olarak ayarla
-       const initialScores: ScoresType = {};
-       sortedDersler.forEach((ders) => {
-         initialScores[ders.dersAdi] = { correct: 0, incorrect: 0 };
-       });
-       setScores(initialScores); // Başlangıçta skorları ayarla
+        const initialScores: ScoresType = {};
+        sortedDersler.forEach((ders) => {
+          initialScores[ders.dersAdi] = { correct: 0, incorrect: 0 };
+        });
+        setScores(initialScores); // Başlangıçta skorları ayarla
 
         const initialErrors: { [key: string]: string[] } = {};
         sortedDersler.forEach((ders) => {
