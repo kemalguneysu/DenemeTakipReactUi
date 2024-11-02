@@ -15,7 +15,6 @@ class AuthService {
     isAdmin: this._isAdmin,
     userId: this._userId,
   });
-
   constructor() {
     this.identityCheck();
   }
@@ -33,9 +32,10 @@ class AuthService {
   }
 
   // Kullanıcı oturumunu kapatır ve çerezleri temizler
-  public signOut(): void {
+  public async signOut(): Promise<void> {
     // Çerezleri temizle
-    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"; // Çerezi sil
+    document.cookie =
+      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"; // Çerezi sil
     this._isAuthenticated = false;
     this._isAdmin = false;
     this._userId = null;
@@ -48,7 +48,10 @@ class AuthService {
     });
 
     // Kullanıcıya bilgi ver
-    toast({ title: "Oturum kapatıldı", description: "Başarıyla çıkış yapıldı." });
+    toast({
+      title: "Oturum kapatıldı",
+      description: "Başarıyla çıkış yapıldı.",
+    });
   }
 
   public async identityCheck(): Promise<void> {

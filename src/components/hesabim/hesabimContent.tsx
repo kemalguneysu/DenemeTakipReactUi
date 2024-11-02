@@ -4,6 +4,7 @@ import { LockIcon, CookieIcon, FileTextIcon, Trash2Icon } from "lucide-react";
 import ChangePassword from "./sideBarContents/changePassword";
 import HandleCookie from "./sideBarContents/handleCookies";
 import GetMyDatas from "./sideBarContents/getMyDatas";
+import DeleteMyAccount from "./sideBarContents/deleteMyAccount";
 
 type Tab = "changePassword" | "manageCookies" | "myData" | "deleteAccount";
 
@@ -34,7 +35,7 @@ export default function HesabimContent({
       case "myData":
         return <div><GetMyDatas/></div>;
       case "deleteAccount":
-        return <div>Hesabımı Sil İçeriği</div>;
+        return <div><DeleteMyAccount/></div>;
       default:
         return null;
     }

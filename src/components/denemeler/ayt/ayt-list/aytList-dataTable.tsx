@@ -20,7 +20,7 @@ import {
   import { Input } from "@/components/ui/input";
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
   import { Icons } from "@/components/icons";
-  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog"; 
+  import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel, AlertDialogFooter } from "@/components/ui/alert-dialog"; 
   import { derslerService } from "@/app/services/dersler.service";
   import { aytGenelList, Ders, OrderByDirection,} from "@/types";
   import { toast } from "@/hooks/use-toast";
@@ -199,11 +199,13 @@ import {
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="">
-                  Seçilen denemelerini sil <Icons.trash2 className="ml-2" />
+                <Button
+                  variant="outline"
+                  className="flex justify-self-center mt-2"
+                >
+                  Seçilen AYT denemelerini sil <Icons.trash2 className="ml-2" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -213,14 +215,19 @@ import {
                     Seçilen AYT denemelerini silmek istediğinize emin misiniz?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <div className="flex justify-end">
+                <AlertDialogFooter>
                   <AlertDialogCancel>İptal</AlertDialogCancel>
-                  <AlertDialogAction onClick={(e) => handleDeleteSelected(e)}>
+                  <AlertDialogAction
+                    onClick={(e: any) => {
+                      handleDeleteSelected(e);
+                    }}
+                  >
                     Sil
                   </AlertDialogAction>
-                </div>
+                </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            
           </div>
         </div>
         <div className="rounded-md border">

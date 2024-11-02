@@ -1,5 +1,7 @@
 import { User, UserById, UserCreate, UserList } from "@/types"; // Adjust the import path according to your project structure
 import { fetchWithAuth } from "./fetch.withAuth";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/router";
 
 export class UserService {
   private baseUrl: string;
@@ -7,7 +9,6 @@ export class UserService {
   constructor() {
     this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
   }
-
   async create(
     user: User,
     successCallback?: (data: UserCreate) => void, // data parametresini ekliyoruz
@@ -52,7 +53,6 @@ export class UserService {
 
       return data;
     } catch (error) {
-      console.error("Error creating user:", error);
       throw error; // Hata sonrası fırlat
     }
   }
@@ -150,9 +150,21 @@ export class UserService {
         successCallback();
       }
     } catch (error) {
-      if(errorCallback)
-        errorCallback(error as string);
+      if (errorCallback) errorCallback(error as string);
     }
+  }
+  async deleteUser(userId?: string) {
+    const response = await fetchWithAuth(
+      `${this.baseUrl}/Users/DeleteAccount`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      }
+    );
+    return response;
   }
 }
 

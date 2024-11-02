@@ -133,6 +133,10 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
     const newErrors: { [key: string]: string[] } = {};
 
     for (const subject of Object.keys(newScores)) {
+      if (!scores[subject]) {
+        newErrors[subject] = ["Skor bilgisi eksik."]; // Handle missing subject
+        continue;
+      }
       newErrors[subject] = [];
       const totalScore =
         newScores[subject].correct + newScores[subject].incorrect;
@@ -194,21 +198,26 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
     e.preventDefault();
     const newErrors: { [key: string]: string[] } = {};
 
+    // Iterate over all subjects to validate scores
     for (const subject of Object.keys(scores)) {
       newErrors[subject] = [];
-      const totalScore = scores[subject].correct + scores[subject].incorrect;
+      const totalScore =
+        (scores[subject]?.correct || 0) + (scores[subject]?.incorrect || 0);
 
-      if (scores[subject].correct < 0 || scores[subject].incorrect < 0) {
+      if (
+        (scores[subject]?.correct || 0) < 0 ||
+        (scores[subject]?.incorrect || 0) < 0
+      ) {
         newErrors[subject].push(
           `${subject} için doğru ve yanlış soru sayısı negatif olamaz.`
         );
       }
-      if (scores[subject].correct > maxLimits[subject].correct) {
+      if ((scores[subject]?.correct || 0) > maxLimits[subject].correct) {
         newErrors[subject].push(
           `${subject} doğru 0 ile ${maxLimits[subject].correct} arasında olmalıdır.`
         );
       }
-      if (scores[subject].incorrect > maxLimits[subject].incorrect) {
+      if ((scores[subject]?.incorrect || 0) > maxLimits[subject].incorrect) {
         newErrors[subject].push(
           `${subject} yanlış 0 ile ${maxLimits[subject].incorrect} arasında olmalıdır.`
         );
@@ -221,7 +230,7 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
     }
 
     if (Object.values(newErrors).flat().length > 0) {
-      setErrors(newErrors); // Hata mesajlarını ayarla
+      setErrors(newErrors);
       Object.values(newErrors)
         .flat()
         .forEach((error) => {
@@ -234,17 +243,18 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
       return; // Hatalar varsa formu gönderme
     }
 
+    // Create the tytDeneme object with safe access to scores
     const tytDeneme: CreateTyt = {
-      matematikDogru: scores.Matematik.correct,
-      matematikYanlis: scores.Matematik.incorrect,
-      turkceDogru: scores.Türkçe.correct,
-      turkceYanlis: scores.Türkçe.incorrect,
-      fenDogru: scores.Fen.correct,
-      fenYanlis: scores.Fen.incorrect,
-      sosyalDogru: scores.Sosyal.correct,
-      sosyalYanlis: scores.Sosyal.incorrect,
-      yanlisKonularId: yanlisKonularId, // Daha sonra eklenecek
-      bosKonularId: bosKonularId, // Daha sonra eklenecek
+      matematikDogru: scores.Matematik?.correct || 0,
+      matematikYanlis: scores.Matematik?.incorrect || 0,
+      turkceDogru: scores.Türkçe?.correct || 0,
+      turkceYanlis: scores.Türkçe?.incorrect || 0,
+      fenDogru: scores.Fen?.correct || 0,
+      fenYanlis: scores.Fen?.incorrect || 0,
+      sosyalDogru: scores.Sosyal?.correct || 0,
+      sosyalYanlis: scores.Sosyal?.incorrect || 0,
+      yanlisKonularId: yanlisKonularId.length > 0 ? yanlisKonularId : [],
+      bosKonularId: bosKonularId.length > 0 ? bosKonularId : [],
     };
 
     try {
@@ -257,6 +267,7 @@ const TytCreate: React.FC<TytCreateProps> = ({ isTytSelected }) => {
       });
     }
   };
+
 
   const handleDersClick = async (dersId: string) => {
     if (selectedDersId === dersId) {

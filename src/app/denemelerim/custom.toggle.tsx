@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import TytCreate from '@/components/denemeler/tyt/tyt.create'; // TYT bileşeni
 import AytCreate from '@/components/denemeler/ayt/ayt.create'; // AYT bileşeni
@@ -16,7 +16,6 @@ const CustomToggle: React.FC<CustomToggleProps> = ({ isTytSelected, setIsTytSele
     setIsTytSelected(prevState => !prevState);
   };
 
-  // Temaya göre renkler
   const isDarkTheme = theme === 'dark';
 
   const backgroundColor = isDarkTheme
