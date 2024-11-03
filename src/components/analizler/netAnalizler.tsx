@@ -91,8 +91,12 @@ const NetAnalizler = () => {
 
   useEffect(() => {
     setDersAdi(null);
-    fetchDersler();
-  }, [isTyt, alanTur]);
+    const fetchData = async () => {
+      await fetchDersler();
+      await fetchTyts();
+    };
+    fetchData();
+  }, [isTyt]);
 
   const handleIsTyt = async () => {
     setIsTyt(!isTyt);
@@ -266,11 +270,9 @@ const NetAnalizler = () => {
 
   
 
-  const chartData = analiz.map((item, index) => {
-    const createdDate = new Date();
-    createdDate.setDate(createdDate.getDate() - index);
-    const formattedDate = !isNaN(createdDate.getTime())
-      ? format(createdDate, "dd/MM/yyyy")
+  const chartData = analiz.map((item) => {
+    const formattedDate = item.tarih
+      ? format(new Date(item.tarih), "dd/MM/yyyy")
       : "Geçersiz tarih";
 
     const baseData = {

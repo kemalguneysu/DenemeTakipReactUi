@@ -28,27 +28,29 @@ export default function RootLayout({
 }>) {
   const signalRService = useSignalR();
   const isAdmin=authService.isAdmin;
-  if(isAdmin){
+  
     useEffect(() => {
-      signalRService.on(
-        HubUrls.KonuHub,
-        ReceiveFunctions.KonuDeletedMessage,
-        async (message) => {
-          const newMessage = message;
-          const messageLines = newMessage.split("\n");
-          toast({
-            title: "Admin Bilgilendirmesi",
-            description: (
-              <>
-                {messageLines.map((line: any, index: any) => (
-                  <div key={index}>{line}</div>
-                ))}
-              </>
-            ),
-            variant: "destructive",
-          });
-        }
-      );
+      if(!isAdmin)
+        return;
+        signalRService.on(
+          HubUrls.KonuHub,
+          ReceiveFunctions.KonuDeletedMessage,
+          async (message) => {
+            const newMessage = message;
+            const messageLines = newMessage.split("\n");
+            toast({
+              title: "Admin Bilgilendirmesi",
+              description: (
+                <>
+                  {messageLines.map((line: any, index: any) => (
+                    <div key={index}>{line}</div>
+                  ))}
+                </>
+              ),
+              variant: "destructive",
+            });
+          }
+        );
       signalRService.on(
         HubUrls.KonuHub,
         ReceiveFunctions.KonuAddedMessage,
@@ -150,7 +152,7 @@ export default function RootLayout({
         signalRService.off(HubUrls.DersHub, ReceiveFunctions.DersUpdatedMessage);
       };
     }, [signalRService,isAdmin]);
-  }
+  
   
   return (
     <html lang="en">

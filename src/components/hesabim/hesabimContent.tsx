@@ -53,7 +53,7 @@ export default function HesabimContent({
               className={`flex items-center justify-start w-full px-4 py-2 rounded-lg 
             ${
               activeTab === tab.id
-                ? "bg-gray-800 text-white dark:bg-gray-100 dark:text-black"
+                ? "bg-primary text-white dark:bg-gray-100 dark:text-black"
                 : "text-gray-700 dark:text-gray-300"
             }
           `}

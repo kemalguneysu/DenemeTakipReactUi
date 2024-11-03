@@ -3,6 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { toast } from "@/hooks/use-toast";
 
 export default function HandleCookie() {
   const { theme } = useTheme();
@@ -27,6 +28,10 @@ export default function HandleCookie() {
 
   const handleSavePreferences = () => {
     localStorage.setItem("cookieConsent", JSON.stringify(cookiePreferences));
+    toast({
+      title: "Başarılı",
+      description: "Çerez tercihleriniz güncellenmiştir.",
+    });
   };
 
  const handleAcceptAll = () => {
@@ -37,6 +42,10 @@ export default function HandleCookie() {
    };
    localStorage.setItem("cookieConsent", JSON.stringify(preferences));
    setCookiePreferences(preferences);
+   toast({
+     title: "Başarılı",
+     description: "Çerez tercihleriniz başarıyla güncellenmiştir.",
+   });
  };
 
   return (

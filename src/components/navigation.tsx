@@ -142,7 +142,35 @@ export default function Footer({ items }: NavProps) {
                         Giriş Yap
                       </Link>
                     ) : (
-                      <></>
+                      <>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <Avatar>
+                              <AvatarImage />
+                              <AvatarFallback>
+                                {username?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem asChild>
+                              <Link
+                                href="/hesabim"
+                                className="flex items-center cursor-pointer justify-self-center"
+                              >
+                                Hesabım
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={handleSignOut}
+                              className="flex items-center cursor-pointer justify-self-center "
+                            >
+                              Çıkış Yap
+                              <Icons.logOut className="w-5 h-5 mr-2" />
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </>
                     )}
                   </div>
                 ) : null}
@@ -156,31 +184,35 @@ export default function Footer({ items }: NavProps) {
               <Icons.user className="w-5 h-5" />
             </Link>
           ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage/>
-                  <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/hesabim"
-                    className="flex items-center cursor-pointer justify-self-center"
+            <div className="hidden md:block">
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Avatar>
+                    <AvatarImage />
+                    <AvatarFallback>
+                      {username?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/hesabim"
+                      className="flex items-center cursor-pointer justify-self-center"
+                    >
+                      Hesabım
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="flex items-center cursor-pointer justify-self-center "
                   >
-                    Hesabım
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="flex items-center cursor-pointer justify-self-center "
-                >
-                  Çıkış Yap
-                  <Icons.logOut className="w-5 h-5 mr-2" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    Çıkış Yap
+                    <Icons.logOut className="w-5 h-5 mr-2" />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       </div>
