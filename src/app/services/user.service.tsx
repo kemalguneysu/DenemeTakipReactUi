@@ -1,7 +1,7 @@
 import { User, UserById, UserCreate, UserList } from "@/types"; // Adjust the import path according to your project structure
-import { fetchWithAuth } from "./fetch.withAuth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/router";
+import { fetchWithAuth } from "./fetch.withAuth";
 
 export class UserService {
   private baseUrl: string;
@@ -166,7 +166,11 @@ export class UserService {
     );
     return response;
   }
-  async updateUserPassword(currentPassword:string,newPassword:string,passwordConfirm:string){
+  async updateUserPassword(
+    currentPassword: string,
+    newPassword: string,
+    passwordConfirm: string
+  ) {
     try {
       const response = await fetchWithAuth(
         `${this.baseUrl}/Users/UpdateUserPassword`,
@@ -188,7 +192,14 @@ export class UserService {
       throw error;
     }
   }
-  async updatePassword(userId:string,resetToken:string,password:string,passwordConfirm:string,successCallback?:()=>void,errorCallback?:(error:any)=>void){
+  async updatePassword(
+    userId: string,
+    resetToken: string,
+    password: string,
+    passwordConfirm: string,
+    successCallback?: () => void,
+    errorCallback?: (error: any) => void
+  ) {
     try {
       const response = await fetch(`${this.baseUrl}/Users/UpdatePassword`, {
         method: "POST",
@@ -199,18 +210,54 @@ export class UserService {
           userId,
           resetToken,
           password,
-          passwordConfirm
+          passwordConfirm,
         }),
       });
       if (successCallback) {
-        successCallback(); 
+        successCallback();
       }
-      var data=await response.json();
+      var data = await response.json();
       return data;
     } catch (error) {
-      throw error; 
+      throw error;
     }
-    
+  }
+
+  async getMyDatas(
+    userId?: string,
+    successCallback?: () => void,
+    errorCallback?: (error: any) => void
+  ) {
+    try {
+      let url = `${this.baseUrl}/Users/GetMyDatas`;
+      if (userId) {
+        url += `?userId=${encodeURIComponent(userId)}`;
+      }
+
+      const blob = await fetchWithAuth(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/zip", // ZIP dosyası bekliyoruz
+        },
+      });
+
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = "UserData.zip"; // Dosya adı
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      if (successCallback) {
+        successCallback();
+      }
+    } catch (error) {
+      console.error("Hata:", error);
+      if (errorCallback) {
+        errorCallback(error);
+      }
+    }
   }
 }
 

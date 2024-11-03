@@ -28,7 +28,9 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     }
   }
 
-  return response.json(); // JSON formatında yanıt döndür
+  return response.headers.get("Content-Type") === "application/zip"
+    ? response.blob()
+    : response.json(); 
 };
 
 export { fetchWithAuth };

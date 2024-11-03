@@ -157,7 +157,6 @@ const ResetToken = () => {
               variant: "destructive",
             });
           }
-
           setErrors({});
           setIsSubmitted(false);
         } catch (error) {

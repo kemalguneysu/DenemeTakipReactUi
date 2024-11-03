@@ -1,11 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card"; // Kart bileşenini içe aktar
+import { userService } from "@/app/services/user.service";
+import { toast } from "@/hooks/use-toast";
 
 export default function GetMyDatas() {
-  const handleDownload = () => {
-    // İndirme işlemi için gerekli kod buraya gelecek
-    console.log("Veriler indiriliyor...");
+  const handleDownload = async () => {
+    await userService.getMyDatas(undefined,()=>{
+      toast({
+        title: "Başarılı",
+        description: "Verileriniz indiriliyor.",
+      });
+    },()=>{
+      toast({
+        title: "Başarısız",
+        description: "Verileriniz indirilirken bir hata ile karşılaşıldı.",
+        variant: "destructive",
+      });
+    })
   };
 
   return (
