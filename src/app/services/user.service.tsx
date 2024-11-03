@@ -188,6 +188,30 @@ export class UserService {
       throw error;
     }
   }
+  async updatePassword(userId:string,resetToken:string,password:string,passwordConfirm:string,successCallback?:()=>void,errorCallback?:(error:any)=>void){
+    try {
+      const response = await fetch(`${this.baseUrl}/Users/UpdatePassword`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          resetToken,
+          password,
+          passwordConfirm
+        }),
+      });
+      if (successCallback) {
+        successCallback(); 
+      }
+      var data=await response.json();
+      return data;
+    } catch (error) {
+      throw error; 
+    }
+    
+  }
 }
 
 export const userService = new UserService();

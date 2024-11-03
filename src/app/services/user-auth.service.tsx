@@ -1,5 +1,6 @@
 import { useToast } from '@/hooks/use-toast'; // Shadcn toast için hook importu
 import { TokenResponse, SocialUser } from '@/types'; // types.tsx dosyasından import
+import { fetchWithAuth } from './fetch.withAuth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL; // API base URL environment variable üzerinden alınıyor
 
@@ -140,21 +141,22 @@ export const UserAuthService = () => {
 
   const passwordReset = async (emailOrUserName: string, callBackFunction?: () => void) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/PasswordReset`, {
+      await fetchWithAuth(`${API_BASE_URL}/auth/PasswordReset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ emailOrUserName }),
       });
-
-      await response.json();
-
+      toast({
+        title: "Başarılı",
+        description:
+          "Şifre yenileme talebiniz için e-mail adresinizi kontrol ediniz.",
+      });
       if (callBackFunction) {
         callBackFunction();
       }
     } catch (error) {
-      console.error('Password reset error:', error);
     }
   };
 
@@ -180,6 +182,7 @@ export const UserAuthService = () => {
       return false;
     }
   };
+
 
   return {
     login,
