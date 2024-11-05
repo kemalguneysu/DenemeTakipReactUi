@@ -15,12 +15,15 @@ import authService from "@/app/services/auth.service";
 import { HubUrls } from "@/types/hubUrls";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
 import { useSignalR } from "@/hooks/use-signalr";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const TYTCard = () => {
   const [homePageTyt, setHomePageTyt] = useState<HomePageTyt | undefined>(undefined);
   const signalRService = useSignalR();
+  const [loading, setLoading] = useState(false); 
 
   const fetchTyt = async () => {
+    setLoading(true);
     try {
       const result = await denemeService.getLastTyt();
       if (result === undefined) setHomePageTyt(undefined);
@@ -32,6 +35,8 @@ const TYTCard = () => {
       setHomePageTyt(formattedResult);
     } catch (error) {
     }
+    setLoading(false);
+    
   };
 
   useEffect(() => {
@@ -103,6 +108,8 @@ const TYTCard = () => {
 
   return (
     <div className="mx-auto p-4 border rounded-lg shadow-lg mt-4">
+      {loading && <SpinnerMethodComponent />}
+
       {homePageTyt ? (
         <>
           <h2 className="text-lg font-bold">Son TYT Denemesi</h2>
@@ -115,7 +122,13 @@ const TYTCard = () => {
               <AccordionTrigger>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold cursor-pointer">
-                    Türkçe Net: {formatValue(calculateNet(homePageTyt.turkceDogru, homePageTyt.turkceYanlis))}
+                    Türkçe Net:{" "}
+                    {formatValue(
+                      calculateNet(
+                        homePageTyt.turkceDogru,
+                        homePageTyt.turkceYanlis
+                      )
+                    )}
                   </h3>
                 </div>
               </AccordionTrigger>
@@ -130,7 +143,13 @@ const TYTCard = () => {
               <AccordionTrigger>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold cursor-pointer">
-                    Matematik Net: {formatValue(calculateNet(homePageTyt.matematikDogru, homePageTyt.matematikYanlis))}
+                    Matematik Net:{" "}
+                    {formatValue(
+                      calculateNet(
+                        homePageTyt.matematikDogru,
+                        homePageTyt.matematikYanlis
+                      )
+                    )}
                   </h3>
                 </div>
               </AccordionTrigger>
@@ -145,7 +164,10 @@ const TYTCard = () => {
               <AccordionTrigger>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold cursor-pointer">
-                    Fen Net: {formatValue(calculateNet(homePageTyt.fenDogru, homePageTyt.fenYanlis))}
+                    Fen Net:{" "}
+                    {formatValue(
+                      calculateNet(homePageTyt.fenDogru, homePageTyt.fenYanlis)
+                    )}
                   </h3>
                 </div>
               </AccordionTrigger>
@@ -160,7 +182,13 @@ const TYTCard = () => {
               <AccordionTrigger>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold cursor-pointer">
-                    Sosyal Net: {formatValue(calculateNet(homePageTyt.sosyalDogru, homePageTyt.sosyalYanlis))}
+                    Sosyal Net:{" "}
+                    {formatValue(
+                      calculateNet(
+                        homePageTyt.sosyalDogru,
+                        homePageTyt.sosyalYanlis
+                      )
+                    )}
                   </h3>
                 </div>
               </AccordionTrigger>

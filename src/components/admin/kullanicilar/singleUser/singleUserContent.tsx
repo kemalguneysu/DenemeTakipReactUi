@@ -18,6 +18,7 @@ import { roleService } from "@/app/services/role.service";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import authService from "@/app/services/auth.service";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Zod schema
 const dersSchema = z.object({
@@ -34,32 +35,44 @@ const SingleUserContent = () => {
   const [emailConfirmed, setEmailConfirmed] = useState<boolean>(false);
   const signalRService = useSignalR();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false); 
+
 
   const fetchUser = async () => {
     if (!id) return;
+    setLoading(true);
     try {
       const fetchedUser= await userService.getUserById(id as string);
       setUser(fetchedUser);
     } catch (error) {
     } finally {
+    setLoading(false);
     }
   };
   const fetchRoles = async () => {
     if (!id) return;
+    setLoading(true);
+
     try {
       const fetchedRoles = await roleService.getRoles();
       setRoles(fetchedRoles);
     } catch (error) {
     } finally {
+    setLoading(false);
+
     }
   };
  const fetchUserRoles = async () => {
    if (!id) return;
+    setLoading(true);
+
    try {
      const fetchedUserRoles = await userService.getUserRoles(id as string);
      setUserRoles(fetchedUserRoles);
    } catch (error) {
    } finally {
+    setLoading(false);
+
    }
  };
 
@@ -71,6 +84,8 @@ const SingleUserContent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       var model = {
         userId: id,
@@ -95,6 +110,8 @@ const SingleUserContent = () => {
         setInputError(err.errors[0].message);
       }
     }
+    setLoading(false);
+
   };
  useEffect(() => {
    fetchUser();
@@ -119,6 +136,8 @@ const SingleUserContent = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
+      {loading && <SpinnerMethodComponent />}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* UserId */}
         <div>
@@ -178,9 +197,7 @@ const SingleUserContent = () => {
 
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <AlertDialogTrigger asChild>
-            <Button className="w-full">
-              Güncelle
-            </Button>
+            <Button className="w-full">Güncelle</Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -193,10 +210,14 @@ const SingleUserContent = () => {
               <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
                 İptal
               </AlertDialogCancel>
-              <AlertDialogAction onClick={(e)=>{
-                handleSubmit(e);
-                setIsDialogOpen(false);
-              }}>Güncelle</AlertDialogAction>
+              <AlertDialogAction
+                onClick={(e) => {
+                  handleSubmit(e);
+                  setIsDialogOpen(false);
+                }}
+              >
+                Güncelle
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

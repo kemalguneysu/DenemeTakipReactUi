@@ -43,7 +43,7 @@ const ResetToken = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<PasswordUpdateErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [state, setState] = useState(false);
+  const [state, setState] = useState<boolean>(false);
 
   const router = useRouter();
   const userAuthService=UserAuthService();
@@ -52,11 +52,11 @@ const ResetToken = () => {
     const verifyToken = async () => {
       if (resetToken && userId) {
         try {
-          const response = await userAuthService.verifyResetToken(
+          const response:any = await userAuthService.verifyResetToken(
             resetToken as string,
             userId as string
           );
-          setState(response);
+            setState(response.state);
         } catch (error) {
         }
       }
@@ -242,7 +242,7 @@ const ResetToken = () => {
         </form>
       ) : (
         <div className="p-6 border shadow rounded-lg text-center mt-4 max-w-7xl mx-auto">
-          <h2 className="text-xl font-semibold mb-4 ">
+          <h2 className="text-xl font-semibold mb-4">
             Geçersiz Şifre Yenileme İsteği
           </h2>
           <p className="opacity-80">
@@ -252,6 +252,7 @@ const ResetToken = () => {
       )}
     </div>
   );
+
 };
 
 export default ResetToken;

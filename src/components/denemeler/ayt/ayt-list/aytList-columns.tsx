@@ -26,18 +26,29 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 // Step 1: Update ColumnsProps
 interface ColumnsProps {
-  orderByAndDirections: Array<{ orderBy: string; orderDirection: "asc" | "desc"| null }>; // Use the correct type
+  orderByAndDirections: Array<{
+    orderBy: string;
+    orderDirection: "asc" | "desc" | null;
+  }>; // Use the correct type
   setOrderByAndDirections: Dispatch<
-    SetStateAction<Array<{ orderBy: string; orderDirection: "asc" | "desc"| null }>>
+    SetStateAction<
+      Array<{ orderBy: string; orderDirection: "asc" | "desc" | null }>
+    >
   >;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 export const columns = ({
   orderByAndDirections,
   setOrderByAndDirections,
+  loading,
+  setLoading,
 }: ColumnsProps): ColumnDef<aytGenelList>[] => {
   const handleSort = (columnKey: keyof aytGenelList) => {
-    const currentSort = orderByAndDirections.find((item) => item.orderBy === columnKey);
+    const currentSort = orderByAndDirections.find(
+      (item) => item.orderBy === columnKey
+    );
     let newDirection: "asc" | "desc" | null = null;
 
     // Determine the new sorting direction
@@ -50,7 +61,9 @@ export const columns = ({
       return;
     }
 
-    const updatedOrderBy = newDirection ? [{ orderBy: columnKey, orderDirection: newDirection }] : [];
+    const updatedOrderBy = newDirection
+      ? [{ orderBy: columnKey, orderDirection: newDirection }]
+      : [];
     setOrderByAndDirections(updatedOrderBy);
   };
 
@@ -59,7 +72,10 @@ export const columns = ({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Hepsini Seç"
         />
@@ -74,106 +90,114 @@ export const columns = ({
       enableHiding: false,
     },
     {
-        accessorKey: "sayisalNet",
-        header: () => (
-          <div
-            className="text-center cursor-pointer flex flex-col items-center justify-center"
-            onClick={() => handleSort("sayisalNet")}
-          >
-            Sayısal Net
-            {(() => {
-              const currentSort = orderByAndDirections.find(item => item.orderBy === "sayisalNet");
-              if (currentSort) {
-                return currentSort.orderDirection === "asc" ? (
-                  <Icons.arrowUp className="h-4 w-4" />
-                ) : (
-                  <Icons.arrowDown className="h-4 w-4" />
-                );
-              }
-              return <Icons.arrowDownUp className="h-4 w-4" />;
-            })()}
-          </div>
-        ),
-        cell: ({ getValue }: CellContext<aytGenelList, any>) => (
-          <div className="text-center">{String(getValue())}</div>
-        ),
-      },
-      {
-        accessorKey: "esitAgirlikNet",
-        header: () => (
-          <div
-            className="text-center cursor-pointer flex flex-col items-center justify-center"
-            onClick={() => handleSort("esitAgirlikNet")}
-          >
-            Eşit Ağırlık Net
-            {(() => {
-              const currentSort = orderByAndDirections.find(item => item.orderBy === "esitAgirlikNet");
-              if (currentSort) {
-                return currentSort.orderDirection === "asc" ? (
-                  <Icons.arrowUp className="h-4 w-4" />
-                ) : (
-                  <Icons.arrowDown className="h-4 w-4" />
-                );
-              }
-              return <Icons.arrowDownUp className="h-4 w-4" />;
-            })()}
-          </div>
-        ),
-        cell: ({ getValue }: CellContext<aytGenelList, any>) => (
-          <div className="text-center">{String(getValue())}</div>
-        ),
-      },
-      {
-        accessorKey: "sozelNet",
-        header: () => (
-          <div
-            className="text-center cursor-pointer flex flex-col items-center justify-center"
-            onClick={() => handleSort("sozelNet")}
-          >
-            Sözel Net
-            {(() => {
-              const currentSort = orderByAndDirections.find(item => item.orderBy === "sozelNet");
-              if (currentSort) {
-                return currentSort.orderDirection === "asc" ? (
-                  <Icons.arrowUp className="h-4 w-4" />
-                ) : (
-                  <Icons.arrowDown className="h-4 w-4" />
-                );
-              }
-              return <Icons.arrowDownUp className="h-4 w-4" />;
-            })()}
-          </div>
-        ),
-        cell: ({ getValue }: CellContext<aytGenelList, any>) => (
-          <div className="text-center">{String(getValue())}</div>
-        ),
-      },
-      {
-        accessorKey: "dilNet",
-        header: () => (
-          <div
-            className="text-center cursor-pointer flex flex-col items-center justify-center"
-            onClick={() => handleSort("dilNet")}
-          >
-            Dil Net
-            {(() => {
-              const currentSort = orderByAndDirections.find(item => item.orderBy === "dilNet");
-              if (currentSort) {
-                return currentSort.orderDirection === "asc" ? (
-                  <Icons.arrowUp className="h-4 w-4" />
-                ) : (
-                  <Icons.arrowDown className="h-4 w-4" />
-                );
-              }
-              return <Icons.arrowDownUp className="h-4 w-4" />;
-            })()}
-          </div>
-        ),
-        cell: ({ getValue }: CellContext<aytGenelList, any>) => (
-          <div className="text-center">{String(getValue())}</div>
-        ),
-      },
-      
+      accessorKey: "sayisalNet",
+      header: () => (
+        <div
+          className="text-center cursor-pointer flex flex-col items-center justify-center"
+          onClick={() => handleSort("sayisalNet")}
+        >
+          Sayısal Net
+          {(() => {
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "sayisalNet"
+            );
+            if (currentSort) {
+              return currentSort.orderDirection === "asc" ? (
+                <Icons.arrowUp className="h-4 w-4" />
+              ) : (
+                <Icons.arrowDown className="h-4 w-4" />
+              );
+            }
+            return <Icons.arrowDownUp className="h-4 w-4" />;
+          })()}
+        </div>
+      ),
+      cell: ({ getValue }: CellContext<aytGenelList, any>) => (
+        <div className="text-center">{String(getValue())}</div>
+      ),
+    },
+    {
+      accessorKey: "esitAgirlikNet",
+      header: () => (
+        <div
+          className="text-center cursor-pointer flex flex-col items-center justify-center"
+          onClick={() => handleSort("esitAgirlikNet")}
+        >
+          Eşit Ağırlık Net
+          {(() => {
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "esitAgirlikNet"
+            );
+            if (currentSort) {
+              return currentSort.orderDirection === "asc" ? (
+                <Icons.arrowUp className="h-4 w-4" />
+              ) : (
+                <Icons.arrowDown className="h-4 w-4" />
+              );
+            }
+            return <Icons.arrowDownUp className="h-4 w-4" />;
+          })()}
+        </div>
+      ),
+      cell: ({ getValue }: CellContext<aytGenelList, any>) => (
+        <div className="text-center">{String(getValue())}</div>
+      ),
+    },
+    {
+      accessorKey: "sozelNet",
+      header: () => (
+        <div
+          className="text-center cursor-pointer flex flex-col items-center justify-center"
+          onClick={() => handleSort("sozelNet")}
+        >
+          Sözel Net
+          {(() => {
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "sozelNet"
+            );
+            if (currentSort) {
+              return currentSort.orderDirection === "asc" ? (
+                <Icons.arrowUp className="h-4 w-4" />
+              ) : (
+                <Icons.arrowDown className="h-4 w-4" />
+              );
+            }
+            return <Icons.arrowDownUp className="h-4 w-4" />;
+          })()}
+        </div>
+      ),
+      cell: ({ getValue }: CellContext<aytGenelList, any>) => (
+        <div className="text-center">{String(getValue())}</div>
+      ),
+    },
+    {
+      accessorKey: "dilNet",
+      header: () => (
+        <div
+          className="text-center cursor-pointer flex flex-col items-center justify-center"
+          onClick={() => handleSort("dilNet")}
+        >
+          Dil Net
+          {(() => {
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "dilNet"
+            );
+            if (currentSort) {
+              return currentSort.orderDirection === "asc" ? (
+                <Icons.arrowUp className="h-4 w-4" />
+              ) : (
+                <Icons.arrowDown className="h-4 w-4" />
+              );
+            }
+            return <Icons.arrowDownUp className="h-4 w-4" />;
+          })()}
+        </div>
+      ),
+      cell: ({ getValue }: CellContext<aytGenelList, any>) => (
+        <div className="text-center">{String(getValue())}</div>
+      ),
+    },
+
     {
       id: "actions",
       header: () => <div className="text-center">Aksiyonlar</div>,
@@ -187,7 +211,7 @@ export const columns = ({
 
         const confirmDelete = async () => {
           setIsDialogOpen(false);
-          await handleDelete(id);
+          await handleDelete(id, setLoading);
         };
 
         return (
@@ -248,23 +272,28 @@ export const columns = ({
 };
 
 // Silme işlemi için örnek işlev
-const handleDelete = async (id: string) => {
+const handleDelete = async (
+  id: string,
+  setLoading: Dispatch<SetStateAction<boolean>>
+) => {
+  setLoading(true);
+
   try {
     const response = await denemeService.deleteAytDenemes([id]);
     if (response.succeeded) {
-    }
-    else
+    } else
+      toast({
+        title: "Başarısız",
+        description: response.message,
+        variant: "destructive",
+      });
+  } catch (error: any) {
     toast({
-      title: 'Başarısız',
-      description: response.message,
-      variant: 'destructive',
+      title: "Başarısız",
+      description: "Seçilen ders silinirken bir hata oluştu.",
+      variant: "destructive",
     });
+  }
+  setLoading(false);
 
-} catch (error: any) {
-    toast({
-        title: 'Başarısız',
-        description: 'Seçilen ders silinirken bir hata oluştu.',
-        variant: 'destructive',
-    });
-}
 };

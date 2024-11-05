@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserList } from "@/types";
 import { toast } from "@/hooks/use-toast";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,6 +51,8 @@ interface DataTableProps<TData, TValue> {
   input: string;
   setInput: (value: string) => void;
   totalCount: number;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 export function DataTable<TData extends UserList, TValue>({
@@ -63,6 +66,8 @@ export function DataTable<TData extends UserList, TValue>({
   input,
   setInput,
   totalCount,
+  loading,
+  setLoading,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -82,33 +87,33 @@ export function DataTable<TData extends UserList, TValue>({
     },
   });
 
-//   const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const response = await derslerService.deleteDers(
-//         Object.values(table.getSelectedRowModel().rowsById).map(
-//           (item) => item.original.id
-//         )
-//       );
-//       if (response.succeeded) {
-//         const selectedRows = table.getSelectedRowModel().rows;
-//         selectedRows.splice(0, selectedRows.length);
-//         table.setRowSelection({});
-//       } else
-//         toast({
-//           title: "Başarısız",
-//           description: response.message,
-//           variant: "destructive",
-//         });
-//     } catch (error: any) {
-//       toast({
-//         title: "Başarısız",
-//         description: "Seçilen kullanıcılar silinirken bir hata oluştu.",
-//         variant: "destructive",
-//       });
-//     }
-//     setDialogOpen(false);
-//   };
+  //   const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
+  //     e.preventDefault();
+  //     try {
+  //       const response = await derslerService.deleteDers(
+  //         Object.values(table.getSelectedRowModel().rowsById).map(
+  //           (item) => item.original.id
+  //         )
+  //       );
+  //       if (response.succeeded) {
+  //         const selectedRows = table.getSelectedRowModel().rows;
+  //         selectedRows.splice(0, selectedRows.length);
+  //         table.setRowSelection({});
+  //       } else
+  //         toast({
+  //           title: "Başarısız",
+  //           description: response.message,
+  //           variant: "destructive",
+  //         });
+  //     } catch (error: any) {
+  //       toast({
+  //         title: "Başarısız",
+  //         description: "Seçilen kullanıcılar silinirken bir hata oluştu.",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //     setDialogOpen(false);
+  //   };
 
   function getColumnWidth(totalColumns: number, index: number): string {
     const totalRatio = 3 * (totalColumns - 2) + 2; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
@@ -207,6 +212,7 @@ export function DataTable<TData extends UserList, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
+                  {loading && <SpinnerMethodComponent />}
                   Kullanıcı bulunamadı.
                 </TableCell>
               </TableRow>

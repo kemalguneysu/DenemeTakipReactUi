@@ -6,6 +6,7 @@ import { Card, CardContent } from "../ui/card";
 import { derslerService } from "@/app/services/dersler.service";
 import { useTheme } from "next-themes"; // Assuming you're using next-themes for theme management
 import { Icons } from "../icons";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const TYTCarousel = () => {
   const [dersler, setDersler] = useState<Ders[]>([]);
@@ -14,10 +15,14 @@ const TYTCarousel = () => {
   const [orientation, setOrientation] = useState<"vertical" | "horizontal">(
     "vertical"
   ); // Orientation state
+  const [loading, setLoading] = useState(false); 
+
   const { theme } = useTheme(); // Get the current theme
 
   // Dersleri çekme
   const fetchDersler = async () => {
+    setLoading(true);
+
     try {
       const result = await derslerService.getAllDers(true);
       const sortedDersler = result.dersler.sort((a, b) => {
@@ -31,17 +36,21 @@ const TYTCarousel = () => {
         fetchKonular(sortedDersler[0].id);
       }
     } catch (error) {
-      console.error("Dersleri çekerken hata oluştu:", error);
     }
+    setLoading(false);
   };
 
   const fetchKonular = async (dersId: string) => {
+    setLoading(true);
+
     try {
       const result = await denemeService.getTytAnaliz(5, 3, dersId, "yanlis");
       setKonular(result);
     } catch (error) {
       console.error("Konuları çekerken hata oluştu:", error);
     }
+    setLoading(false);
+
   };
 
   useEffect(() => {
@@ -81,6 +90,8 @@ const TYTCarousel = () => {
 
   return (
     <div className="relative w-full">
+      {loading && <SpinnerMethodComponent />}
+
       {/* Yukarı ok butonu */}
       <div className="hidden md:flex justify-center items-center mb-2">
         <button
@@ -124,7 +135,8 @@ const TYTCarousel = () => {
                       En Fazla Yanlış Yapılan Konular
                     </h3>
                     <ul className="w-full list-disc list-inside">
-                      {Array.isArray(konular) && konular.length > 0 &&
+                      {Array.isArray(konular) &&
+                      konular.length > 0 &&
                       konular.some(
                         (konu) => konu.dersId === dersler[selectedIndex].id
                       ) ? (

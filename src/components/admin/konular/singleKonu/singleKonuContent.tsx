@@ -14,6 +14,7 @@ import { ReceiveFunctions } from "@/types/receiveFunctions";
 import { konularService } from "@/app/services/konular.service";
 import CustomToggleDersler from "@/app/admin/dersler/custom.toggle.dersler";
 import { ComboboxDemo } from "../konuCreate/konuCreate.combobox";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Zod schema
 const dersSchema = z.object({
@@ -30,9 +31,11 @@ const SingleDersContent = () => {
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [selectedDersId, setSelectedDersId] = useState<string>('');
   const [konuAdi, setKonuAdi] = useState<string>('');
+  const [loading, setLoading] = useState(false); 
 
   const fetchKonu = async () => {
     if (!id) return;
+    setLoading(true);
     try {
       const fetchedKonu = await konularService.getKonuById(id as string);
       setKonu(fetchedKonu);
@@ -41,6 +44,8 @@ const SingleDersContent = () => {
       setKonuAdi(fetchedKonu.konuAdi);
     } catch (error) {
     } finally {
+    setLoading(false);
+
     }
   };
 
@@ -86,6 +91,7 @@ const SingleDersContent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const updateKonu = new UpdateKonu();
       updateKonu.konuId=id as string;
@@ -111,6 +117,7 @@ const SingleDersContent = () => {
       if (err instanceof z.ZodError) {
         setInputError(err.errors[0].message);
       }
+    setLoading(false);
     }
   };
 
@@ -118,6 +125,8 @@ const SingleDersContent = () => {
 
   return (
     <div className="p-4 mx-auto max-w-7xl">
+      {loading && <SpinnerMethodComponent />}
+
       <form className="flex flex-col" onSubmit={handleSubmit}>
         <div className="flex items-center space-x-4 mb-4">
           <div className="w-full">
@@ -134,19 +143,19 @@ const SingleDersContent = () => {
           </div>
         </div>
         <div className="mb-4">
-          <CustomToggleDersler 
-            onChange={(value: any) => setIsTyt(value)} 
+          <CustomToggleDersler
+            onChange={(value: any) => setIsTyt(value)}
             isTyt={isTyt} // Pass the current isTyt value to toggle
           />
         </div>
         <div className="mb-4">
-          <ComboboxDemo 
+          <ComboboxDemo
             items={dersler}
-            onSelect={(value: string) => setSelectedDersId(value)} 
+            onSelect={(value: string) => setSelectedDersId(value)}
             value={selectedDersId} // Bind the selectedDersId to the Combobox
           />
         </div>
-        <Button type="submit" className="w-full"> 
+        <Button type="submit" className="w-full">
           Güncelle
         </Button>
       </form>

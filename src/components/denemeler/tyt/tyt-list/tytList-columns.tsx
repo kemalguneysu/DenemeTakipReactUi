@@ -26,18 +26,29 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 // Step 1: Update ColumnsProps
 interface ColumnsProps {
-  orderByAndDirections: Array<{ orderBy: string; orderDirection: "asc" | "desc"| null }>; // Use the correct type
+  orderByAndDirections: Array<{
+    orderBy: string;
+    orderDirection: "asc" | "desc" | null;
+  }>; // Use the correct type
   setOrderByAndDirections: Dispatch<
-    SetStateAction<Array<{ orderBy: string; orderDirection: "asc" | "desc"| null }>>
+    SetStateAction<
+      Array<{ orderBy: string; orderDirection: "asc" | "desc" | null }>
+    >
   >;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 export const columns = ({
   orderByAndDirections,
   setOrderByAndDirections,
+  loading,
+  setLoading,
 }: ColumnsProps): ColumnDef<tytGenelList>[] => {
   const handleSort = (columnKey: keyof tytGenelList) => {
-    const currentSort = orderByAndDirections.find((item) => item.orderBy === columnKey);
+    const currentSort = orderByAndDirections.find(
+      (item) => item.orderBy === columnKey
+    );
     let newDirection: "asc" | "desc" | null = null;
 
     // Determine the new sorting direction
@@ -52,7 +63,9 @@ export const columns = ({
     }
 
     // Update the sort order, keeping only the new sorting option
-    const updatedOrderBy = newDirection ? [{ orderBy: columnKey, orderDirection: newDirection }] : [];
+    const updatedOrderBy = newDirection
+      ? [{ orderBy: columnKey, orderDirection: newDirection }]
+      : [];
     setOrderByAndDirections(updatedOrderBy);
   };
 
@@ -61,7 +74,10 @@ export const columns = ({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Hepsini Seç"
         />
@@ -84,7 +100,9 @@ export const columns = ({
         >
           Türkçe Net
           {(() => {
-            const currentSort = orderByAndDirections.find(item => item.orderBy === "turkceNet");
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "turkceNet"
+            );
             if (currentSort) {
               return currentSort.orderDirection === "asc" ? (
                 <Icons.arrowUp className="h-4 w-4" />
@@ -109,7 +127,9 @@ export const columns = ({
         >
           Matematik Net
           {(() => {
-            const currentSort = orderByAndDirections.find(item => item.orderBy === "matematikNet");
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "matematikNet"
+            );
             if (currentSort) {
               return currentSort.orderDirection === "asc" ? (
                 <Icons.arrowUp className="h-4 w-4" />
@@ -134,7 +154,9 @@ export const columns = ({
         >
           Fen Net
           {(() => {
-            const currentSort = orderByAndDirections.find(item => item.orderBy === "fenNet");
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "fenNet"
+            );
             if (currentSort) {
               return currentSort.orderDirection === "asc" ? (
                 <Icons.arrowUp className="h-4 w-4" />
@@ -159,7 +181,9 @@ export const columns = ({
         >
           Sosyal Net
           {(() => {
-            const currentSort = orderByAndDirections.find(item => item.orderBy === "sosyalNet");
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "sosyalNet"
+            );
             if (currentSort) {
               return currentSort.orderDirection === "asc" ? (
                 <Icons.arrowUp className="h-4 w-4" />
@@ -184,7 +208,9 @@ export const columns = ({
         >
           Toplam Net
           {(() => {
-            const currentSort = orderByAndDirections.find(item => item.orderBy === "toplamNet");
+            const currentSort = orderByAndDirections.find(
+              (item) => item.orderBy === "toplamNet"
+            );
             if (currentSort) {
               return currentSort.orderDirection === "asc" ? (
                 <Icons.arrowUp className="h-4 w-4" />
@@ -200,7 +226,7 @@ export const columns = ({
         <div className="text-center">{String(getValue())}</div>
       ),
     },
-    
+
     {
       id: "actions",
       header: () => <div className="text-center">Aksiyonlar</div>,
@@ -214,7 +240,7 @@ export const columns = ({
 
         const confirmDelete = async () => {
           setIsDialogOpen(false);
-          await handleDelete(id);
+          await handleDelete(id, setloading);
         };
 
         return (
@@ -275,23 +301,27 @@ export const columns = ({
 };
 
 // Silme işlemi için örnek işlev
-const handleDelete = async (id: string) => {
+const handleDelete = async (
+  id: string,
+  setLoading: Dispatch<SetStateAction<boolean>>
+) => {
+  setLoading(true);
   try {
     const response = await denemeService.deleteTytDenemes([id]);
     if (response.succeeded) {
-    }
-    else
+    } else
+      toast({
+        title: "Başarısız",
+        description: response.message,
+        variant: "destructive",
+      });
+  } catch (error: any) {
     toast({
-      title: 'Başarısız',
-      description: response.message,
-      variant: 'destructive',
+      title: "Başarısız",
+      description: "Seçilen ders silinirken bir hata oluştu.",
+      variant: "destructive",
     });
+  }
+  setLoading(false);
 
-} catch (error: any) {
-    toast({
-        title: 'Başarısız',
-        description: 'Seçilen ders silinirken bir hata oluştu.',
-        variant: 'destructive',
-    });
-}
 };

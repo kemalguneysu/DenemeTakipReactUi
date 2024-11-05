@@ -175,7 +175,6 @@ export const UserAuthService = () => {
       if (callBackFunction) {
         callBackFunction();
       }
-
       return state;
     } catch (error) {
       console.error('Verify reset token error:', error);

@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { useSignalR } from "@/hooks/use-signalr";
 import { HubUrls } from "@/types/hubUrls";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Zod şeması tanımlama
 const dersSchema = z.object({
@@ -33,6 +34,7 @@ const SingleDersContent = () => {
   // fetchDers fonksiyonunu burada tanımlıyoruz
   const fetchDers = async () => {
     if (!id) return;
+    setLoading(true);
     try {
       const fetchedDers = await derslerService.getDersById(id as string);
       setDers(fetchedDers);
@@ -106,10 +108,10 @@ const SingleDersContent = () => {
     }
   };
 
-  if (!ders) return <div className="text-center mt-2">Ders bulunamadı.</div>;
 
   return (
     <div className="p-4 mx-auto max-w-7xl">
+      {loading && <SpinnerMethodComponent/>}
       <form className="flex flex-col" onSubmit={handleSubmit}>
         <div className="flex items-center space-x-4 mb-4">
           <div className="w-8/12">
@@ -118,7 +120,7 @@ const SingleDersContent = () => {
             </Label>
             <Input
               id="dersAdi"
-              value={ders.dersAdi}
+              value={ders?.dersAdi}
               onChange={handleInputChange}
               className="w-full"
             />
@@ -161,9 +163,8 @@ const SingleDersContent = () => {
             </div>
           </div>
         </div>
-
-        {submitError && <p className="text-red-500">{submitError}</p>} {/* Hata mesajı için */}
-        
+        {submitError && <p className="text-red-500">{submitError}</p>}{" "}
+        {/* Hata mesajı için */}
         <Button type="submit">Güncelle</Button>
       </form>
     </div>

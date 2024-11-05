@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronsUpDown } from "lucide-react";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Zod schema
 
@@ -49,6 +50,8 @@ const SingleAytContent = () => {
   const signalRService = useSignalR();
   const [dersler, setDersler] = useState<Ders[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const subjects = [
     "Matematik",
     "Fizik",
@@ -309,6 +312,7 @@ const SingleAytContent = () => {
        yanlisKonular: yanlisKonularId,
        bosKonular: bosKonularId,
      };
+     setLoading(true);
      try {
        await denemeService.editAyt(aytUpdate, undefined, () => {
          toast({
@@ -318,6 +322,8 @@ const SingleAytContent = () => {
          });
        });
      } catch (error: any) {}
+     setLoading(false);
+
    };
   const handleDersClick = async (dersId: string) => {
     if (selectedDersId === dersId) {
@@ -345,6 +351,7 @@ const SingleAytContent = () => {
   
   const fetchAyt = async () => {
     if (!id) return;
+    setLoading(true);
     const fetchedAyt = await denemeService.getAytById(id as string);
     setAyt(fetchedAyt);
     if (fetchedAyt) {
@@ -401,12 +408,15 @@ const SingleAytContent = () => {
       setYanlisKonularId(fetchedAyt.yanlisKonularAdDers.map((konu) => konu.konuId));
       setBosKonularId(fetchedAyt.bosKonularAdDers.map((konu) => konu.konuId));
     }
+    setLoading(false);
+
   };
   useEffect(() => {
     fetchAyt();
   }, []);
   useEffect(() => {
     const fetchDersler = async () => {
+      setLoading(true);
       try {
         const response = await derslerService.getAllDers(isTytSelected);
         const sortedDersler = response.dersler.sort((a, b) => {
@@ -439,6 +449,8 @@ const SingleAytContent = () => {
           variant: "destructive",
         });
       }
+      setLoading(false);
+
     };
     fetchDersler();
   }, []);
@@ -467,9 +479,16 @@ const SingleAytContent = () => {
    };
  }, [signalRService]);
   if (!ayt)
-    return <div className="text-center mt-2">AYT denemesi bulunamaadı.</div>;
+    return (
+      <div className="text-center mt-2">
+        {loading && <SpinnerMethodComponent />}
+        AYT denemesi bulunamaadı.
+      </div>
+    );
   return (
     <div className="mx-auto mt-4 max-w-7xl">
+      {loading && <SpinnerMethodComponent />}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -655,7 +674,6 @@ const SingleAytContent = () => {
                   handleSubmit(); // Call submit function on confirmation
                   setOpenDialog(false); // Close the dialog
                 }}
-                
               >
                 Güncelle
               </AlertDialogAction>

@@ -36,6 +36,9 @@ import { konularService } from "@/app/services/konular.service";
     setInput: (value: string) => void; // Yeni prop
     totalCount: number;
     setSelectedDersIds: Dispatch<SetStateAction<string[]>>;
+    loading: boolean;
+    setLoading: Dispatch<SetStateAction<boolean>>;
+    
   }
   function getColumnWidth(totalColumns: number, index: number): string {
     const totalRatio =  3 * (totalColumns - 2)+ 2; ; // 1 for first, 2 * (totalColumns - 2) for middle, 1 for last
@@ -58,6 +61,8 @@ import { konularService } from "@/app/services/konular.service";
     setInput,
     setSelectedDersIds,
     totalCount,
+    loading,
+    setLoading
   }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = React.useState({});
@@ -77,6 +82,7 @@ import { konularService } from "@/app/services/konular.service";
   
     const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
       e.preventDefault();
+      setLoading(true);
       try {
           const response = await konularService.deleteKonu(
               Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
@@ -101,6 +107,8 @@ import { konularService } from "@/app/services/konular.service";
           });
       }
       setDialogOpen(false); 
+      setLoading(false);
+
     };
   
     return (

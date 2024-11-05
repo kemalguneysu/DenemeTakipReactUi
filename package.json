@@ -11,6 +11,9 @@
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@microsoft/signalr": "^8.0.7",
+    "@nextui-org/spinner": "^2.0.34",
+    "@nextui-org/system": "^2.2.6",
+    "@nextui-org/theme": "^2.2.11",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
@@ -46,6 +49,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
+    "react-loader-spinner": "^6.1.6",
+    "react-spinners": "^0.14.1",
     "recharts": "^2.13.2",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",

@@ -43,6 +43,7 @@ import { useSignalR } from "@/hooks/use-signalr";
 import authService from "@/app/services/auth.service";
 import { HubUrls } from "@/types/hubUrls";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const NetAnalizler = () => {
   const { theme } = useTheme();
@@ -509,7 +510,7 @@ const NetAnalizler = () => {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="text-center py-10">Yükleniyor...</div>
+          <SpinnerMethodComponent />
         ) : analiz.length === 0 ? (
           <div className="text-center py-10">
             {isTyt ? "TYT" : "AYT"} denemeniz bulunmamaktadır.

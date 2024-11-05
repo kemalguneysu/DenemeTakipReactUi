@@ -6,6 +6,7 @@ import { Card, CardContent } from "../ui/card";
 import { derslerService } from "@/app/services/dersler.service";
 import { useTheme } from "next-themes"; // Assuming you're using next-themes for theme management
 import { Icons } from "../icons";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const AYTCarousel = () => {
   const [dersler, setDersler] = useState<Ders[]>([]);
@@ -15,9 +16,11 @@ const AYTCarousel = () => {
     "vertical"
   ); // Orientation state
   const { theme } = useTheme(); // Get the current theme
+  const [loading, setLoading] = useState(false); 
 
   // Dersleri çekme
   const fetchDersler = async () => {
+    setLoading(true);
     try {
       const result = await derslerService.getAllDers(false);
       const sortedDersler = result.dersler.sort((a, b) => {
@@ -44,17 +47,21 @@ const AYTCarousel = () => {
         fetchKonular(sortedDersler[0].id); // İlk dersin konularını çek
       }
     } catch (error) {
-      console.error("Dersleri çekerken hata oluştu:", error);
     }
+    setLoading(false);
+
   };
 
   const fetchKonular = async (dersId: string) => {
+    setLoading(true);
+
     try {
       const result = await denemeService.getAytAnaliz(5, 3, dersId, "yanlis");
       setKonular(result);
     } catch (error) {
-      console.error("Konuları çekerken hata oluştu:", error);
     }
+    setLoading(false);
+
   };
 
   // Ekran boyutuna göre orientation'ı ayarla
@@ -94,6 +101,8 @@ const AYTCarousel = () => {
 
   return (
     <div className="relative w-full">
+      {loading && <SpinnerMethodComponent />}
+
       {/* Yukarı ok butonu */}
       <div className="hidden md:flex justify-center items-center mb-2">
         <button
@@ -130,7 +139,8 @@ const AYTCarousel = () => {
                       En Fazla Yanlış Yapılan Konular
                     </h3>
                     <ul className="w-full list-disc list-inside">
-                      {Array.isArray(konular) && konular.length > 0 &&
+                      {Array.isArray(konular) &&
+                      konular.length > 0 &&
                       konular.some(
                         (konu) => konu.dersId === dersler[selectedIndex].id
                       ) ? (

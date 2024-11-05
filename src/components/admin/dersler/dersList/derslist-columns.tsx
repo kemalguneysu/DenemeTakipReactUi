@@ -8,18 +8,29 @@ import Link from "next/link";
 import { derslerService } from "@/app/services/dersler.service";
 import { toast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 interface ColumnsProps {
   isTyt: boolean | null;
   setIsTyt: Dispatch<SetStateAction<boolean | null>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] => [
+export const columns = ({
+  isTyt,
+  setIsTyt,
+  loading,
+  setLoading,
+}: ColumnsProps): ColumnDef<Ders>[] => [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Hepsini Seç"
       />
@@ -35,7 +46,9 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
   {
     accessorKey: "dersAdi",
     header: () => <div className="text-center">Ders Adı</div>,
-    cell: ({ getValue }) => <div className="text-center">{String(getValue())}</div>,
+    cell: ({ getValue }) => (
+      <div className="text-center">{String(getValue())}</div>
+    ),
   },
   {
     accessorKey: "isTyt",
@@ -44,46 +57,47 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <div className="flex items-center justify-self-center w-full">
-              <span className="text-center justify-self-center">Ders Türü</span> <Icons.chevronDown className="ml-1 w-4 h-4" />
+              <span className="text-center justify-self-center">Ders Türü</span>{" "}
+              <Icons.chevronDown className="ml-1 w-4 h-4" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48">
             <DropdownMenuItem>
-            <Checkbox
-              checked={isTyt === null || isTyt === true} // isTyt null veya true ise checked
-              onCheckedChange={(value) => {
-                if (value) {
-                  // TYT seçildiğinde
-                  if (isTyt === null) {
-                    setIsTyt(true); // isTyt null ise true yap
+              <Checkbox
+                checked={isTyt === null || isTyt === true} // isTyt null veya true ise checked
+                onCheckedChange={(value) => {
+                  if (value) {
+                    // TYT seçildiğinde
+                    if (isTyt === null) {
+                      setIsTyt(true); // isTyt null ise true yap
+                    } else {
+                      setIsTyt(null); // Zaten seçiliyse, her ikisini de kaldır
+                    }
                   } else {
-                    setIsTyt(null); // Zaten seçiliyse, her ikisini de kaldır
+                    // TYT kaldırıldığında
+                    setIsTyt(false); // TYT checkbox'ı kaldırılırsa AYT seçili olmalı
                   }
-                } else {
-                  // TYT kaldırıldığında
-                  setIsTyt(false); // TYT checkbox'ı kaldırılırsa AYT seçili olmalı
-                }
-              }}
-            />
-            <span className="ml-2">TYT</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Checkbox
-              checked={isTyt === null || isTyt === false} // isTyt null veya false ise checked
-              onCheckedChange={(value) => {
-                if (value) {
-                  // AYT seçildiğinde
-                  if (isTyt === null) {
-                    setIsTyt(false); // isTyt null ise false yap
+                }}
+              />
+              <span className="ml-2">TYT</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Checkbox
+                checked={isTyt === null || isTyt === false} // isTyt null veya false ise checked
+                onCheckedChange={(value) => {
+                  if (value) {
+                    // AYT seçildiğinde
+                    if (isTyt === null) {
+                      setIsTyt(false); // isTyt null ise false yap
+                    } else {
+                      setIsTyt(null); // Zaten seçiliyse, her ikisini de kaldır
+                    }
                   } else {
-                    setIsTyt(null); // Zaten seçiliyse, her ikisini de kaldır
+                    // AYT kaldırıldığında
+                    setIsTyt(true); // AYT checkbox'ı kaldırıldığında TYT seçili olmalı
                   }
-                } else {
-                  // AYT kaldırıldığında
-                  setIsTyt(true); // AYT checkbox'ı kaldırıldığında TYT seçili olmalı
-                }
-              }}
-            />
+                }}
+              />
               <span className="ml-2">AYT</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -91,7 +105,9 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
       </div>
     ),
     cell: ({ getValue }) => (
-      <div className="text-center">{(getValue() as boolean) ? "TYT" : "AYT"}</div>
+      <div className="text-center">
+        {(getValue() as boolean) ? "TYT" : "AYT"}
+      </div>
     ),
   },
   {
@@ -107,11 +123,13 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
 
       const confirmDelete = async () => {
         setIsDialogOpen(false); // Close the dialog
-        await handleDelete(id); // Call the delete function
+        await handleDelete(id,setLoading); // Call the delete function
       };
 
       return (
         <div className="justify-self-center">
+          {loading && <SpinnerMethodComponent />}
+
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Icons.dots className="w-5" />
@@ -163,23 +181,28 @@ export const columns = ({ isTyt, setIsTyt }: ColumnsProps): ColumnDef<Ders>[] =>
 ];
 
 // Silme işlemi için örnek işlev
-const handleDelete = async (id: string) => {
+const handleDelete = async (
+  id: string,
+  setLoading: Dispatch<SetStateAction<boolean>>
+) => {
+  setLoading(true);
+
   try {
     const response = await derslerService.deleteDers([id]);
     if (response.succeeded) {
-    }
-    else
+    } else
+      toast({
+        title: "Başarısız",
+        description: response.message,
+        variant: "destructive",
+      });
+  } catch (error: any) {
     toast({
-      title: 'Başarısız',
-      description: response.message,
-      variant: 'destructive',
+      title: "Başarısız",
+      description: "Seçilen ders silinirken bir hata oluştu.",
+      variant: "destructive",
     });
-
-} catch (error: any) {
-    toast({
-        title: 'Başarısız',
-        description: 'Seçilen ders silinirken bir hata oluştu.',
-        variant: 'destructive',
-    });
-}
+  } finally {
+    setLoading(false); // loading durumunu kapat
+  }
 };

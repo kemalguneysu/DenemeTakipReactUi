@@ -15,14 +15,18 @@ import { useSignalR } from "@/hooks/use-signalr";
 import authService from "@/app/services/auth.service";
 import { HubUrls } from "@/types/hubUrls";
 import { ReceiveFunctions } from "@/types/receiveFunctions";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const AYTCard = () => {
   const [homePageAyt, setHomePageAyt] = useState<HomePageAyt | undefined>(
     undefined
   );
+  const [loading, setLoading] = useState(false); 
+
   const signalRService = useSignalR();
 
   const fetchAyt = async () => {
+    setLoading(true);
     try {
       const result = await denemeService.getLastAyt();
       if(result===undefined)
@@ -35,6 +39,7 @@ const AYTCard = () => {
     } catch (error) {
       console.error("AYT denemesi alınamadı.", error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -176,6 +181,8 @@ const AYTCard = () => {
 
   return (
     <div className="mx-auto p-4 border rounded-lg shadow-lg mt-4">
+      {loading && <SpinnerMethodComponent />}
+
       {homePageAyt ? (
         <>
           <h2 className="text-lg font-bold">Son AYT Denemesi</h2>

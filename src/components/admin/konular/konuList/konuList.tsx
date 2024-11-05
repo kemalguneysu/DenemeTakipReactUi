@@ -20,11 +20,13 @@ export default function KonuList() {
   const [input, setInput] = useState<string>("");
   const [totalCount, setTotalCount] = useState(0);
   const [selectedDersIds, setSelectedDersIds]=useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const signalRService = useSignalR();
 
   // fetchData fonksiyonunu burada tanımlıyoruz
   const fetchData = async () => {
+    setLoading(true);
       try {
           const result = await konularService.getAllKonular(
             isTyt,
@@ -40,6 +42,8 @@ export default function KonuList() {
           setTotalPages(newTotalPages);
       } catch (error) {
       }
+    setLoading(false);
+
   };
   const fetchDersler=async ()=> {
         try {
@@ -89,7 +93,7 @@ export default function KonuList() {
   return (
     <div className="container space-y-8 max-w-7xl mx-auto">
       <DataTable<ListKonu,any>
-        columns={columns({ isTyt, setIsTyt,dersListesi,selectedDersIds,setSelectedDersIds})} // Pass isTyt and setIsTyt
+        columns={columns({ isTyt, setIsTyt,dersListesi,selectedDersIds,setSelectedDersIds,loading,setLoading})} // Pass isTyt and setIsTyt
         data={data}
         page={page}
         pageSize={pageSize}

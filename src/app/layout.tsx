@@ -17,6 +17,7 @@ import { metadata } from "./metadata";
 import authService from "./services/auth.service";
 import { Footer } from "@/components/footer";
 import CookieConsentBanner from "@/components/cookieContent";
+import { ClipLoader } from "react-spinners";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" }); 
 const fontJakartaSans = FontJakarta({ subsets: ["latin"], variable: "--font-jakarta-sans", });

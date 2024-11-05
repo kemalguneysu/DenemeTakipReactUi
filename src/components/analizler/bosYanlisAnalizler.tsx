@@ -37,6 +37,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { TrendingUp } from "lucide-react";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 export const description = "Bar chart for analyzing exam results";
 
@@ -50,6 +51,7 @@ const BosYanlisAnalizler = () => {
   const [alanTur, setAlanTur] = useState<string>("Sayısal"); // New state for subject type
   const [type, setType] = useState<string>("yanlis");
   const [loading, setLoading] = useState<boolean>(false);
+  
 
   const fetchAnaliz = async () => {
     if (!dersId) return;
@@ -75,7 +77,6 @@ const BosYanlisAnalizler = () => {
         throw new Error("Gelen veri bir dizi değil.");
       }
     } catch (error) {
-      console.error(error);
       toast({
         title: "Hata",
         description: isTyt
@@ -207,7 +208,7 @@ const BosYanlisAnalizler = () => {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="text-center py-10">Yükleniyor...</div>
+                <SpinnerMethodComponent />
         ) : analiz.length === 0 ? (
           <div className="text-center py-10">
             {dersId ? `${dersler.find((d) => d.id === dersId)?.dersAdi}` : ""}{" "}

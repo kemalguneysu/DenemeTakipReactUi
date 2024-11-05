@@ -9,6 +9,7 @@ import { userService } from "@/app/services/user.service";
 import { UserList } from "@/types";
 import { DataTable } from "./kullaniciList-dataTable";
 import { columns } from "./kullaniciList-columns";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 export default function KullaniciList() {
   const [data, setData] = useState<UserList[]>([]);
@@ -19,9 +20,11 @@ export default function KullaniciList() {
   const [totalCount, setTotalCount] = useState(0);
   const signalRService = useSignalR();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // Default to null
+  const [loading, setLoading] = useState(false); 
 
   // fetchData fonksiyonunu burada tanımlıyoruz
   const fetchData = async () => {
+    setLoading(true);
     try {
       const result = await userService.getAllUsers(
         page + 1,
@@ -37,6 +40,9 @@ export default function KullaniciList() {
       const newTotalPages = Math.ceil(totalCount / pageSize);
       setTotalPages(newTotalPages);
     } catch (error) {}
+    setLoading(false);
+
+    
   };
 
   useEffect(() => {
@@ -49,6 +55,7 @@ export default function KullaniciList() {
 
   return (
     <div className="container space-y-8 max-w-7xl mx-auto">
+      {loading && <SpinnerMethodComponent />}
       <DataTable<UserList, any>
         columns={columns({ isAdmin, setIsAdmin })}
         data={data}
@@ -60,6 +67,8 @@ export default function KullaniciList() {
         input={input}
         setInput={setInput}
         totalCount={totalCount}
+        loading={loading}
+        setLoading={setLoading}
       />
     </div>
   );

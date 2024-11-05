@@ -20,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronsUpDown } from "lucide-react";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Zod schema
 
@@ -38,6 +39,8 @@ const SingleTytContent = () => {
   const [konular, setKonular] = useState<Konu[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const isTytSelected=true;
+  const [loading, setLoading] = useState(true);
+
   const subjectSchema = z
     .object({
       correct: z.number().min(0).max(40),
@@ -196,6 +199,8 @@ const SingleTytContent = () => {
        yanlisKonular: yanlisKonularId,
        bosKonular: bosKonularId,
      };
+     setLoading(true);
+
      try {
        await denemeService.editTyt(tytUpdate, undefined, () => {
          toast({
@@ -205,6 +210,8 @@ const SingleTytContent = () => {
          });
        });
      } catch (error: any) {}
+     setLoading(false);
+
    }; 
   const handleDersClick = async (dersId: string) => {
     if (selectedDersId === dersId) {
@@ -231,6 +238,8 @@ const SingleTytContent = () => {
   };
   const fetchTyt = async () => {
     if (!id) return;
+     setLoading(true);
+
     const fetchedTyt = await denemeService.getTytById(id as string);
     setTyt(fetchedTyt);
     if (fetchedTyt) {
@@ -254,12 +263,16 @@ const SingleTytContent = () => {
       );
       setBosKonularId(fetchedTyt.bosKonularAdDers.map((konu) => konu.konuId));
     }
+     setLoading(false);
+
   };
   useEffect(() => {
     fetchTyt();
   }, []);
   useEffect(() => {
     const fetchDersler = async () => {
+     setLoading(true);
+
       try {
         const response = await derslerService.getAllDers(isTytSelected);
         const sortedDersler = response.dersler.sort((a, b) => {
@@ -279,6 +292,8 @@ const SingleTytContent = () => {
           variant: "destructive",
         });
       }
+     setLoading(false);
+
     };
     fetchDersler();
   },[]);
@@ -300,9 +315,16 @@ const SingleTytContent = () => {
     };
   }, [signalRService]);
   
-  if (!tyt) return <div className="text-center mt-2">TYT denemesi bulunamaadı.</div>;
+  if (!tyt) return (
+    <div className="text-center mt-2">
+      {loading && <SpinnerMethodComponent />}
+      TYT denemesi bulunamaadı.
+    </div>
+  );
   return (
     <div className="mx-auto mt-4 max-w-7xl">
+      {loading && <SpinnerMethodComponent />}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -490,7 +512,6 @@ const SingleTytContent = () => {
                   handleSubmit(); // Call submit function on confirmation
                   setOpenDialog(false); // Close the dialog
                 }}
-               
               >
                 Güncelle
               </AlertDialogAction>

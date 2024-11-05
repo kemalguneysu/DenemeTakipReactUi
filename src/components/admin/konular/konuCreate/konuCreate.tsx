@@ -11,6 +11,7 @@ import { konularService } from '@/app/services/konular.service';
 import { Ders } from '@/types'; // Import Ders type
 import { derslerService } from '@/app/services/dersler.service';
 import { ComboboxDemo } from './konuCreate.combobox';
+import SpinnerMethodComponent from '@/app/spinner/spinnerForMethods';
 
 // Zod validation schema for topics
 const konuSchema = z.object({
@@ -25,10 +26,11 @@ const KonuCreate = () => {
   const [errors, setErrors] = useState<string | null>(null); // State for errors
   const [selectedDersId, setSelectedDersId] = useState<string>(''); // Ders ID state
   const [dersler, setDersler] = useState<Ders[]>([]); // State for Dersler
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
-    // Fetch all Dersler when the component mounts
     const fetchDersler = async () => {
+      setLoading(true);
       try {
         const response = await derslerService.getAllDers(isTyt);
         setDersler(response.dersler); // Store the fetched Dersler
@@ -42,6 +44,8 @@ const KonuCreate = () => {
     };
     setSelectedDersId('');
     fetchDersler();
+    setLoading(false);
+
   }, [isTyt]); // Rerun when isTyt changes
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +66,7 @@ const KonuCreate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form behavior
-
+    setLoading(true);
     // CreateKonu object
     const konu: CreateKonu = {
       konuAdi: inputValue,
@@ -90,37 +94,44 @@ const KonuCreate = () => {
         variant: 'destructive',
       });
     }
+    setLoading(false);
+
   };
 
   return (
-    <div className="py-4 max-w-7xl mx-auto"> {/* Centered width */} 
+    <div className="py-4 max-w-7xl mx-auto">
+      {" "}
+      {/* Centered width */}
+      {loading && <SpinnerMethodComponent />}
       <form onSubmit={handleSubmit}>
         {/* Input field */}
         <div className="mb-4">
-          <Input 
-            type="text" 
-            value={inputValue} 
-            onChange={handleInputChange}  // Called on input change
-            placeholder="Konu adı girin" 
+          <Input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange} // Called on input change
+            placeholder="Konu adı girin"
             className="w-full"
           />
-          {errors && <p className="text-red-500 text-sm mt-1">{errors}</p>} {/* Error message */}
-        </div>
-        
-        <div className="mb-4">
-          <CustomToggleDersler onChange={(value: any) => setIsTyt(value)} /> {/* Set value from toggle */} 
+          {errors && <p className="text-red-500 text-sm mt-1">{errors}</p>}{" "}
+          {/* Error message */}
         </div>
 
         <div className="mb-4">
-          <ComboboxDemo 
-              items={dersler} // Pass the fetched dersler to the Combobox
-              onSelect={(value: string) => setSelectedDersId(value)} // Update selected Ders ID
-              value={selectedDersId} // Pass the selectedDersId as value
+          <CustomToggleDersler onChange={(value: any) => setIsTyt(value)} />{" "}
+          {/* Set value from toggle */}
+        </div>
+
+        <div className="mb-4">
+          <ComboboxDemo
+            items={dersler} // Pass the fetched dersler to the Combobox
+            onSelect={(value: string) => setSelectedDersId(value)} // Update selected Ders ID
+            value={selectedDersId} // Pass the selectedDersId as value
           />
         </div>
 
         {/* Submit button */}
-        <Button type="submit" className="w-full"> 
+        <Button type="submit" className="w-full">
           Konu Ekle
         </Button>
       </form>

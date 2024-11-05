@@ -12,6 +12,7 @@ import { columns } from "./tytList-columns";
 import authService from "@/app/services/auth.service";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { toast } from "@/hooks/use-toast";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 export default function DersList() {
   const [data, setData] = useState<tytGenelList[]>([]);
@@ -21,9 +22,11 @@ export default function DersList() {
   const [totalCount, setTotalCount] = useState(0);
   const signalRService = useSignalR();
   const [orderByAndDirections, setOrderByAndDirections] = useState<OrderByDirection[]>([]);
+  const [loading, setLoading] = useState(false);
   
   // fetchData fonksiyonunu burada tanımlıyoruz
   const fetchData = async () => {
+    setLoading(true);
       try {
           const result = await denemeService.getTytDenemes(
             page + 1,
@@ -39,7 +42,9 @@ export default function DersList() {
           setTotalPages(newTotalPages);
       } catch (error) {
       }
-  };
+    setLoading(false);
+  
+    };
 
   useEffect(() => {
       fetchData();
@@ -83,15 +88,22 @@ export default function DersList() {
 
   return (
     <div className="container space-y-8 max-w-7xl mx-auto">
+      {loading && <SpinnerMethodComponent />}
+
       <DataTable<tytGenelList, any>
-        columns={columns({orderByAndDirections, setOrderByAndDirections })} 
+        columns={columns({
+          orderByAndDirections,
+          setOrderByAndDirections,
+          loading,
+          setLoading,
+        })}
         data={data}
         page={page}
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
         totalPages={totalPages}
-        totalCount={totalCount} 
+        totalCount={totalCount}
         orderByAndDirections={orderByAndDirections}
         setOrderByAndDirections={setOrderByAndDirections}
       />

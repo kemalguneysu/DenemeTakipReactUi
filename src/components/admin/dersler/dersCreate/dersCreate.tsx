@@ -8,6 +8,10 @@ import { derslerService } from '@/app/services/dersler.service';
 import CustomToggleDersler from '@/app/admin/dersler/custom.toggle.dersler';
 import { z } from 'zod'; // Zod'u import et
 import { toast } from '@/hooks/use-toast';
+import { ClipLoader } from 'react-spinners';
+import Spinner from '@/app/spinner/spinner';
+import SpinnerComponent from '@/app/spinner/spinner';
+import SpinnerMethodComponent from '@/app/spinner/spinnerForMethods';
 
 // Zod ile validation şeması
 const dersSchema = z.object({
@@ -19,6 +23,7 @@ const DersCreate = () => {
   const [inputValue, setInputValue] = useState(''); // Input değerini tutmak için state
   const [isTyt, setIsTyt] = useState<boolean>(true); // Varsayılan olarak TYT seçili
   const [errors, setErrors] = useState<string | null>(null); // Hata mesajlarını tutmak için state
+  const [loading, setLoading] = useState(false); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -55,7 +60,7 @@ const DersCreate = () => {
     }
 
     setErrors(null);
-
+    setLoading(true);
     try {
       // Ders oluşturma işlemi
       const response = await derslerService.createDers(ders);
@@ -68,30 +73,34 @@ const DersCreate = () => {
         variant: 'destructive',
       });
     }
+    setLoading(false);
   };
 
   return (
-    <div className="py-4 max-w-7xl mx-auto"> {/* Ortalanmış bir genişlik */} 
+    <div className="py-4 max-w-7xl mx-auto">
+      {loading && <SpinnerMethodComponent />}
       <form onSubmit={handleSubmit}>
         {/* Input alanı */}
         <div className="mb-4">
-          <Input 
-            type="text" 
-            value={inputValue} 
-            onChange={handleInputChange}  // Input değiştiğinde çağrılacak fonksiyon
-            placeholder="Ders adı girin" 
+          <Input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange} // Input değiştiğinde çağrılacak fonksiyon
+            placeholder="Ders adı girin"
             className="w-full"
           />
-          {errors && <p className="text-red-500 text-sm mt-1">{errors}</p>} {/* Hata mesajı */}
+          {errors && <p className="text-red-500 text-sm mt-1">{errors}</p>}{" "}
+          {/* Hata mesajı */}
         </div>
 
         {/* Toggle butonu */}
         <div className="mb-4">
-          <CustomToggleDersler onChange={(value: any) => setIsTyt(value)} /> {/* Toggle'dan gelen değeri ayarlayın */}
+          <CustomToggleDersler onChange={(value: any) => setIsTyt(value)} />{" "}
+          {/* Toggle'dan gelen değeri ayarlayın */}
         </div>
 
         {/* Gönder butonu */}
-        <Button type="submit" className="w-full"> 
+        <Button type="submit" className="w-full">
           Ders Ekle
         </Button>
       </form>

@@ -16,7 +16,7 @@ import {
     TableRow,
   } from "@/components/ui/table";
   import { Button } from "@/components/ui/button";
-  import React from "react";
+  import React, { Dispatch, SetStateAction } from "react";
   import { Input } from "@/components/ui/input";
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
   import { Icons } from "@/components/icons";
@@ -39,6 +39,8 @@ import {
     totalCount: number;
     orderByAndDirections: OrderByDirection[];
     setOrderByAndDirections: (order: OrderByDirection[]) => void;
+    loading: boolean;
+    setLoading: Dispatch<SetStateAction<boolean>>;
   }
   
   export function DataTable<TData extends aytGenelList, TValue>({
@@ -51,32 +53,42 @@ import {
     totalPages,
     totalCount,
     orderByAndDirections,
-    setOrderByAndDirections
+    setOrderByAndDirections,
+    loading,
+    setLoading,
   }: DataTableProps<TData, TValue>) {
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnFilters, setColumnFilters] =
+      React.useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [dialogOpen, setDialogOpen] = React.useState(false);
-    const [selectedSort, setSelectedSort] = React.useState<string | null>("desc");
+    const [selectedSort, setSelectedSort] = React.useState<string | null>(
+      "desc"
+    );
     const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-    
-    const handleSortChange = (sortOrder: 'asc' | 'desc' | null) => {
+      React.useState<VisibilityState>({});
+
+    const handleSortChange = (sortOrder: "asc" | "desc" | null) => {
       const columnKey = "tarih"; // Sıralamak istediğiniz sütun
-        // @ts-ignore
-        setOrderByAndDirections((prevOrderBy: OrderByDirection[]) => {
-          const updatedOrderBy: OrderByDirection[] = prevOrderBy.filter((item: OrderByDirection) => item.orderBy !== columnKey);
-          
-          if (sortOrder) {
-            updatedOrderBy.push({ orderBy: columnKey, orderDirection: sortOrder });
-          } else {
-            // Eğer sortOrder null ise, sadece 'tarih' sütununu çıkarıyoruz
-            updatedOrderBy.push({ orderBy: columnKey, orderDirection: null });
-          }
-      
-          return updatedOrderBy; // Güncellenmiş durumu döndür
-        });
+      // @ts-ignore
+      setOrderByAndDirections((prevOrderBy: OrderByDirection[]) => {
+        const updatedOrderBy: OrderByDirection[] = prevOrderBy.filter(
+          (item: OrderByDirection) => item.orderBy !== columnKey
+        );
+
+        if (sortOrder) {
+          updatedOrderBy.push({
+            orderBy: columnKey,
+            orderDirection: sortOrder,
+          });
+        } else {
+          // Eğer sortOrder null ise, sadece 'tarih' sütununu çıkarıyoruz
+          updatedOrderBy.push({ orderBy: columnKey, orderDirection: null });
+        }
+
+        return updatedOrderBy; // Güncellenmiş durumu döndür
+      });
     };
-    
+
     const table = useReactTable({
       data,
       columns,
@@ -91,45 +103,50 @@ import {
         columnVisibility,
       },
     });
-  
-    const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (e) => {
+
+    const handleDeleteSelected: (e: React.FormEvent) => Promise<void> = async (
+      e
+    ) => {
       e.preventDefault();
+      setLoading(true);
+
       try {
-          const response = await denemeService.deleteAytDenemes(
-              Object.values(table.getSelectedRowModel().rowsById).map(item => item.original.id)
-          );
-          if (response.succeeded) {
-              
-              const selectedRows = table.getSelectedRowModel().rows;
-              selectedRows.splice(0, selectedRows.length); 
-              table.setRowSelection({});
-          }
-          else
+        const response = await denemeService.deleteAytDenemes(
+          Object.values(table.getSelectedRowModel().rowsById).map(
+            (item) => item.original.id
+          )
+        );
+        if (response.succeeded) {
+          const selectedRows = table.getSelectedRowModel().rows;
+          selectedRows.splice(0, selectedRows.length);
+          table.setRowSelection({});
+        } else
           toast({
-            title: 'Başarısız',
+            title: "Başarısız",
             description: response.message,
-            variant: 'destructive',
+            variant: "destructive",
           });
-  
       } catch (error: any) {
-          toast({
-              title: 'Başarısız',
-              description: 'Seçilen AYT denemesi silinirken bir hata oluştu.',
-              variant: 'destructive',
-          });
+        toast({
+          title: "Başarısız",
+          description: "Seçilen AYT denemesi silinirken bir hata oluştu.",
+          variant: "destructive",
+        });
       }
-      setDialogOpen(false); 
+      setDialogOpen(false);
+      setLoading(false);
+
     };
-  
+
     function getColumnWidth(totalColumns: number, index: number): string {
-        const totalRatio = 2 + 3 * (totalColumns - 2); // 1 for first, 3 * (totalColumns - 2) for middle, 1 for last
-        if (index === 0 || index === totalColumns - 1) {
-          return `${(1 / totalRatio) * 100}%`;
-        } else {
-          return `${(3 / totalRatio) * 100}%`;
-        }
+      const totalRatio = 2 + 3 * (totalColumns - 2); // 1 for first, 3 * (totalColumns - 2) for middle, 1 for last
+      if (index === 0 || index === totalColumns - 1) {
+        return `${(1 / totalRatio) * 100}%`;
+      } else {
+        return `${(3 / totalRatio) * 100}%`;
+      }
     }
-  
+
     return (
       <div className="max-w-7xl ">
         <div className="flex flex-col gap-2 pb-4">
@@ -227,7 +244,6 @@ import {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
           </div>
         </div>
         <div className="rounded-md border">

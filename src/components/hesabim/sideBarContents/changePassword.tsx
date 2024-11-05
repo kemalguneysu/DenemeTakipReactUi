@@ -6,6 +6,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { userService } from "@/app/services/user.service";
 import { toast } from "@/hooks/use-toast";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Define the Zod schema for validation
 const passwordUpdateSchema = z
@@ -47,6 +48,7 @@ export default function ChangePassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<PasswordUpdateErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
   const validateField = (
     fieldName: keyof PasswordUpdateErrors,
@@ -116,6 +118,7 @@ export default function ChangePassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
+    setLoading(true);
     
     const result = passwordUpdateSchema.safeParse({
       currentPassword,
@@ -161,6 +164,8 @@ export default function ChangePassword() {
         });
       }
     }
+    setLoading(false);
+
   };
 
   return (
@@ -168,6 +173,8 @@ export default function ChangePassword() {
       onSubmit={handleSubmit}
       className="mx-auto p-6 border shadow rounded-lg space-y-4"
     >
+      {loading && <SpinnerMethodComponent />}
+
       <h2 className="text-xl font-semibold mb-4">Şifre Güncelle</h2>
 
       <div>

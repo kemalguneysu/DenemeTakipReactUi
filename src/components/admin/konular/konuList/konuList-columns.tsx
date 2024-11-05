@@ -30,14 +30,27 @@ interface ColumnsProps {
   dersListesi: Ders[];
   selectedDersIds: string[];
   setSelectedDersIds: Dispatch<SetStateAction<string[]>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSelectedDersIds }: ColumnsProps): ColumnDef<ListKonu>[] => [
+export const columns = ({
+  isTyt,
+  setIsTyt,
+  dersListesi,
+  selectedDersIds,
+  setSelectedDersIds,
+  loading,
+  setLoading,
+}: ColumnsProps): ColumnDef<ListKonu>[] => [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Hepsini Seç"
       />
@@ -53,25 +66,29 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
   {
     accessorKey: "konuAdi",
     header: () => <div className="text-center">Konu Adı</div>,
-    cell: ({ getValue }) => <div className="text-center">{String(getValue())}</div>,
+    cell: ({ getValue }) => (
+      <div className="text-center">{String(getValue())}</div>
+    ),
   },
   {
     accessorKey: "dersAdi",
     header: () => {
       const [open, setOpen] = useState(false);
       const [searchTerm, setSearchTerm] = useState("");
-  
+
       // Filter dersListesi based on search input
       const filteredDersListesi = dersListesi.filter((ders) =>
         ders.dersAdi.toLowerCase().includes(searchTerm.toLowerCase())
       );
-  
+
       const handleSelect = (dersId: string) => {
         setSelectedDersIds((prev) =>
-          prev.includes(dersId) ? prev.filter((id) => id !== dersId) : [...prev, dersId]
+          prev.includes(dersId)
+            ? prev.filter((id) => id !== dersId)
+            : [...prev, dersId]
         );
       };
-  
+
       return (
         <div className="justify-items-center">
           <Popover open={open} onOpenChange={setOpen}>
@@ -129,7 +146,9 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
       );
     },
     cell: ({ row }) => (
-      <div className="text-center text-sm sm:text-base">{row.original.dersAdi}</div> // Adjust text size for smaller screens
+      <div className="text-center text-sm sm:text-base">
+        {row.original.dersAdi}
+      </div> // Adjust text size for smaller screens
     ),
   },
   {
@@ -139,7 +158,8 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
         <DropdownMenu>
           <DropdownMenuTrigger>
             <div className="flex items-center justify-self-center w-full">
-              <span className="text-center justify-self-center">Ders Türü</span> <Icons.chevronDown className="ml-1 w-4 h-4" />
+              <span className="text-center justify-self-center">Ders Türü</span>{" "}
+              <Icons.chevronDown className="ml-1 w-4 h-4" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48">
@@ -182,7 +202,9 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
       </div>
     ),
     cell: ({ getValue }) => (
-      <div className="text-center">{(getValue() as boolean) ? "TYT" : "AYT"}</div>
+      <div className="text-center">
+        {(getValue() as boolean) ? "TYT" : "AYT"}
+      </div>
     ),
   },
   {
@@ -198,7 +220,7 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
 
       const confirmDelete = async () => {
         setIsDialogOpen(false); // Close the dialog
-        await handleDelete(id); // Call the delete function
+        await handleDelete(id,setLoading); // Call the delete function
       };
 
       return (
@@ -253,23 +275,29 @@ export const columns = ({ isTyt, setIsTyt, dersListesi, selectedDersIds, setSele
 ];
 
 // Silme işlemi için örnek işlev
-const handleDelete = async (id: string) => {
+const handleDelete = async (
+  id: string,
+  setLoading: Dispatch<SetStateAction<boolean>>
+) => {
+  setLoading(true);
+
   try {
     const response = await konularService.deleteKonu([id]);
     if (response.succeeded) {
-      
     } else {
       toast({
-        title: 'Başarısız',
+        title: "Başarısız",
         description: response.message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   } catch (error: any) {
     toast({
-      title: 'Başarısız',
-      description: 'Seçilen ders silinirken bir hata oluştu.',
-      variant: 'destructive',
+      title: "Başarısız",
+      description: "Seçilen ders silinirken bir hata oluştu.",
+      variant: "destructive",
     });
+  } finally {
+    setLoading(false); // loading durumunu kapat
   }
 };
