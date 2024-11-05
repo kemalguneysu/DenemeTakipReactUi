@@ -240,7 +240,7 @@ export const columns = ({
 
         const confirmDelete = async () => {
           setIsDialogOpen(false);
-          await handleDelete(id, setloading);
+          await handleDelete(id, setLoading);
         };
 
         return (

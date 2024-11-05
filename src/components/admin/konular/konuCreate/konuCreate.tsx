@@ -66,7 +66,6 @@ const KonuCreate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form behavior
-    setLoading(true);
     // CreateKonu object
     const konu: CreateKonu = {
       konuAdi: inputValue,
@@ -84,6 +83,7 @@ const KonuCreate = () => {
     }
 
     setErrors(null);
+    setLoading(true);
 
     try {
       await konularService.createKonu(konu)

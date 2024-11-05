@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
 } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 
 interface NavProps {
@@ -37,6 +38,8 @@ export default function Footer({ items }: NavProps) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false); // Admin durumu için state
   const router = useRouter(); // useRouter hook'unu kullanarak yönlendirme işlemi
   const [username,setUserName]=useState<string|null>("");
+  const [loading, setLoading] = useState(false); 
+
   useEffect(() => {
     const subscription = AuthService.authStatus$().subscribe(({ isAuthenticated, isAdmin,username }) => {
       setIsAuthenticated(isAuthenticated);
@@ -52,11 +55,13 @@ export default function Footer({ items }: NavProps) {
   }, []);
 
   const handleSignOut = () => {
+    setLoading(true);
     AuthService.signOut();
     router.push("/"); 
     if (window.location.pathname === "/") {
       window.location.reload(); // Force page refresh if already on the root path
     }
+    setLoading(false);
   };
 
   const renderNavItems = (items: NavItem[]) => {
@@ -105,6 +110,7 @@ export default function Footer({ items }: NavProps) {
 
   return (
     <nav className="sticky max-w-7xl mx-auto top-0 z-40 w-full bg-background">
+      {loading && <SpinnerMethodComponent />}
       <div className="flex py-3 px-4 gap-8 items-center">
         <div className="flex w-full items-center justify-between gap-12">
           <Link href="/" className="flex items-center space-x-2">

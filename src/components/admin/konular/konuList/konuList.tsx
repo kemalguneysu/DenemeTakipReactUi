@@ -104,6 +104,8 @@ export default function KonuList() {
         setInput={setInput}
         totalCount={totalCount}
         setSelectedDersIds={setSelectedDersIds}
+        loading={loading}
+        setLoading={setLoading}
       />
     </div>
   );

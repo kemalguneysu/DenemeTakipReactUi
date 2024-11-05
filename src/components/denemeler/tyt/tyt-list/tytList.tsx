@@ -106,6 +106,8 @@ export default function DersList() {
         totalCount={totalCount}
         orderByAndDirections={orderByAndDirections}
         setOrderByAndDirections={setOrderByAndDirections}
+        loading={loading}
+        setLoading={setLoading}
       />
     </div>
   );

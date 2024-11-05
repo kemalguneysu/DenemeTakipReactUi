@@ -29,7 +29,7 @@ export default function HandleCookie() {
     setLoading(false);
   }, []);
 
-  const handleSavePreferences = () => {
+  const handleSavePreferences = async () => {
     setLoading(true);
     localStorage.setItem("cookieConsent", JSON.stringify(cookiePreferences));
     toast({
@@ -40,9 +40,8 @@ export default function HandleCookie() {
 
   };
 
- const handleAcceptAll = () => {
+ const handleAcceptAll = async() => {
     setLoading(true);
-
    const preferences = {
      essentialCookies: true, 
      functionalCookies: true,
