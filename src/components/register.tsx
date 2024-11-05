@@ -25,6 +25,7 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import authService from "@/app/services/auth.service";
 import { UserAuthService } from "@/app/services/user-auth.service";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 // Form validation schema using Zod
 const formSchema = z
@@ -75,7 +76,7 @@ export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // State for checkbox
-
+  const [loading, setLoading] = useState(false); 
   // Form submission handler
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!isChecked) {
@@ -89,6 +90,7 @@ export function RegisterForm() {
     }
 
     const { username, email, password, confirmPassword } = values;
+    setLoading(true);
     try {
       const userCreateResponse: UserCreate = await userService.create(
         {
@@ -141,11 +143,14 @@ export function RegisterForm() {
         description: errorMessage,
         variant: "destructive",
       });
+      
     }
+    setLoading(false);
   }
 
   // Google login success handler
   const onSuccess = async (credentialResponse: any) => {
+    setLoading(true);
     try {
       const profile = credentialResponse.profileObj || {};
 
@@ -175,10 +180,10 @@ export function RegisterForm() {
         variant: "destructive",
       });
     }
+    setLoading(false);
   };
 
   const onError = () => {
-    console.log("Google ile giriş hatası");
     toast({
       title: "Giriş Yapılamadı",
       description: "Google ile girişte bir hata oluştu.",
@@ -190,12 +195,14 @@ export function RegisterForm() {
 
   if (!clientId) {
     throw new Error(
-      "Google Client ID is not defined. Please check your .env file."
+      "Google Client ID bulunamadı."
     );
   }
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
+      {loading && <SpinnerMethodComponent />}
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

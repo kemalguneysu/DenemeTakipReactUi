@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./ui/dialog";
 import { Switch } from "./ui/switch";
+import SpinnerMethodComponent from "@/app/spinner/spinnerForMethods";
 
 const CookieConsentBanner = () => {
   const { theme } = useTheme();
@@ -11,6 +12,8 @@ const CookieConsentBanner = () => {
   const [isPersonalizeOpen, setIsPersonalizeOpen] = useState(false);
   const [functionalCookiesEnabled, setFunctionalCookiesEnabled] =useState(false);
   const [commercialCookiesEnabled, setCommercialCookiesEnabled] = useState(false);
+  const [loading, setLoading] = useState(false); 
+
   const [cookiePreferences, setCookiePreferences] = useState({
     essentialCookies: true, // Assuming essential cookies are always enabled
     functionalCookies: false,
@@ -24,6 +27,7 @@ const CookieConsentBanner = () => {
   }, []);
 
   const handleAcceptAll = () => {
+    setLoading(true);
     const preferences = {
       essentialCookies: true,
       functionalCookies: true,
@@ -33,6 +37,8 @@ const CookieConsentBanner = () => {
     setCookiePreferences(preferences);
     setIsVisible(false);
     setIsPersonalizeOpen(false);
+    setLoading(false);
+
   };
 
   const handlePersonalize = () => {
@@ -44,6 +50,7 @@ const CookieConsentBanner = () => {
   };
 
   const handleSavePreferences = () => {
+    setLoading(true);
     const preferences = {
       essentialCookies: true,
       functionalCookies: functionalCookiesEnabled,
@@ -52,10 +59,14 @@ const CookieConsentBanner = () => {
     localStorage.setItem("cookieConsent", JSON.stringify(preferences));
     setIsVisible(false);
     setIsPersonalizeOpen(false);
+    setLoading(false);
+
   };
 
   return (
     <>
+      {loading && <SpinnerMethodComponent />}
+
       {isVisible && (
         <div
           className={`fixed bottom-0 left-0 right-0 p-4 mx-auto border-t-2 ${

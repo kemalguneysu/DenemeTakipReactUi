@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'; // next/navigation'dan useRouter im
 import authService from '@/app/services/auth.service'; // AuthService import et
 import { toast } from '@/hooks/use-toast';
 import { SocialUser } from '@/types';
+import SpinnerMethodComponent from '@/app/spinner/spinnerForMethods';
 
 // Form doğrulama şemasını tanımlayın
 const formSchema = z.object({
@@ -37,14 +38,15 @@ export function LoginForm() {
   const router = useRouter(); // useRouter burada kullanılır
   const userAuthService = UserAuthService(); // UserAuthService örneği alınıyor
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string;
-
+  const [loading, setLoading] = useState(false); 
   // Eğer clientId tanımlı değilse hata ver
   if (!clientId) {
-    throw new Error("Google Client ID is not defined. Please check your .env file.");
+    throw new Error("Google Client ID bulunamadı.");
   }
   // Form değerlerini işleyen bir submit handler tanımlayalım.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { username, password } = values;
+    setLoading(true);
     try {
         await userAuthService.login(username, password, () => {
             authService.identityCheck(); // Kullanıcı durumunu kontrol et
@@ -58,11 +60,13 @@ export function LoginForm() {
             variant: "destructive",
         });
     }
+    setLoading(false);
 }
 
 
   // Google ile giriş başarılı olduğunda çağrılacak fonksiyon
   const onSuccess = async (credentialResponse: any) => {
+    setLoading(true);
     try {
       const profile = credentialResponse.profileObj || {};
 
@@ -92,10 +96,11 @@ export function LoginForm() {
         variant: 'destructive',
       });
     }
+    setLoading(false);
+
   };
 
   const onError = () => {
-    console.log('Google ile giriş hatası');
     toast({
       title: 'Giriş Yapılamadı',
       description: 'Google ile girişte bir hata oluştu.',
@@ -107,8 +112,13 @@ export function LoginForm() {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
+      {loading && <SpinnerMethodComponent />}
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-7xl mx-auto">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 max-w-7xl mx-auto"
+        >
           {/* Username Alanı */}
           <FormField
             control={form.control}
@@ -117,7 +127,10 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email veya kullanıcı adı</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email veya kullanıcı adınızı giriniz." {...field} />
+                  <Input
+                    placeholder="Email veya kullanıcı adınızı giriniz."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,7 +147,7 @@ export function LoginForm() {
                 <div className="relative">
                   <FormControl>
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Şifrenizi giriniz."
                       {...field}
                     />
@@ -147,7 +160,9 @@ export function LoginForm() {
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
-                <div className="h-6"> {/* Sabit yükseklik ekleyerek kaymayı önlüyoruz */}
+                <div className="h-6">
+                  {" "}
+                  {/* Sabit yükseklik ekleyerek kaymayı önlüyoruz */}
                   <FormMessage />
                 </div>
               </FormItem>
@@ -156,7 +171,10 @@ export function LoginForm() {
 
           {/* Şifremi unuttum? Linki */}
           <div className="mt-2 text-center">
-            <Link href="/sifremi-unuttum" className="text-primary hover:underline">
+            <Link
+              href="/sifremi-unuttum"
+              className="text-primary hover:underline"
+            >
               Şifremi unuttum
             </Link>
           </div>
@@ -169,7 +187,7 @@ export function LoginForm() {
           {/* Hesabınız yok mu? Kayıt Ol Linki */}
           <div className="mt-4 text-center">
             <p className="text-gray-500">
-              Hesabınız yok mu?{' '}
+              Hesabınız yok mu?{" "}
               <Link href="/kayit-ol" className="text-primary hover:underline">
                 Kayıt Ol
               </Link>
@@ -177,7 +195,9 @@ export function LoginForm() {
           </div>
 
           {/* Google ile giriş yap butonu */}
-          <div className="mt-4 flex justify-center"> {/* Flex ile ortalama */}
+          <div className="mt-4 flex justify-center">
+            {" "}
+            {/* Flex ile ortalama */}
             <GoogleLogin
               onSuccess={onSuccess}
               onError={onError}
@@ -185,7 +205,7 @@ export function LoginForm() {
               shape="pill"
               text="signin_with"
               size="large"
-              theme={theme === 'dark' ? 'filled_black' : 'outline'} // Tema kontrolü
+              theme={theme === "dark" ? "filled_black" : "outline"} // Tema kontrolü
               width="100%"
               auto_select={false}
             />
