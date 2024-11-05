@@ -91,10 +91,10 @@ export function Footer() {
           </h5>
           <h5 className="m-1 text-center opacity-75 transition-opacity duration-300 hover:opacity-100">
             <Link
-              href="mailto:denemetakip@gmail.com"
+              href="/iletisim"
               className="text-base font-quicksand font-light text-textColor rounded-2xl p-2 transition duration-300 ease-in-out hover:bg-secondaryColor"
             >
-              Email
+              Bize Ulaşın
             </Link>
           </h5>
         </div>
