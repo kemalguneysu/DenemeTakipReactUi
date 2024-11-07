@@ -49,7 +49,7 @@ export default function DeleteMyAccount() {
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center" >
       {loading && <SpinnerMethodComponent />}
 
       <Card className="p-6 shadow-md">

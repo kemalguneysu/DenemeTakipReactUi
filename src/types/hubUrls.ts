@@ -4,4 +4,5 @@ export enum HubUrls {
   DersHub = "ders-hub",
   KonuHub = "konu-hub",
   UserHub = "user-hub",
+  UserKonuHub="userKonu-hub"
 }

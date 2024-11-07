@@ -27,7 +27,7 @@ export function Footer() {
           </h5>
           <h5 className="m-1 text-center opacity-75 transition-opacity duration-300 hover:opacity-100">
             <Link
-              href="denemelerim"
+              href="/denemelerim"
               className="text-base font-quicksand font-light text-textColor rounded-2xl p-2 transition duration-300 ease-in-out hover:bg-secondaryColor"
             >
               Denemelerim
@@ -35,7 +35,7 @@ export function Footer() {
           </h5>
           <h5 className="m-1 text-center opacity-75 transition-opacity duration-300 hover:opacity-100">
             <Link
-              href="analizlerim"
+              href="/analizlerim"
               className="text-base font-quicksand font-light text-textColor rounded-2xl p-2 transition duration-300 ease-in-out hover:bg-secondaryColor"
             >
               Analizler
@@ -48,7 +48,7 @@ export function Footer() {
           </h5>
           <h5 className="m-1 text-center opacity-75 transition-opacity duration-300 hover:opacity-100">
             <Link
-              href="hakkimizda"
+              href="/hakkimizda"
               className="text-base font-quicksand font-light text-textColor rounded-2xl p-2 transition duration-300 ease-in-out hover:bg-secondaryColor"
             >
               Hakkımızda
@@ -56,7 +56,7 @@ export function Footer() {
           </h5>
           <h5 className="m-1 text-center opacity-75 transition-opacity duration-300 hover:opacity-100">
             <Link
-              href="sikca-sorulan-sorular"
+              href="/sikca-sorulan-sorular"
               className="text-base font-quicksand font-light text-textColor rounded-2xl p-2 transition duration-300 ease-in-out hover:bg-secondaryColor"
             >
               Sıkça Sorulan Sorular
@@ -83,7 +83,6 @@ export function Footer() {
               Kullanım Şartları
             </Link>
           </h5>
-          
         </div>
         <div className="navigationContainer col-span-1 flex flex-col items-center">
           <h5 className="text-lg font-quicksand font-bold text-textColor">

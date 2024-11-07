@@ -9,7 +9,7 @@ import React from "react";
 
 const SikcaSorulanSorular = () => {
   return (
-    <div className="max-w-7xl mx-auto mt-4">
+    <div className="max-w-xl mx-auto mt-4">
       <Card>
         <CardHeader>
           <h2 className="text-3xl font-semibold text-center ">

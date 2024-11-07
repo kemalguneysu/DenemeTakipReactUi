@@ -399,3 +399,10 @@ export class TytAnalizList {
   fenNet!: number;
   sosyalNet!: number;
 }
+export class ListUserKonular {
+  id!: string;
+  konuId!: string;
+  konuAdi!: string;
+  dersId!: string;
+  dersAdi!: string;
+}

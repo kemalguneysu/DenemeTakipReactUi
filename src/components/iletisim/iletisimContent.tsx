@@ -6,7 +6,7 @@ import { Card, CardHeader, CardFooter, CardContent } from "../ui/card";
 export default function IletisimContent() {
   return (
     <div className="max-w-7xl mx-auto">
-      <Card className="max-w-sm mx-auto mt-4">
+      <Card className="max-w-xl mx-auto mt-4">
         <CardHeader>
           <h2 className="text-2xl font-semibold text-center">İletişim</h2>
         </CardHeader>

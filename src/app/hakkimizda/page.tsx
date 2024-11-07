@@ -19,8 +19,8 @@ import React from "react";
 
 const Hakkimizda = () => {
   return (
-    <div className="max-w-7xl mx-auto mt-4">
-      <Card className="max-w-md mx-auto">
+    <div className="max-w-xl mx-auto mt-4">
+      <Card className="max-w-xl mx-auto">
         <CardHeader className="text-center">
           <h2 className="text-2xl font-bold">Deneme Takip</h2>
           <h3 className="text-xl font-semibold mt-2 ">Hakkında</h3>

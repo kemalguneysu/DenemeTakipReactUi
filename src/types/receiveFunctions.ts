@@ -12,6 +12,9 @@ export const ReceiveFunctions = {
   DersAddedMessage: "receiveDersAddedMessage",
   DersUpdatedMessage: "receiveDersUpdatedMessage",
   DersDeletedMessage: "receiveDersDeletedMessage",
-  UserUpdatedMessage: 'receiveUserUpdatedMessage'
+  UserUpdatedMessage: 'receiveUserUpdatedMessage',
+  UserKonuAddedMessage : "receiveUserKonuAddedMessage",
+  UserKonuUpdatedMessage : "receiveUserKonuUpdatedMessage",
+  UserKonuDeletedMessage : "receiveUserKonuDeletedMessage",
 };
   

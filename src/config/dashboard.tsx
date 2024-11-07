@@ -15,9 +15,14 @@ export const dashboardConfig: DashboardConfig = {
       href: "/analizlerim",
     },
     {
+      title: "Konu Takip",
+      href: "/konu-takip",
+    },
+    {
       title: "Admin",
       href: "/admin",
-      children: [ // Admin altında alt öğeler
+      children: [
+        // Admin altında alt öğeler
         {
           title: "Dersler",
           href: "/admin/dersler",
@@ -34,7 +39,6 @@ export const dashboardConfig: DashboardConfig = {
     },
   ],
   footerNav: [
-    
     // {
     //   title: "Social",
     //   items: [

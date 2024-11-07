@@ -29,7 +29,7 @@ export const faqQuestions: FaqQuestions = {
       id: "5",
       question: "Grafiksel Analizler nasıl yorumlanır?",
       answer:
-        "Analizler sayfasında, her bir grafik üzerinde neyi temsil ettiğini açıklayan bilgiler yer almaktadır. Bu sayede, grafiklerin ne anlama geldiğini ve nasıl yorumlanması gerektiğini kolayca öğrenebilirsiniz.",
+        "Analizler sayfasında, her bir grafik üzerinde neyi temsil ettiğini açıklayan bilgiler yer almaktadır. Bu sayede, grafiklerin ne anlama geldiğini ve nasıl yorumlanması gerektiğini kolayca anlayabilirsiniz.",
     },
   ],
 };
