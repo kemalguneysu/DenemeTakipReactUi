@@ -19,6 +19,10 @@ export const dashboardConfig: DashboardConfig = {
       href: "/konu-takip",
     },
     {
+      title: "Yapılacaklar",
+      href: "/yapilacaklar",
+    },
+    {
       title: "Admin",
       href: "/admin",
       children: [

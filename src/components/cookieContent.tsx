@@ -69,8 +69,8 @@ const CookieConsentBanner = () => {
 
       {isVisible && (
         <div
-          className={`fixed bottom-0 left-0 right-0 p-4 mx-auto border-t-2 ${
-            theme === "dark" ? "border-gray-600" : "border-gray-300"
+          className={`fixed bottom-0 left-0 right-0 p-4 mx-auto border-t-2 z-10 ${
+            theme === "dark" ? "border-gray-800" : "border-gray-300"
           } bg-background`} // Ensure the background is fully opaque
         >
           <span>
