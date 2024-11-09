@@ -10,6 +10,7 @@ import {
   CheckCircle,
   Trash2,
   X,
+  Plus,
 } from "lucide-react";
 import {
   format,
@@ -28,19 +29,10 @@ import { Checkbox } from "../ui/checkbox";
 import { useTheme } from "next-themes"; // Import Next.js theme hook
 import { Input } from "../ui/input";
 import { AnimatePresence, motion } from "framer-motion";
+import { toDoService } from "@/app/services/toDo.service";
+import { toast } from "@/hooks/use-toast";
+import { ListToDoElement, toDoElements } from "@/types";
 
-// Define Action type
-interface Action {
-  name: string;
-  completed: boolean;
-  isEditing: boolean;
-  editName: string;
-}
-
-// Define actions type as an object where each key is a string (the day), and the value is an array of actions.
-interface Actions {
-  [key: string]: Action[];
-}
 
 export default function YapilacaklarContent() {
   const { theme } = useTheme(); // Get current theme (dark or light)
@@ -48,261 +40,192 @@ export default function YapilacaklarContent() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [today] = useState(new Date());
   const [currentDateRange, setCurrentDateRange] = useState("");
-  const [actions, setActions] = useState<Actions>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDayActions, setSelectedDayActions] = useState<Action[]>([]);
-  const [selectedDayKey, setSelectedDayKey] = useState<string | Date | null>(null);
+  const [isCompleted, setIsCompleted] = useState<boolean | undefined>();
+  const [userToDos, setUserToDos] = useState<ListToDoElement[]>([]);
+
   useEffect(() => {
     updateDateRange();
   }, [view, today]);
 
   const updateDateRange = () => {
+     if (view === "weekly") {
+       const start = startOfWeek(today, { weekStartsOn: 1 });
+       const end = endOfWeek(today, { weekStartsOn: 1 });
+       setCurrentDateRange(
+         `${format(start, "d.MM.yyyy")} - ${format(end, "d.MM.yyyy")}`
+       );
+     } else {
+       const start = startOfMonth(today);
+       const end = endOfMonth(today);
+       setCurrentDateRange(
+         `${format(start, "d.MM.yyyy")} - ${format(end, "d.MM.yyyy")}`
+       );
+     }
+     getUserToDos(view, isCompleted);
+  };
+  const getUserToDos = async (view: string, isCompleted?: boolean) => {
+    let start: Date | null = null;
+    let end: Date | null = null;
     if (view === "weekly") {
-      const start = startOfWeek(today, { weekStartsOn: 1 });
-      const end = endOfWeek(today, { weekStartsOn: 1 });
-      setCurrentDateRange(
-        `${format(start, "d.MM.yyyy")} - ${format(end, "d.MM.yyyy")}`
-      );
-    } else {
-      const start = startOfMonth(today);
-      const end = endOfMonth(today);
-      setCurrentDateRange(
-        `${format(start, "d.MM.yyyy")} - ${format(end, "d.MM.yyyy")}`
-      );
+      start = startOfWeek(today, { weekStartsOn: 1 }); 
+      end = endOfWeek(today, { weekStartsOn: 1 }); 
     }
+    else if (view === "monthly") {
+      start = startOfMonth(today); 
+      end = endOfMonth(today); 
+    }
+
+    if (start && end) {
+      try {
+        const response = await toDoService.getToDoElements(
+          start,
+          end,
+          isCompleted
+        );
+        setUserToDos(response.toDoElements);
+      } catch (error) {
+      }
+    } 
+  };
+  useEffect(() => {console.log(userToDos)}, [userToDos]);
+
+  const renderWeeklyView = () => {
+    const daysOfWeek = Array.from({ length: 7 }).map((_, index) => {
+      const day = startOfWeek(today, { weekStartsOn: 1 });
+      return addDays(day, index);
+    });
+
+    return (
+      <div className="grid grid-cols-7 gap-2">
+        {daysOfWeek.map((day, index) => {
+          const dayKey = format(day, "yyyy-MM-dd");
+
+          // UserToDos verisi burada ListToDoElement içerecek
+          const todosForDay = userToDos.find(
+            (todo) => format(new Date(todo.date), "yyyy-MM-dd") === dayKey
+          )?.toDoElements;
+
+          return (
+            <TodoCard
+              key={index}
+              day={day} // Day, Date tipi olarak geçiyor
+              todo={todosForDay || []} // Burada 'todos' değil, 'todo' kullanmalıyız
+            />
+          );
+        })}
+      </div>
+    );
+  };
+ const renderMonthlyView = () => {
+   // Ayın tüm günlerini alıyoruz
+   const daysInMonth = eachDayOfInterval({
+     start: startOfMonth(today),
+     end: endOfMonth(today),
+   });
+
+   return (
+     <div className="grid grid-cols-7 gap-2">
+       {daysInMonth.map((day, index) => {
+         const dayKey = format(day, "yyyy-MM-dd");
+         const todosForDay =
+           userToDos.find(
+             (todo) => format(new Date(todo.date), "yyyy-MM-dd") === dayKey
+           )?.toDoElements || [];
+
+         return (
+           <div key={index} className="border p-2">
+             {/* Her gün için TodoCard bileşenini render ediyoruz */}
+             <TodoCard day={day} todo={todosForDay} />
+           </div>
+         );
+       })}
+     </div>
+   );
+ };
+  interface TodoCardProps {
+    day: Date;
+    todo: toDoElements[];
+  }
+  const TodoCard = ({ day, todo }: TodoCardProps) => {
+    const dayOfMonth = format(day, "d");
+    const dayName = format(day, "eeee", { locale: tr });
+
+      return (
+        <div className="border p-4 rounded shadow-lg flex flex-col">
+          {/* Üst kısımda, gün bilgisi ve move ikonunun olduğu alan */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-sm font-normal">{dayOfMonth}</div>
+            <div className="text-center text-sm font-normal">{dayName}</div>
+            <div className="cursor-pointer">
+              <MoveDiagonal size={16} />
+            </div>
+          </div>
+
+          {/* Görevler kısmı */}
+          <div>
+            <AnimatePresence>
+              {todo.length > 0 ? (
+                todo.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    className="mt-2 rounded shadow-lg flex flex-col gap-2"
+                    initial={{ opacity: 0, y: 20 }} // Animasyon başlangıcı
+                    animate={{ opacity: 1, y: 0 }} // Animasyon son hali
+                    exit={{ opacity: 0, y: -20 }} // Çıkış animasyonu
+                    transition={{ duration: 0.5 }} // Animasyon süresi
+                  >
+                    {/* Shadcn Card */}
+                    <div className="border rounded flex flex-col gap-2">
+                      {/* İlk satır: İkonlar */}
+                      <div className="flex justify-end gap-2 p-2">
+                        <Pencil
+                          size={16}
+                          className="cursor-pointer"
+                          onClick={() => console.log("Edit item", item.id)} // Tıklayınca işlem yapılacak
+                        />
+                        <Trash2
+                          size={16}
+                          className="cursor-pointer"
+                          onClick={() => console.log("Delete item", item.id)} // Tıklayınca silme işlemi yapılacak
+                        />
+                      </div>
+
+                      {/* İkinci satır: Başlık ve Checkbox */}
+                      <div className="flex items-center gap-2 p-2">
+                        <div className="flex-1">{item.toDoElementTitle}</div>
+                        <Checkbox id={`checkbox-${item.id}`} />
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="mt-2 p-2 text-gray-400">No tasks for today</div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Hedef Ekle Butonu */}
+          <div className="mt-4">
+            <Button
+              className="flex items-center gap-2 w-full"
+              onClick={() => addAction(day)} // Butona tıklanınca addAction çağrılacak
+            >
+              <Plus size={16} /> Hedef Ekle
+            </Button>
+          </div>
+        </div>
+      );
   };
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  const addAction = (day: Date) => {
-    const dayKey = format(day, "yyyy-MM-dd");
-
-    // Get the current UTC time
-    const currentTime = new Date();
-
-    const turkeyTime = new Date(currentTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours to UTC time
-
-    const startTime = turkeyTime.toISOString().slice(11, 16);
-
-    const endTime = new Date(turkeyTime.getTime() + 60 * 60 * 1000); // Add 1 hour
-    const formattedEndTime = endTime.toISOString().slice(11, 16);
-
-    setActions({
-      ...actions,
-      [dayKey]: [
-        ...(actions[dayKey] || []),
-        {
-          name: "",
-          completed: false,
-          isEditing: false,
-          editName: "",
-        },
-      ],
-    });
+  const addAction = async (day: Date) => {
+    const turkeyTime = new Date(day.getTime() + 3 * 60 * 60 * 1000); // 3 saat ekleyerek Türkiye saatine çevirme
+    await toDoService.createToDo("Yeni Hedef", turkeyTime, false);
+    await getUserToDos(view,isCompleted);
   };
-
-  const handleEditActionName = (index: number, dayKey: string) => {
-    const updatedActions = [...(actions[dayKey] || [])];
-    const action = updatedActions[index];
-
-    // Toggle editing mode
-    action.isEditing = !action.isEditing;
-
-    // If not editing, save the edited values
-    if (!action.isEditing) {
-      action.name = action.editName;
-    } else {
-      // When entering edit mode, set the fields to current values
-      action.editName = action.name;
-    }
-
-    setActions({ ...actions, [dayKey]: updatedActions });
-    
-  };
-
-   const handleDeleteAction = (index: number, dayKey: string) => {
-     const updatedActions = [...actions[dayKey]]; // Make a copy of actions for the day
-     updatedActions.splice(index, 1); // Remove the action at the given index
-     setActions({ ...actions, [dayKey]: updatedActions });
-   };
-
-     const openModal = (dayKey: string) => {
-       setSelectedDayActions(actions[dayKey] || []);
-       setSelectedDayKey(dayKey);
-       setIsModalOpen(true);
-     };
-
-     const closeModal = () => setIsModalOpen(false);
-
-     const handleOutsideClick = (e: React.MouseEvent) => {
-       if ((e.target as HTMLElement).id === "modal-overlay") {
-         closeModal();
-       }
-     };
-
-  const renderDayCard = (day: Date) => {
-    const dayKey = format(day, "yyyy-MM-dd");
-    const dayActions = actions[dayKey] || [];
-
-    return (
-      <div key={dayKey} className="p-4 border rounded relative">
-        <div className="flex justify-between items-center w-full">
-          {/* Gün numarası (sol üst) */}
-          <div className="text-xs font-bold">{format(day, "d")}</div>
-
-          <div className="flex justify-center  text-sm font-semibold">
-            {format(day, "eeee", { locale: tr })}{" "}
-          </div>
-
-          <div className="cursor-pointer" onClick={() => openModal(dayKey)}>
-            <MoveDiagonal size={16} />
-          </div>
-        </div>
-
-        {dayActions.length === 0 ? (
-          <Button
-            onClick={() => addAction(day)}
-            className="w-full mt-4 flex items-center justify-center gap-2"
-          >
-            <DiamondPlus size={16} /> Ekle
-          </Button>
-        ) : (
-          <AnimatePresence>
-            {dayActions.map((action, index) => (
-              <motion.div
-                key={index}
-                className="mt-4 p-2 border rounded edit-action relative w-full "
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.8,
-                  transition: { duration: 0.3 },
-                }}
-              >
-                {/* Container for pencil and trash icons */}
-                <div className="flex justify-between items-start w-full">
-                  <div className="flex-grow"></div>{" "}
-                  {/* This makes the rest of the space flexible */}
-                  <div className="flex gap-2 mb-4">
-                    {!action.isEditing ? (
-                      <>
-                        <Pencil
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => handleEditActionName(index, dayKey)} // Toggle edit mode
-                        />
-                        <Trash2
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => handleDeleteAction(index, dayKey)} // Delete the action
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <PencilOff
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => handleEditActionName(index, dayKey)} // Toggle edit mode to save
-                        />
-                        <Trash2
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => handleDeleteAction(index, dayKey)} // Delete the action
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="flex-grow">
-                    {!action.isEditing ? (
-                      <div
-                        className="text-sm font-medium cursor-pointer w-full"
-                        onClick={() => handleEditActionName(index, dayKey)}
-                      >
-                        {action.name || "Yeni Hedef"}
-                      </div>
-                    ) : (
-                      <input
-                        type="text"
-                        value={action.editName}
-                        onChange={(e) => {
-                          const updatedActions = [...dayActions];
-                          updatedActions[index].editName = e.target.value;
-                          setActions({
-                            ...actions,
-                            [dayKey]: updatedActions,
-                          });
-                        }}
-                        className="p-1 border rounded w-full"
-                        autoFocus
-                        onBlur={() => handleEditActionName(index, dayKey)}
-                      />
-                    )}
-                  </div>
-                  <div className="flex">
-                    <Checkbox
-                      checked={action.completed}
-                      onCheckedChange={(checked) => {
-                        const updatedActions = [...dayActions];
-                        updatedActions[index].completed = Boolean(checked);
-                        setActions({ ...actions, [dayKey]: updatedActions });
-                      }}
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        )}
-
-        {/* Action Ekle Butonu */}
-        {dayActions.length > 0 && (
-          <Button
-            onClick={() => addAction(day)}
-            className="w-full mt-4 flex items-center justify-center gap-2"
-          >
-            Ekle
-            <DiamondPlus size={16} />
-          </Button>
-        )}
-      </div>
-    );
-
-  };
-
-  const renderWeeklyView = () => {
-    const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
-    const endOfCurrentWeek = endOfWeek(today, { weekStartsOn: 1 });
-    const daysOfWeek = eachDayOfInterval({
-      start: startOfCurrentWeek,
-      end: endOfCurrentWeek,
-    });
-
-    return (
-      <div className="grid grid-cols-7 gap-4">
-        {daysOfWeek.map((day) => renderDayCard(day))}
-      </div>
-    );
-  };
-
-  const renderMonthlyView = () => {
-    const startOfCurrentMonth = startOfMonth(today);
-    const endOfCurrentMonth = endOfMonth(today);
-    const daysInMonth = eachDayOfInterval({
-      start: startOfCurrentMonth,
-      end: endOfCurrentMonth,
-    });
-
-    return (
-      <div className="grid grid-cols-7 gap-4">
-        {daysInMonth.map((day) => renderDayCard(day))}
-      </div>
-    );
-  };
-
+  
   return (
     <div className="p-4 z-10 relative">
       {/* Header with Dropdown */}
@@ -354,8 +277,6 @@ export default function YapilacaklarContent() {
           </div>
         )}
       </div>
-
-      {/* Date Range */}
       <div className="mt-2 opacity-80">{currentDateRange}</div>
 
       {/* Calendar */}
@@ -366,7 +287,6 @@ export default function YapilacaklarContent() {
         <div
           id="modal-overlay"
           className={`fixed inset-0 flex items-center justify-center ${theme==="dark"?"bg-black":"bg-white"} bg-opacity-50  `}
-          onClick={handleOutsideClick}
         >
           <motion.div
             className={`relative p-6 rounded-lg shadow-lg w-1/2 ${
@@ -381,58 +301,7 @@ export default function YapilacaklarContent() {
           >
             <X
               className="absolute top-4 right-4 cursor-pointer"
-              onClick={closeModal}
             />
-
-            {/* Modal Başlık ve Alt Başlık */}
-            <h2 className="text-lg font-bold  text-center">
-              {selectedDayKey && format(new Date(selectedDayKey), "d.MM.yyyy")}
-            </h2>
-            <p className="text-sm mb-2 text-center">
-              {selectedDayKey &&
-                format(new Date(selectedDayKey), "eeee", { locale: tr })}
-            </p>
-
-            {/* Görev Durumu Özeti */}
-            <p className="text-sm opacity-80 mb-4 text-center">
-              {actions[selectedDayKey as string]?.length || 0} görevden{" "}
-              {actions[selectedDayKey as string]?.filter(
-                (action) => action.completed
-              ).length || 0}{" "}
-              tanesi tamamlandı.
-            </p>
-
-            {/* Aksiyonlar Listesi */}
-            {selectedDayActions.length > 0 ? (
-              selectedDayActions.map((action, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center mb-4 p-2 border rounded"
-                >
-                  <div>{action.name || "Yeni Hedef"}</div>
-                  <div className="flex gap-2">
-                    <Pencil
-                      size={16}
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleEditActionName(index, selectedDayKey as string)
-                      }
-                    />
-                    <Trash2
-                      size={16}
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleDeleteAction(index, selectedDayKey as string)
-                      }
-                    />
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="opacity-80">
-                Bu gün için aksiyon bulunmamaktadır.
-              </p>
-            )}
           </motion.div>
         </div>
       )}

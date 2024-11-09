@@ -40,7 +40,6 @@ class UserKonularService {
     successCallBack?: () => void,
     errorCallBack?: (errorMessage: string) => void
   ): Promise<{ totalCount: number; userKonular: ListUserKonular[] }> {
-    console.log(dersId);
     let queryString = "";
     if (dersId) {
       queryString += `&DersId=${dersId}`;

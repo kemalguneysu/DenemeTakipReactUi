@@ -406,3 +406,13 @@ export class ListUserKonular {
   dersId!: string;
   dersAdi!: string;
 }
+export class ListToDoElement {
+  date!: string;
+  toDoElements!: toDoElements[];
+}
+export class toDoElements{
+  id!:string;
+  toDoElementTitle!:string;
+  toDoDate!:Date;
+  isCompleted!:boolean;
+}
